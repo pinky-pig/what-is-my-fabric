@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import type { Arrow } from '~/views/modules/Arrow'
 
 enum Mode {
   Hand = 'Hand',
@@ -16,12 +17,15 @@ export interface IDesignState {
   canvasRef: null | HTMLCanvasElement
   mode: TMode
   modeList: TMode[]
-  pointer: { x: number; y: number }
+  mouseFrom: { x: number; y: number }
+  mouseTo: { x: number; y: number }
   isMouseDown: boolean
   isCanvasDragging: boolean
+  isDrawing: boolean
   isCtrlKey: boolean
   zoom: number
   activeObjectId: number | null
+  temp: Arrow | null
 }
 export const useFabricStore = defineStore({
   id: 'fabricStore',
@@ -31,12 +35,15 @@ export const useFabricStore = defineStore({
       canvasRef: null,
       mode: 'Hand',
       modeList: Object.keys(Mode) as TMode[],
-      pointer: { x: 0, y: 0 },
+      mouseFrom: { x: 0, y: 0 },
+      mouseTo: { x: 0, y: 0 },
+      isDrawing: false,
       isMouseDown: false,
       isCanvasDragging: false,
       isCtrlKey: false,
       zoom: 1,
       activeObjectId: null,
+      temp: null,
     }
   },
   getters: {

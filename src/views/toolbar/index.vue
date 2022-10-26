@@ -16,7 +16,8 @@ const icons = {
     <div
       v-for="(item, index) in fabricStore.modeList"
       :key="index"
-      class="w-10 h-10 flex justify-center items-center cursor-pointer outline-none select-none rounded-lg border-3 border-solid border-black focus:ring-2 focus:ring-offset-2 focus:ring-black hover:bg-gray-50"
+      :class="fabricStore.mode === item ? 'bg-blue-100' : ''"
+      class="w-10 h-10 flex justify-center items-center cursor-pointer outline-none select-none rounded-lg border-3 border-solid border-black focus:ring-2 focus:ring-offset-2 focus:ring-black"
       @click="fabricStore.handleChangeMode(item)"
     >
       <div class="w-24px h-24px" v-html="icons[item]" />

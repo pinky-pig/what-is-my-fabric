@@ -1,5 +1,6 @@
 import { fabric } from 'fabric'
 import useCanvas from '../control/useCanvas'
+import { renderLinePreview } from '../control/useDraw'
 import { isPressedCtrl } from './useKeyStoke'
 import { useFabricStore } from '~/store/modules/fabric'
 
@@ -30,6 +31,12 @@ export const useMouseMove = () => {
 
       // 将选中的取消。只有在移动的时候才取消选中。
       canvas.discardActiveObject()
+    }
+
+    if (fabricStore.isDrawing) {
+      const { offsetX, offsetY } = evt
+      fabricStore.mouseTo = { x: offsetX, y: offsetY }
+      renderLinePreview()
     }
   })
 }

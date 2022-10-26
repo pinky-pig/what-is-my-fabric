@@ -1,4 +1,3 @@
-import { toggleSelection } from '../control/useCanvas'
 import { useFabricStore } from '~/store/modules/fabric'
 
 /**
@@ -12,7 +11,7 @@ export const useMouseUp = () => {
     evt.preventDefault()
 
     fabricStore.isCanvasDragging = false
-    // 可选择
-    toggleSelection(true)
+
+    fabricStore.isDrawing = false
   })
 }

@@ -61,6 +61,8 @@ const initCanvas = () => {
 
   canvas.add(rect)
 
+  toggleSelection(false)
+
   // 设置背景图片
   setBackground()
   useMouseWheel()
