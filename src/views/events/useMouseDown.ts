@@ -1,4 +1,4 @@
-import useCanvas from '../control/useCanvas'
+import { toggleSelection } from '../control/useCanvas'
 import { isPressedCtrl } from './useKeyStoke'
 import { useFabricStore } from '~/store/modules/fabric'
 
@@ -8,17 +8,22 @@ import { useFabricStore } from '~/store/modules/fabric'
 
 export const useMouseDown = () => {
   const fabricStore = useFabricStore()
-  const [canvas] = useCanvas()
   useEventListener(fabricStore.wrapperRef, 'mousedown', (evt: WheelEvent) => {
     evt.preventDefault()
     evt.stopPropagation()
 
     if (isPressedCtrl.value) {
-      // 拖拽画布
-      fabricStore.isCanvasDragging = true
-      canvas.selection = false
+      // 左键
+      if (evt.button === 0) {
+        // 拖拽画布
+        fabricStore.isCanvasDragging = true
+        // 禁止选中
+        toggleSelection(false)
+      }
     }
-    if (canvas)
-      canvas.selection = false
+
+    // 右键
+    if (evt.button === 2)
+      toggleSelection(true)
   })
 }

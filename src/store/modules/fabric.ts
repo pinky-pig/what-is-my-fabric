@@ -4,6 +4,9 @@ enum Mode {
   Hand = 'Hand',
   Line = 'Line',
   Curve = 'Curve',
+  Rect = 'Rect',
+  Ellipse = 'ellipse',
+  Arrow = 'Arrow',
 }
 
 export type TMode = keyof typeof Mode
@@ -52,7 +55,6 @@ export const useFabricStore = defineStore({
         return
       if (mode)
         this.mode = mode
-      // const [canvas] = useCanvas()
     },
   },
 })

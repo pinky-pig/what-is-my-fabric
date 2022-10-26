@@ -27,6 +27,9 @@ export const useMouseMove = () => {
       const delta = new fabric.Point(movementX, movementY)
       canvas.relativePan(delta)
       previousEvent = evt
+
+      // 将选中的取消。只有在移动的时候才取消选中。
+      canvas.discardActiveObject()
     }
   })
 }

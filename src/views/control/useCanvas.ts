@@ -12,6 +12,7 @@ let canvas: null | Canvas = null
  * canvas 画布相关
  * 1. 初始化画布
  * 2. 动态监听dom尺寸设置canvas尺寸
+ * 3. 画布是否可选择
  */
 
 const setViewport = (width, height) => {
@@ -22,13 +23,22 @@ const setViewport = (width, height) => {
   }
 }
 
+// 切换 Fabric Canvas 可否区域选择
+export const toggleSelection = (selection?: boolean) => {
+  if (!canvas)
+    return
+  // 这个禁止选中方法没有生效
+  canvas.selection = selection !== undefined ? selection : !canvas.selection
+  // 补充使用这个让其画布上的元素禁止选中
+  fabric.Object.prototype.selectable = canvas.selection
+}
+
 const initCanvas = () => {
   const fabricStore = useFabricStore()
 
   canvas = new fabric.Canvas(fabricStore.canvasRef, {
     width: fabricStore.getWidth(),
     height: fabricStore.getHeight(),
-    // preserveObjectStacking: true,
   })
 
   // 监听窗口大小变化，更新 canvas 画布
