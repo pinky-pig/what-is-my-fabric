@@ -62,15 +62,15 @@ export class Arrow {
     const cos = w / Math.sqrt(w ** 2 + h ** 2)
     const w1 = (16 * sin) / 4
     const h1 = (16 * cos) / 4
-    const centerx = sh * cos
-    const centery = sh * sin
+    const centeX = sh * cos
+    const centerY = sh * sin
 
     let path = ` M ${x1} ${y1}`
-    path += ` L ${x2 - centerx + w1} ${y2 - centery - h1}`
-    path += ` L ${x2 - centerx + w1 * 2} ${y2 - centery - h1 * 2}`
+    path += ` L ${x2 - centeX + w1} ${y2 - centerY - h1}`
+    path += ` L ${x2 - centeX + w1 * 2} ${y2 - centerY - h1 * 2}`
     path += ` L ${x2} ${y2}`
-    path += ` L ${x2 - centerx - w1 * 2} ${y2 - centery + h1 * 2}`
-    path += ` L ${x2 - centerx - w1} ${y2 - centery + h1}`
+    path += ` L ${x2 - centeX - w1 * 2} ${y2 - centerY + h1 * 2}`
+    path += ` L ${x2 - centeX - w1} ${y2 - centerY + h1}`
     path += ' Z'
 
     return path

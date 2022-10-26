@@ -6,7 +6,7 @@ import { useFabricStore } from '~/store/modules/fabric'
 export type insertType = 'D' | 'M' | 'L' | 'V' | 'H' | 'C' | 'S' | 'Q' | 'T' | 'A' | 'Z'
 export interface svgPathType { type: insertType; points: { x: number; y: number } }
 export type FabricObject = TObject
-
+export interface pointType { x: number; y: number }
 /**
  * 这里是箭头， todo 扩展成为曲线箭头 Curve Arrow
  * <path d="M 0 0 L 10 10 z"> + 箭头
@@ -15,7 +15,7 @@ export type FabricObject = TObject
  */
 
 export class Line {
-  svgPath: svgPathType[]
+  svgPath: pointType[]
   canvas = useCanvas()[0]
   fabricStore = useFabricStore()
   fabricObject: FabricObject | null = null
@@ -24,10 +24,10 @@ export class Line {
     name: String(this.id),
     strokeWidth: 1,
     strokeUniform: true,
-    fill: '#00bfff',
+    fill: 'red',
     hoverCursor: 'default',
     hasBorders: true,
-    stroke: '#00bfff',
+    stroke: 'red',
     borderColor: '#00bfff',
     selectable: true,
     hasControls: true,
@@ -36,7 +36,7 @@ export class Line {
     evented: true,
   }
 
-  constructor(svgPath: svgPathType[]) {
+  constructor(svgPath: pointType[]) {
     this.svgPath = svgPath
   }
 
@@ -48,34 +48,13 @@ export class Line {
     return this._config
   }
 
-  // 将 svg 路径转为 string
-  svgPath2Text(svgPath: svgPathType[]) {
-    return svgPath
-      .map(path => `${path.type} ${path.points.x} ${path.points.y}`)
-      .join(' ')
-  }
-
-  get svgPathText() {
-    return `${this.svgPath2Text(this.svgPath)}`
-  }
-
-  getFabricObject(): FabricObject {
-    const path1 = new fabric.Path(this.svgPathText)
-    path1.set({ left: 120, top: 120, fill: 'red' })
-
-    const path = new fabric.Path('M 0 0 L 200 100 L 170 200 z')
-    path.set({ left: 120, top: 120, fill: 'red' })
-    return path1
-  }
-
-  render() {
-    // this.fabricObject = this.getFabricObject()
-    // this.canvas.add(this.fabricObject)
-
-    const x1 = this.fabricStore.mouseFrom.x
-    const x2 = this.fabricStore.mouseTo.x
-    const y1 = this.fabricStore.mouseFrom.y
-    const y2 = this.fabricStore.mouseTo.y
+  // 生成箭头的svg路径
+  svgPath2String(svgPath: pointType[]) {
+    const [mouseFrom, mouseTo] = svgPath
+    const x1 = mouseFrom.x
+    const x2 = mouseTo.x
+    const y1 = mouseFrom.y
+    const y2 = mouseTo.y
     const w = x2 - x1
     const h = y2 - y1
     const sh = Math.cos(Math.PI / 4) * 16
@@ -93,7 +72,24 @@ export class Line {
     path += ` L ${x2 - centerx - w1 * 2} ${y2 - centery + h1 * 2}`
     path += ` L ${x2 - centerx - w1} ${y2 - centery + h1}`
     path += ' Z'
-    const canvasObject = new fabric.Path(path, this.config)
-    this.canvas.add(canvasObject)
+
+    return path
+  }
+
+  get svgPathString() {
+    return this.svgPath2String(this.svgPath)
+  }
+
+  getFabricObject(): FabricObject {
+    return new fabric.Path(this.svgPathString, this.config)
+  }
+
+  render() {
+    this.fabricObject = this.getFabricObject()
+    this.canvas.add(this.fabricObject)
+  }
+
+  remove() {
+    this.canvas.remove(this.fabricObject as FabricObject)
   }
 }
