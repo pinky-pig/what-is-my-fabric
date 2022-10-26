@@ -18,5 +18,7 @@ export const useMouseDown = () => {
       fabricStore.isCanvasDragging = true
       canvas.selection = false
     }
+    if (canvas)
+      canvas.selection = false
   })
 }

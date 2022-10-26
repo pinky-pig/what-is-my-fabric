@@ -1,3 +1,4 @@
+import useCanvas from '../control/useCanvas'
 import { useFabricStore } from '~/store/modules/fabric'
 
 /**
@@ -7,10 +8,12 @@ import { useFabricStore } from '~/store/modules/fabric'
 
 export const useMouseUp = () => {
   const fabricStore = useFabricStore()
+  const [canvas] = useCanvas()
   useEventListener(fabricStore.wrapperRef, 'mouseup', (evt: MouseEvent) => {
     evt.preventDefault()
-    evt.stopPropagation()
 
     fabricStore.isCanvasDragging = false
+    if (canvas)
+      canvas.selection = true
   })
 }

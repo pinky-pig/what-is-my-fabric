@@ -13,7 +13,6 @@ export const useMouseMove = () => {
   const [canvas] = useCanvas()
   useEventListener(fabricStore.wrapperRef, 'mousemove', (evt: MouseEvent) => {
     evt.preventDefault()
-    evt.stopPropagation()
 
     if (isPressedCtrl.value && fabricStore.isCanvasDragging) {
       // 拖拽移动画布
