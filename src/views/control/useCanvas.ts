@@ -47,20 +47,6 @@ const initCanvas = () => {
     setViewport(width.value, height.value)
   })
 
-  const rect = new fabric.Rect({
-    top: 50, // 距离画布上边的距离
-    left: 100, // 距离画布左侧的距离，单位是像素
-    width: 100, // 矩形的宽度
-    height: 70, // 矩形的高度
-    fill: 'red', // 填充的颜色
-    stroke: 'orange', // 边框原色
-    strokeWidth: 5, // 边框大小
-    rx: 8, // 圆角半径
-    ry: 4, // 圆角半径
-  })
-
-  canvas.add(rect)
-
   toggleSelection(false)
 
   // 设置背景图片
