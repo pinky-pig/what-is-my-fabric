@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import useCanvas from '../control/useCanvas'
-import { useMouseWheel } from '../events/useMouseWheel'
-import { useMouseDown } from '../events/useMouseDown'
-import { useMouseMove } from '../events/useMouseMove'
-import { useMouseUp } from '../events/useMouseUp'
+
 import { setBackground } from '../control/useOperate'
 import useKeyStoke from '../events/useKeyStoke'
+import { addFabricCanvasEvent } from '../events'
 import { useFabricStore } from '~/store/modules/fabric'
 const store = useFabricStore()
 const [,initCanvas] = useCanvas()
@@ -18,10 +16,7 @@ onMounted(() => {
 
   const [,,useWatchKeyboard] = useKeyStoke()
   setBackground()
-  useMouseWheel()
-  useMouseDown()
-  useMouseMove()
-  useMouseUp()
+  addFabricCanvasEvent()
   useKeyStoke()
   useWatchKeyboard()
 })
