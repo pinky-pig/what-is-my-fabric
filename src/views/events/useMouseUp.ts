@@ -12,6 +12,7 @@ export const useMouseUp = () => {
 
     fabricStore.isCanvasDragging = false
 
-    fabricStore.isDrawing = false
+    // 绘制停止，要将缓存清除，还有(mouseFrom、mouseTo)可选。这里建议将方法放到store中
+    fabricStore.handleChangeIsDrawing(false)
   })
 }

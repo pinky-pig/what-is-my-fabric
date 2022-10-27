@@ -1,5 +1,8 @@
 import { defineStore } from 'pinia'
+import { toggleSelection } from '~/views/control/useCanvas'
+import useDisableEvent from '~/views/control/useDisableEvent'
 import type { Arrow } from '~/views/modules/Arrow'
+import type { Line } from '~/views/modules/Line'
 
 enum Mode {
   Hand = 'Hand',
@@ -9,10 +12,10 @@ enum Mode {
   Ellipse = 'ellipse',
   Arrow = 'Arrow',
 }
-
 export type TMode = keyof typeof Mode
+export type TObjects = Arrow | Line
 
-export interface IDesignState {
+export interface IFabricState {
   wrapperRef: null | HTMLDivElement
   canvasRef: null | HTMLCanvasElement
   mode: TMode
@@ -25,11 +28,12 @@ export interface IDesignState {
   isCtrlKey: boolean
   zoom: number
   activeObjectId: number | null
-  temp: Arrow | null
+  temp: Arrow | null // 上一个对象
+  objects: TObjects[] // 所有的对象
 }
 export const useFabricStore = defineStore({
   id: 'fabricStore',
-  state: (): IDesignState => {
+  state: (): IFabricState => {
     return {
       wrapperRef: null,
       canvasRef: null,
@@ -44,6 +48,7 @@ export const useFabricStore = defineStore({
       zoom: 1,
       activeObjectId: null,
       temp: null,
+      objects: [],
     }
   },
   getters: {
@@ -57,11 +62,40 @@ export const useFabricStore = defineStore({
       return this.wrapperRef?.offsetHeight || 750
     },
 
+    handleChangeIsDrawing(flag: boolean) {
+      this.isDrawing = flag
+
+      if (!flag)
+        this.temp = null
+    },
+
     handleChangeMode(mode?: TMode) {
       if (mode === this.mode)
         return
       if (mode)
         this.mode = mode
+
+      // 切换模式，比如画直线到画箭头，
+      // 先将原来绘制过程中的缓存清掉（绘制预览）
+
+      const [, toggleDisabledEvent] = useDisableEvent()
+
+      switch (this.mode) {
+        case 'Hand':
+          // 将所有的要素可选中
+          toggleSelection(true)
+          // 清除之前已选中
+          toggleDisabledEvent(false)
+          break
+        case 'Arrow':
+          // 将所有的不可选中
+          toggleSelection(false)
+          // toggleDisabledEvent(true)
+          break
+
+        default:
+          break
+      }
     },
   },
 })

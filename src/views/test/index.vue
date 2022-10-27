@@ -18,10 +18,6 @@ onMounted(() => {
     canvas.add(rect)
 
     canvas.renderAll()
-    canvas.selection = false
-    // fabric.Object.prototype.selectable = false
-
-    window.canvastest = canvas
   })
 })
 </script>

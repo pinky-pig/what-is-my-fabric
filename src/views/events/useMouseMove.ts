@@ -1,6 +1,6 @@
 import { fabric } from 'fabric'
 import useCanvas from '../control/useCanvas'
-import { renderLinePreview } from '../control/useDraw'
+import { renderArrowPreview } from '../control/useDraw'
 import { isPressedCtrl } from './useKeyStoke'
 import { useFabricStore } from '~/store/modules/fabric'
 
@@ -33,10 +33,10 @@ export const useMouseMove = () => {
       canvas.discardActiveObject()
     }
 
-    if (fabricStore.isDrawing) {
+    if (fabricStore.isDrawing && (fabricStore.mode === 'Arrow')) {
       const { offsetX, offsetY } = evt
       fabricStore.mouseTo = { x: offsetX, y: offsetY }
-      renderLinePreview()
+      renderArrowPreview()
     }
   })
 }

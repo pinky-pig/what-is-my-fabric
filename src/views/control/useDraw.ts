@@ -1,7 +1,7 @@
 import { Arrow } from '../modules/Arrow'
 import { useFabricStore } from '~/store/modules/fabric'
 
-export const renderLinePreview = () => {
+export const renderArrowPreview = () => {
   const fabricStore = useFabricStore()
   // 先删除上一个
   const temp = fabricStore.temp
@@ -14,14 +14,3 @@ export const renderLinePreview = () => {
   fabricStore.temp = arrow
 }
 
-// 这里写 模式的判断，line arrow ...
-// export default () => {
-//   const fabricStore = useFabricStore()
-//   renderLinePreview()
-
-//   // switch (fabricStore.mode) {
-//   //   case 'Line':
-//   //     renderLinePreview()
-//   //     break
-//   // }
-// }

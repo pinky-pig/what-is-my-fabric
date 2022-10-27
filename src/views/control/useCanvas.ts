@@ -31,6 +31,9 @@ export const toggleSelection = (selection?: boolean) => {
   canvas.selection = selection !== undefined ? selection : !canvas.selection
   // 补充使用这个让其画布上的元素禁止选中
   fabric.Object.prototype.selectable = canvas.selection
+
+  // 补充这个方法，禁止选中所有元素
+  // canvas.getObjects().forEach(i => i.set('selectable', selection))
 }
 
 const initCanvas = () => {

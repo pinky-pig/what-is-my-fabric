@@ -89,6 +89,10 @@ export class Arrow {
     this.canvas.add(this.fabricObject)
   }
 
+  update() {
+
+  }
+
   remove() {
     this.canvas.remove(this.fabricObject as FabricObject)
   }
