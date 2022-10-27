@@ -7,13 +7,10 @@ import { useFabricStore } from '~/store/modules/fabric'
 
 export const useMouseUp = () => {
   const fabricStore = useFabricStore()
-  useEventListener(fabricStore.wrapperRef, 'mouseup', (evt: MouseEvent) => {
-    evt.preventDefault()
 
-    fabricStore.isCanvasDragging = false
+  fabricStore.isCanvasDragging = false
 
-    // 绘制停止
-    if (fabricStore.isDrawing)
-      fabricStore.handleChangeIsDrawing(false)
-  })
+  // 绘制停止
+  if (fabricStore.isDrawing)
+    fabricStore.handleChangeIsDrawing(false)
 }
