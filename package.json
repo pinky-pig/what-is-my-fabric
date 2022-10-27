@@ -21,6 +21,7 @@
     "naive-ui": "^2.33.5",
     "pinia": "^2.0.22",
     "prism-theme-vars": "^0.2.4",
+    "roughjs": "^4.5.2",
     "unplugin-auto-import": "^0.11.2",
     "unplugin-vue-components": "^0.22.7",
     "vue": "^3.2.37",
