@@ -1,12 +1,12 @@
 import type { Ref } from 'vue'
-import { keyListener } from './useTools'
+import { useMutations } from '../control/useMutations'
 
 const { Ctrl, Space, Ctrl_Z, Ctrl_Y, Ctrl_A, Ctrl_C, Ctrl_V, Delete } = useMagicKeys()
 const isPressedCtrl = ref(false)
 const isPressedSpace = ref(false)
 
 export const useWatchKeyboard = () => {
-  const { undo, redo, deleteActiveObjects, setAllObjectsActive, copy, paste } = keyListener()
+  const { undo, redo, deleteActiveObjects, setAllObjectsActive, copy, paste } = useMutations()
 
   watch(Ctrl, (v) => {
     isPressedCtrl.value = v

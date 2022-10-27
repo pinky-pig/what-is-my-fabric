@@ -1,9 +1,9 @@
 import type { Object as TObject } from 'fabric/fabric-impl'
 import { fabric } from 'fabric'
-import useCanvas from '../control/useCanvas'
+import useCanvas from './useCanvas'
 import { useFabricStore } from '~/store/modules/fabric'
 
-export const keyListener = () => {
+export const useMutations = () => {
   // 这里目前只实现了新增对象的撤销
   const [canvas] = useCanvas()
   const fabricStore = useFabricStore()
