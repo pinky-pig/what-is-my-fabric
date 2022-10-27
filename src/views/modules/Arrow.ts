@@ -29,7 +29,7 @@ export class Arrow {
     hasBorders: true,
     stroke: 'red',
     borderColor: '#00bfff',
-    selectable: true,
+    selectable: false,
     hasControls: true,
     flipX: false,
     flipY: false,

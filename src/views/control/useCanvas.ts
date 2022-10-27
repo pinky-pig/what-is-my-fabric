@@ -33,7 +33,7 @@ export const toggleSelection = (selection?: boolean) => {
   fabric.Object.prototype.selectable = canvas.selection
 
   // 补充这个方法，禁止选中所有元素
-  // canvas.getObjects().forEach(i => i.set('selectable', selection))
+  canvas.getObjects().forEach(i => i.set('selectable', selection))
 }
 
 const initCanvas = () => {
@@ -49,8 +49,6 @@ const initCanvas = () => {
   watchEffect(() => {
     setViewport(width.value, height.value)
   })
-
-  toggleSelection(false)
 
   // 设置背景图片
   setBackground()
