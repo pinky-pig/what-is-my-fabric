@@ -12,9 +12,9 @@ enum Mode {
   Ellipse = 'ellipse',
   Arrow = 'Arrow',
 }
+export const maxStep = 10 // 保存的最大步数
 export type TMode = keyof typeof Mode
 export type TObjects = Arrow | Line
-
 export interface IFabricState {
   wrapperRef: null | HTMLDivElement
   canvasRef: null | HTMLCanvasElement
@@ -30,7 +30,10 @@ export interface IFabricState {
   activeObjectId: number | null
   temp: Arrow | null // 上一个对象
   objects: TObjects[] // 所有的对象
+  history: string[] // 操作历史
+  redoHistory: object[] // 回退操作历史
 }
+
 export const useFabricStore = defineStore({
   id: 'fabricStore',
   state: (): IFabricState => {
@@ -49,6 +52,8 @@ export const useFabricStore = defineStore({
       activeObjectId: null,
       temp: null,
       objects: [],
+      history: [],
+      redoHistory: [],
     }
   },
   getters: {
@@ -65,8 +70,18 @@ export const useFabricStore = defineStore({
     handleChangeIsDrawing(flag: boolean) {
       this.isDrawing = flag
 
+      // 绘制结束
       if (!flag)
+        this.finishDraw()
+    },
+    finishDraw() {
+      // 清空缓存
+      if (this.temp) {
+        this.objects.push(this.temp)
         this.temp = null
+      }
+
+      this.redoHistory = []
     },
 
     handleChangeMode(mode?: TMode) {
@@ -74,9 +89,6 @@ export const useFabricStore = defineStore({
         return
       if (mode)
         this.mode = mode
-
-      // 切换模式，比如画直线到画箭头，
-      // 先将原来绘制过程中的缓存清掉（绘制预览）
 
       const [, toggleDisabledEvent] = useDisableEvent()
 
@@ -88,9 +100,7 @@ export const useFabricStore = defineStore({
           toggleDisabledEvent(false)
           break
         case 'Arrow':
-          // 将所有的不可选中
           toggleSelection(false)
-          // toggleDisabledEvent(true)
           break
 
         default:

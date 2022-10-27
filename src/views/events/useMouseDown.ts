@@ -21,10 +21,12 @@ export const useMouseDown = () => {
     }
 
     // 按下左键，设置 mouseFrom 的点
-    if (evt.button === 0) {
-      fabricStore.handleChangeIsDrawing(true)
-      const { offsetX, offsetY } = evt
-      fabricStore.mouseFrom = { x: offsetX, y: offsetY }
+    if (fabricStore.mode !== 'Hand') {
+      if (evt.button === 0) {
+        fabricStore.handleChangeIsDrawing(true)
+        const { offsetX, offsetY } = evt
+        fabricStore.mouseFrom = { x: offsetX, y: offsetY }
+      }
     }
 
     // 右键
