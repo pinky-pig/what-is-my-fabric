@@ -1,7 +1,9 @@
 import type { IPoint } from 'fabric/fabric-impl'
 import useCanvas from '../control/useCanvas'
-import { isPressedCtrl } from './useKeyStoke'
+import useKeyStoke from './useKeyStoke'
+
 import { useFabricStore } from '~/store/modules/fabric'
+const [isPressedCtrl] = useKeyStoke()
 
 // 最大最小缩放的值
 const zoomLimit = { min: 0.5, max: 2 }

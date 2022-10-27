@@ -5,33 +5,26 @@ import { useFabricStore } from '~/store/modules/fabric'
 
 export const keyListener = () => {
   // 这里目前只实现了新增对象的撤销
+  const [canvas] = useCanvas()
+  const fabricStore = useFabricStore()
+
   const canUndo = (): boolean => {
-    const [canvas] = useCanvas()
     return canvas._objects.length > 0
   }
   const undo = () => {
-    const fabricStore = useFabricStore()
-    const [canvas] = useCanvas()
-
     if (canUndo()) {
       fabricStore.redoHistory.push(canvas._objects.pop() as Object)
       canvas.renderAll()
     }
   }
   const canRedo = (): boolean => {
-    const fabricStore = useFabricStore()
     return fabricStore.redoHistory.length > 0
   }
   const redo = () => {
-    const fabricStore = useFabricStore()
-    if (canRedo()) {
-      const [canvas] = useCanvas()
+    if (canRedo())
       canvas.add(fabricStore.redoHistory.pop() as TObject)
-    }
   }
   const deleteActiveObjects = () => {
-    const [canvas] = useCanvas()
-
     canvas.getActiveObjects().forEach((item) => {
       canvas.remove(item)
       canvas.discardActiveObject()
@@ -39,7 +32,6 @@ export const keyListener = () => {
   }
 
   const setAllObjectsActive = () => {
-    const [canvas] = useCanvas()
     canvas.discardActiveObject()
     const sel = new fabric.ActiveSelection(canvas.getObjects(), {
       canvas,
@@ -50,15 +42,12 @@ export const keyListener = () => {
 
   let _clipboard: any = null
   const copy = () => {
-    const [canvas] = useCanvas()
     canvas.getActiveObject().clone((cloned) => {
       _clipboard = cloned
     })
   }
 
   const paste = () => {
-    const [canvas] = useCanvas()
-
     if (_clipboard) {
       _clipboard.clone((clonedObj) => {
         canvas.discardActiveObject()

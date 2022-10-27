@@ -1,11 +1,12 @@
 import { toggleSelection } from '../control/useCanvas'
-import { isPressedCtrl } from './useKeyStoke'
+import useKeyStoke from './useKeyStoke'
 import { useFabricStore } from '~/store/modules/fabric'
 
 /**
  * 鼠标左键按下有几种可能 [拖拽画布, 框选, 绘制]
  */
 
+const [isPressedCtrl] = useKeyStoke()
 export const useMouseDown = () => {
   const fabricStore = useFabricStore()
   useEventListener(fabricStore.wrapperRef, 'mousedown', (evt: WheelEvent) => {

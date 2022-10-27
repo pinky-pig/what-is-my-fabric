@@ -1,11 +1,6 @@
 import '../utils/initFabricPrototype'
 import { fabric } from 'fabric'
 import type { Canvas } from 'fabric/fabric-impl'
-import { useMouseWheel } from '../events/useMouseWheel'
-import { useMouseDown } from '../events/useMouseDown'
-import { useMouseMove } from '../events/useMouseMove'
-import { useMouseUp } from '../events/useMouseUp'
-import { setBackground } from './useOperate'
 import { useFabricStore } from '~/store/modules/fabric'
 let canvas: null | Canvas = null
 /**
@@ -49,13 +44,6 @@ const initCanvas = () => {
   watchEffect(() => {
     setViewport(width.value, height.value)
   })
-
-  // 设置背景图片
-  setBackground()
-  useMouseWheel()
-  useMouseDown()
-  useMouseMove()
-  useMouseUp()
 }
 
 export default (): [ Canvas, typeof initCanvas] => [canvas as Canvas, initCanvas]

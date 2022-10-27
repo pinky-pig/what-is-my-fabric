@@ -1,8 +1,11 @@
 import { fabric } from 'fabric'
-import useCanvas from '../control/useCanvas'
 import { renderArrowPreview } from '../control/useDraw'
-import { isPressedCtrl } from './useKeyStoke'
+import useCanvas from '../control/useCanvas'
+import useKeyStoke from './useKeyStoke'
+
 import { useFabricStore } from '~/store/modules/fabric'
+
+const [isPressedCtrl] = useKeyStoke()
 
 /**
  * 鼠标左键按下有几种可能 [拖拽画布, 框选, 移动]
