@@ -24,7 +24,6 @@ export class IFText {
     name: String(this.id),
     left: 0,
     top: 0,
-    borderColor: 'rgba(0,0,0,0.5)',
     fontSize: Number(24),
     fill: 'red',
     charSpacing: Number(10),
