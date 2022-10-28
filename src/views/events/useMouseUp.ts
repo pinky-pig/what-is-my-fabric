@@ -8,8 +8,6 @@ import { useFabricStore } from '~/store/modules/fabric'
 export const useMouseUp = () => {
   const fabricStore = useFabricStore()
 
-  // fabricStore.isCanvasDragging = false
-
   if (fabricStore.isCanvasDragging)
     fabricStore.handleChangeIsCanvasDragging(false)
 

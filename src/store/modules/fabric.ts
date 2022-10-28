@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
 import { toggleSelection } from '~/views/control/useCanvas'
 import useDisableEvent from '~/views/control/useDisableEvent'
+import { exitRenderTextPreview } from '~/views/control/useDraw'
 import type { Arrow } from '~/views/modules/Arrow'
+import type { IFText } from '~/views/modules/IFText'
 import type { Line } from '~/views/modules/Line'
 
 enum Mode {
@@ -11,6 +13,7 @@ enum Mode {
   Rect = 'Rect',
   Ellipse = 'ellipse',
   Arrow = 'Arrow',
+  Text = 'Text',
 }
 export const maxStep = 10 // 保存的最大步数
 export type TMode = keyof typeof Mode
@@ -25,10 +28,11 @@ export interface IFabricState {
   isMouseDown: boolean
   isCanvasDragging: boolean
   isDrawing: boolean
+  isTexting: boolean
   isCtrlKey: boolean
   zoom: number
   activeObjectId: number | null
-  temp: Arrow | null // 上一个对象
+  temp: Arrow | IFText | null // 上一个对象
   objects: TObjects[] // 所有的对象
   history: string[] // 操作历史
   redoHistory: object[] // 回退操作历史
@@ -44,9 +48,10 @@ export const useFabricStore = defineStore({
       modeList: Object.keys(Mode) as TMode[],
       mouseFrom: { x: 0, y: 0 },
       mouseTo: { x: 0, y: 0 },
-      isDrawing: false,
-      isMouseDown: false,
       isCanvasDragging: false,
+      isDrawing: false,
+      isTexting: false,
+      isMouseDown: false,
       isCtrlKey: false,
       zoom: 1,
       activeObjectId: null,
@@ -103,12 +108,17 @@ export const useFabricStore = defineStore({
 
       switch (this.mode) {
         case 'Hand':
+          // 退出文字编辑模式
+          exitRenderTextPreview()
           // 将所有的要素可选中
           toggleSelection(true)
           // 清除之前已选中
           toggleDisabledEvent(false)
           break
         case 'Arrow':
+          toggleSelection(false)
+          break
+        case 'Text':
           toggleSelection(false)
           break
 
