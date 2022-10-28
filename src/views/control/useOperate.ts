@@ -53,3 +53,28 @@ export const previewImage = () => {
   w.document.write(`<img src='${dataURL}' alt='from canvas'/>`)
 }
 
+// 打印编辑后的图片
+export const printImage = () => {
+  const [canvas] = useCanvas()
+  const dataURL = canvas.toDataURL({
+    width: canvas.width,
+    height: canvas.height,
+    left: 0,
+    top: 0,
+    format: 'png',
+  })
+
+  const html = `<img src='${dataURL}'/>`
+  const w = window.open('', '_blank', 'location=no,width=1000,height=600')
+  if (w) {
+    w.document.open()
+    w.document.write(html)
+    const o = w.document.createElement('script')
+    o.type = 'text/javascript'
+    const text = w.document.createTextNode('window.print()')
+    o.appendChild(text)
+    w.document.getElementsByTagName('head')[0].appendChild(o)
+    w.document.close()
+  }
+}
+
