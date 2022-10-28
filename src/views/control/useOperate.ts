@@ -37,3 +37,19 @@ export const exportImage = () => {
   link.href = dataURL
   link.click()
 }
+
+// 预览编辑后的图片
+export const previewImage = () => {
+  const [canvas] = useCanvas()
+  const dataURL = canvas.toDataURL({
+    width: canvas.width,
+    height: canvas.height,
+    left: 0,
+    top: 0,
+    format: 'png',
+  })
+
+  const w = window.open('about:blank', 'image from canvas') as Window
+  w.document.write(`<img src='${dataURL}' alt='from canvas'/>`)
+}
+

@@ -5,7 +5,6 @@ import useCanvas from '../control/useCanvas'
 import { setBackground } from '../control/useOperate'
 import useKeyStoke from '../events/useKeyStoke'
 import { addFabricCanvasEvent } from '../events'
-import { useRough } from '../control/useRough'
 import { useFabricStore } from '~/store/modules/fabric'
 const store = useFabricStore()
 const [,initCanvas] = useCanvas()
@@ -20,7 +19,6 @@ onMounted(() => {
   addFabricCanvasEvent()
   useKeyStoke()
   useWatchKeyboard()
-  useRough()
 })
 </script>
 
