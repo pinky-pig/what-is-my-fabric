@@ -67,12 +67,21 @@ export const useFabricStore = defineStore({
       return this.wrapperRef?.offsetHeight || 750
     },
 
+    // 改变是否绘制
     handleChangeIsDrawing(flag: boolean) {
       this.isDrawing = flag
 
       // 绘制结束
       if (!flag)
         this.finishDraw()
+    },
+    // 改变是否拖拽画布
+    handleChangeIsCanvasDragging(flag: boolean) {
+      this.isCanvasDragging = flag
+      if (flag)
+        toggleSelection(false)
+      else
+        toggleSelection(true)
     },
     finishDraw() {
       // 清空缓存

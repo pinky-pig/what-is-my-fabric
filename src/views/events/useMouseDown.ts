@@ -13,10 +13,11 @@ export const useMouseDown = (evt: IEvent<MouseEvent>) => {
 
   // 按下ctrl和左键，拖拽画布
   if (evt.button === 1 && isPressedCtrl.value) {
-    // 拖拽画布
-    fabricStore.isCanvasDragging = true
-    // 禁止选中
-    toggleSelection(false)
+    // // 拖拽画布
+    // fabricStore.isCanvasDragging = true
+    // // 禁止选中
+    // toggleSelection(false)
+    fabricStore.handleChangeIsCanvasDragging(true)
   }
 
   // 按下左键，设置 mouseFrom 的点
