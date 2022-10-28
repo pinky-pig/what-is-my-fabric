@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { exportImage } from '../control/useOperate'
+
 const operateList = ref([
   {
     key: 'import',
@@ -9,6 +11,21 @@ const operateList = ref([
     icon: '<svg width="24" height="24" viewBox="0 0 32 32"><path fill="currentColor" d="M13 21h13.17l-2.58 2.59L25 25l5-5l-5-5l-1.41 1.41L26.17 19H13v2z"/><path fill="currentColor" d="M22 14v-4a1 1 0 0 0-.29-.71l-7-7A1 1 0 0 0 14 2H4a2 2 0 0 0-2 2v24a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2h-2v2H4V4h8v6a2 2 0 0 0 2 2h6v2Zm-8-4V4.41L19.59 10Z"/></svg>',
   },
 ])
+
+const handleClick = (key: string) => {
+  switch (key) {
+    case 'import':
+      alert('import')
+      break
+    case 'export':
+      exportImage()
+
+      break
+
+    default:
+      break
+  }
+}
 </script>
 
 <template>
@@ -17,6 +34,7 @@ const operateList = ref([
       v-for="(item, index) in operateList"
       :key="index"
       class="w-10 h-10 flex justify-center items-center cursor-pointer outline-none select-none rounded-lg border-3 border-solid border-black focus:ring-2 focus:ring-offset-2 focus:ring-black hover:bg-gray-50"
+      @click="handleClick(item.key)"
     >
       <div class="w-24px h-24px" v-html="item.icon" />
     </div>

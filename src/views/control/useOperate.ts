@@ -19,10 +19,21 @@ export const setBackground = () => {
         canvas.renderAll()
       }
     }
-  })
+  }, { crossOrigin: 'anonymous' })
 }
 
 // 导出编辑后的图片
 export const exportImage = () => {
-
+  const [canvas] = useCanvas()
+  const dataURL = canvas.toDataURL({
+    width: canvas.width,
+    height: canvas.height,
+    left: 0,
+    top: 0,
+    format: 'png',
+  })
+  const link = document.createElement('a')
+  link.download = 'canvas.png'
+  link.href = dataURL
+  link.click()
 }
