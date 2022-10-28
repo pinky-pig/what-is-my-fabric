@@ -1,18 +1,26 @@
 import type { IText } from 'fabric/fabric-impl'
 import { Arrow } from '../modules/Arrow'
 import { IFText } from '../modules/IFText'
+import { Rect } from '../modules/Rect'
 import useCanvas from './useCanvas'
 import { useFabricStore } from '~/store/modules/fabric'
 
 export const renderArrowPreview = () => {
   const fabricStore = useFabricStore()
-  // 先删除上一个
   const temp = fabricStore.temp
   if (temp)
     temp.remove()
-
-  // 再添加当前这个
   const arrow = new Arrow([fabricStore.mouseFrom, fabricStore.mouseTo])
+  arrow.render()
+  fabricStore.temp = arrow
+}
+
+export const renderRectPreview = () => {
+  const fabricStore = useFabricStore()
+  const temp = fabricStore.temp
+  if (temp)
+    temp.remove()
+  const arrow = new Rect([fabricStore.mouseFrom, fabricStore.mouseTo])
   arrow.render()
   fabricStore.temp = arrow
 }

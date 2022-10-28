@@ -1,6 +1,6 @@
 import { fabric } from 'fabric'
 import type { IEvent } from 'fabric/fabric-impl'
-import { renderArrowPreview } from '../control/useDraw'
+import { renderArrowPreview, renderRectPreview } from '../control/useDraw'
 import useCanvas from '../control/useCanvas'
 import useKeyStoke from './useKeyStoke'
 
@@ -16,10 +16,9 @@ let previousEvent: null | IEvent<MouseEvent> = null
 export const useMouseMove = (evt: IEvent<MouseEvent>) => {
   const fabricStore = useFabricStore()
   const [canvas] = useCanvas()
-  // useEventListener(fabricStore.wrapperRef, 'mousemove', (evt: MouseEvent) => {
 
+  // 1.拖拽移动画布
   if (isPressedCtrl.value && fabricStore.isCanvasDragging) {
-    // 拖拽移动画布
     let { movementX, movementY } = evt.e
     if (
       (movementX === undefined || movementY === undefined)
@@ -36,6 +35,7 @@ export const useMouseMove = (evt: IEvent<MouseEvent>) => {
     canvas.discardActiveObject()
   }
 
+  // 2. 绘制箭头
   if (fabricStore.isDrawing && (fabricStore.mode === 'Arrow')) {
     if (evt.absolutePointer) {
       const { x, y } = evt.absolutePointer
@@ -43,5 +43,13 @@ export const useMouseMove = (evt: IEvent<MouseEvent>) => {
       renderArrowPreview()
     }
   }
-  // })
+
+  // 3. 绘制矩形
+  if (fabricStore.isDrawing && (fabricStore.mode === 'Rect')) {
+    if (evt.absolutePointer) {
+      const { x, y } = evt.absolutePointer
+      fabricStore.mouseTo = { x, y }
+      renderRectPreview()
+    }
+  }
 }

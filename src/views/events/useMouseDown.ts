@@ -20,7 +20,7 @@ export const useMouseDown = (evt: IEvent<MouseEvent>) => {
 
   // 按下左键，设置 mouseFrom 的点
   if (fabricStore.mode !== 'Hand') {
-    // 正常的需要拖拽绘制图形
+    // 1.正常的需要拖拽绘制图形
     if (evt.button === 1) {
       fabricStore.handleChangeIsDrawing(true)
       if (evt.absolutePointer) {
@@ -29,12 +29,12 @@ export const useMouseDown = (evt: IEvent<MouseEvent>) => {
       }
     }
 
-    // 点击在文字上
+    // 2.点击在文字上
     if (evt?.target?.type === 'textbox') {
       (evt.target as IText).enterEditing()
     }
     else {
-    // 点击输入文字
+      // 点击输入文字
       if (fabricStore.isTexting) {
         // 有已经输入的text，这里是退出输入
         exitRenderTextPreview()

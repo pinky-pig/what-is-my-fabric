@@ -5,6 +5,7 @@ import { exitRenderTextPreview } from '~/views/control/useDraw'
 import type { Arrow } from '~/views/modules/Arrow'
 import type { IFText } from '~/views/modules/IFText'
 import type { Line } from '~/views/modules/Line'
+import type { Rect } from '~/views/modules/Rect'
 
 enum Mode {
   Hand = 'Hand',
@@ -32,7 +33,7 @@ export interface IFabricState {
   isCtrlKey: boolean
   zoom: number
   activeObjectId: number | null
-  temp: Arrow | IFText | null // 上一个对象
+  temp: Arrow | IFText | Rect | null // 上一个对象
   objects: TObjects[] // 所有的对象
   history: string[] // 操作历史
   redoHistory: object[] // 回退操作历史
@@ -119,6 +120,9 @@ export const useFabricStore = defineStore({
           toggleSelection(false)
           break
         case 'Text':
+          toggleSelection(false)
+          break
+        case 'Rect':
           toggleSelection(false)
           break
 
