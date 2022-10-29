@@ -66,6 +66,9 @@ export class Rect {
   }
 
   getFabricObject(): FabricObject {
+    // const path = new RoughPath(this.svgPathString, this.config, undefined)
+    // return path
+
     return new fabric.Path(this.svgPathString, this.config)
   }
 
