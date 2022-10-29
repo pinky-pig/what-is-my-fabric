@@ -78,7 +78,12 @@ export class Rect {
   }
 
   update() {
-
+    this.fabricObject = this.getFabricObject()
+    // this.fabricObject.set()
+    // currentCircle.set('radius', radius)
+    // currentCircle.set('top', top)
+    // currentCircle.set('left', left)
+    this.canvas.requestRenderAll()
   }
 
   remove() {

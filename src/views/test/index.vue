@@ -31,6 +31,21 @@ onMounted(() => {
     left: 150,
     top: 150,
   }, null)
+
+  const rect = new fabric.Rect({
+    left: 300,
+    top: 300,
+    width: 100,
+    height: 100,
+    stroke: 'black',
+    strokeWidth: 2,
+    fill: 'lightgreen',
+  })
+  canvas.add(rect)
+
+  window.recttest = rect
+  window.canvastest = canvas
+
   canvas.add(roughCircle, path).renderAll()
 
   // 导出图片
