@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { toggleSelection } from '~/views/control/useCanvas'
-import useDisableEvent from '~/views/control/useDisableEvent'
 import { exitRenderTextPreview } from '~/views/control/useDraw'
 import type { Arrow } from '~/views/modules/Arrow'
 import type { IFText } from '~/views/modules/IFText'
@@ -105,16 +104,12 @@ export const useFabricStore = defineStore({
       if (mode)
         this.mode = mode
 
-      const [, toggleDisabledEvent] = useDisableEvent()
-
       switch (this.mode) {
         case 'Hand':
           // 退出文字编辑模式
           exitRenderTextPreview()
           // 将所有的要素可选中
           toggleSelection(true)
-          // 清除之前已选中
-          toggleDisabledEvent(false)
           break
         case 'Arrow':
           toggleSelection(false)
