@@ -5,6 +5,7 @@ import useCanvas from '../control/useCanvas'
 import { setBackground } from '../control/useOperate'
 import useKeyStoke from '../events/useKeyStoke'
 import { addFabricCanvasEvent } from '../events'
+import { RoughPath } from '../modules/rough-path'
 import { useFabricStore } from '~/store/modules/fabric'
 const store = useFabricStore()
 const [,initCanvas] = useCanvas()
@@ -19,6 +20,17 @@ onMounted(() => {
   addFabricCanvasEvent()
   useKeyStoke()
   useWatchKeyboard()
+
+  // 测试 rough.js 的使用
+  const path = new RoughPath('M 100, 100 m -75, 0 a75,75 0 1,0 150,0 a75,75 0 1,0 -150,0', {
+    stroke: 'black',
+    strokeWidth: 2,
+    fill: 'red',
+    left: 150,
+    top: 150,
+  }, undefined)
+  const [canvas] = useCanvas()
+  canvas.add(path).renderAll()
 })
 </script>
 
