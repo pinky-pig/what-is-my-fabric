@@ -44,6 +44,11 @@ onMounted(() => {
   })
   canvas.add(rect)
 
+  setTimeout(() => {
+    rect.set('fill', 'red')
+    canvas.renderAll()
+  }, 5000)
+
   window.recttest = rect
   window.canvastest = canvas
 

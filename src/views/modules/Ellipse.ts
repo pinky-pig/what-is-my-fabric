@@ -1,6 +1,7 @@
 import type { IObjectOptions, Object as TObject } from 'fabric/fabric-impl'
 import { fabric } from 'fabric'
 import useCanvas from '../control/useCanvas'
+// import { RoughPath } from './rough-path'
 import { useFabricStore } from '~/store/modules/fabric'
 
 export type insertType = 'D' | 'M' | 'L' | 'V' | 'H' | 'C' | 'S' | 'Q' | 'T' | 'A' | 'Z'
@@ -70,6 +71,7 @@ export class Ellipse {
   }
 
   getFabricObject(): FabricObject {
+    // return new RoughPath(this.svgPathString, this.config, undefined)
     return new fabric.Path(this.svgPathString, this.config)
   }
 
