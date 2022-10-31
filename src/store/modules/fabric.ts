@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { toggleSelection } from '~/views/control/useCanvas'
+import useCanvas, { toggleSelection } from '~/views/control/useCanvas'
 import { exitRenderTextPreview } from '~/views/control/useDraw'
 import type { Arrow } from '~/views/modules/Arrow'
 import type { IFText } from '~/views/modules/IFText'
@@ -8,10 +8,11 @@ import type { Rect } from '~/views/modules/Rect'
 
 enum Mode {
   Hand = 'Hand',
+  FreeDraw = 'FreeDraw',
   Line = 'Line',
   Curve = 'Curve',
   Rect = 'Rect',
-  Ellipse = 'ellipse',
+  Ellipse = 'Ellipse',
   Arrow = 'Arrow',
   Text = 'Text',
 }
@@ -104,6 +105,11 @@ export const useFabricStore = defineStore({
       if (mode)
         this.mode = mode
 
+      const [canvas] = useCanvas()
+
+      // 将自由绘制模式关闭
+      canvas.isDrawingMode = false
+
       switch (this.mode) {
         case 'Hand':
           // 退出文字编辑模式
@@ -119,6 +125,14 @@ export const useFabricStore = defineStore({
           break
         case 'Rect':
           toggleSelection(false)
+          break
+        case 'Ellipse':
+          toggleSelection(false)
+          break
+        case 'FreeDraw':
+          toggleSelection(false)
+          canvas.isDrawingMode = true
+          canvas.freeDrawingBrush.color = 'red'
           break
 
         default:
