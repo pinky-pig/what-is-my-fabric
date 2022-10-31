@@ -4,6 +4,7 @@ import { fabric } from 'fabric'
 import rough from 'roughjs'
 import { RoughCircle } from '../modules/rough-circle'
 import { RoughPath } from '../modules/rough-path'
+import { testSvg2path } from '../modules/svg2path'
 
 onMounted(() => {
   window.canvas = new fabric.Canvas('c')
@@ -62,10 +63,18 @@ onMounted(() => {
     w.document.write(`<img src='${dataURL}' alt='from canvas'/>`)
   }
 })
+
+onMounted(() => {
+  testSvg2path()
+})
 </script>
 
 <template>
   <canvas id="c" width="600" height="600" />
+
+  <svg width="100" height="100">
+    <circle cx="50" cy="50" r="40" />
+  </svg>
 
   <button id="btn">
     export
