@@ -1,4 +1,4 @@
-import type { IObjectOptions, IRectOptions, Object as TObject } from 'fabric/fabric-impl'
+import type { IObjectOptions, Object as TObject } from 'fabric/fabric-impl'
 import { fabric } from 'fabric'
 import useCanvas from '../control/useCanvas'
 import { useFabricStore } from '~/store/modules/fabric'
@@ -52,11 +52,15 @@ export class Ellipse {
   svgPath2String(svgPath: pointType[]) {
     const [mouseFrom, mouseTo] = svgPath
 
-    const path = `M ${mouseFrom.x} ${mouseFrom.y}
-    L ${mouseTo.x} ${mouseFrom.y}
-    L ${mouseTo.x} ${mouseTo.y}
-    L ${mouseFrom.x} ${mouseTo.y}
-    L ${mouseFrom.x} ${mouseFrom.y} z`
+    const rx = (mouseTo.x - mouseFrom.x) / 2
+    const ry = (mouseTo.y - mouseFrom.y) / 2
+    const cx = mouseFrom.x + rx
+    const cy = mouseFrom.y + ry
+
+    const path = `M ${cx - rx} ${cy}
+     a ${rx} ${ry} 0 1 0 ${2 * rx} 0
+     a ${rx} ${ry} 0 1 0 ${-2 * rx} 0
+     z`
 
     return path
   }
@@ -66,17 +70,7 @@ export class Ellipse {
   }
 
   getFabricObject(): FabricObject {
-    const [mouseFrom, mouseTo] = this.svgPath
-    this.config = {
-      left: (mouseTo.x - mouseFrom.x) / 2 + mouseFrom.x,
-      top: (mouseTo.y - mouseFrom.y) / 2 + mouseFrom.y,
-      originX: 'center',
-      originY: 'center',
-      rx: Math.abs(mouseFrom.x - mouseTo.x) / 2,
-      ry: Math.abs(mouseFrom.y - mouseTo.y) / 2,
-    } as IRectOptions
-
-    return new fabric.Ellipse(this.config)
+    return new fabric.Path(this.svgPathString, this.config)
   }
 
   render() {
