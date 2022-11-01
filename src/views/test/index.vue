@@ -9,50 +9,49 @@ import { testSvg2path } from '../modules/svg2path'
 onMounted(() => {
   window.canvas = new fabric.Canvas('c')
 
-  // 生成 rough-circle
-  const roughCircle = new RoughCircle({
-    top: 100,
+  canvas.backgroundColor = '#f5f5f5'
+
+  // 简单path 更改 路径
+  const path = new fabric.Path('M 0 20 L 20 0', {
     left: 100,
-    radius: 100,
+    top: 100,
     stroke: 'black',
-    strokeWidth: 2,
-    fill: 'red',
-    fillWeight: 1,
-    fillStyle: 'cross-hatch',
-    hachureGap: 5,
-    objectCaching: false,
-    rough: true,
-  }, null)
-
-  const path = new RoughPath('M 100, 100 m -75, 0 a75,75 0 1,0 150,0 a75,75 0 1,0 -150,0', {
-    stroke: 'black',
-    strokeWidth: 2,
-    fill: 'red',
-    fillWeight: 1,
-    left: 150,
-    top: 150,
-  }, null)
-
-  const rect = new fabric.Rect({
-    left: 300,
-    top: 300,
-    width: 100,
-    height: 100,
-    stroke: 'black',
-    strokeWidth: 2,
-    fill: 'lightgreen',
+    fill: '',
   })
-  canvas.add(rect)
-
+  canvas.add(path)
+  canvas.renderAll()
   setTimeout(() => {
-    rect.set('fill', 'red')
+    const updatedPath = new fabric.Path('M 50 100 L 10 46 Z')
+    path.set({
+      path: updatedPath.path,
+      width: updatedPath.width,
+      height: updatedPath.height,
+      pathOffset: updatedPath.pathOffset,
+    })
     canvas.renderAll()
-  }, 5000)
+  }, 3000)
 
-  window.recttest = rect
-  window.canvastest = canvas
+  // 复杂一点的path更改
+  // const roughPath = new RoughPath('M 100, 100 m -75, 0 a75,75 0 1,0 150,0 a75,75 0 1,0 -150,0', {
+  //   stroke: 'black',
+  //   strokeWidth: 2,
+  //   fill: 'red',
+  //   left: 150,
+  //   top: 150,
+  // }, null)
+  // canvas.add(roughPath)
+  // canvas.renderAll()
 
-  canvas.add(roughCircle, path).renderAll()
+  // setTimeout(() => {
+  //   const updatedPath = new fabric.Path('M 50 100 L 10 46 Z')
+  //   roughPath.set({
+  //     path: updatedPath.path,
+  //     width: updatedPath.width,
+  //     height: updatedPath.height,
+  //     pathOffset: updatedPath.pathOffset,
+  //   })
+  //   canvas.renderAll()
+  // }, 3000)
 
   // 导出图片
   const btn = document.getElementById('btn')

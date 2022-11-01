@@ -117,6 +117,9 @@ export const useFabricStore = defineStore({
           // 将所有的要素可选中
           toggleSelection(true)
           break
+        case 'Line':
+          toggleSelection(false)
+          break
         case 'Arrow':
           toggleSelection(false)
           break

@@ -1,6 +1,6 @@
 import { fabric } from 'fabric'
 import type { IEvent } from 'fabric/fabric-impl'
-import { renderArrowPreview, renderCirclePreview, renderRectPreview } from '../control/useDraw'
+import { renderArrowPreview, renderCirclePreview, renderLinePreview, renderRectPreview } from '../control/useDraw'
 import useCanvas from '../control/useCanvas'
 import useKeyStoke from './useKeyStoke'
 
@@ -59,6 +59,15 @@ export const useMouseMove = (evt: IEvent<MouseEvent>) => {
       const { x, y } = evt.absolutePointer
       fabricStore.mouseTo = { x, y }
       renderCirclePreview()
+    }
+  }
+
+  // 5. 绘制直线
+  if (fabricStore.isDrawing && (fabricStore.mode === 'Line')) {
+    if (evt.absolutePointer) {
+      const { x, y } = evt.absolutePointer
+      fabricStore.mouseTo = { x, y }
+      renderLinePreview()
     }
   }
 }

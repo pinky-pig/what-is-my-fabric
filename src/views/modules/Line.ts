@@ -1,6 +1,7 @@
 import type { IObjectOptions, Object as TObject } from 'fabric/fabric-impl'
 import { fabric } from 'fabric'
 import useCanvas from '../control/useCanvas'
+// import { RoughPath } from './rough-path'
 import { useFabricStore } from '~/store/modules/fabric'
 
 export type insertType = 'D' | 'M' | 'L' | 'V' | 'H' | 'C' | 'S' | 'Q' | 'T' | 'A' | 'Z'
@@ -8,7 +9,7 @@ export interface svgPathType { type: insertType; points: { x: number; y: number 
 export type FabricObject = TObject
 export interface pointType { x: number; y: number }
 /**
- * 这里是箭头， todo 扩展成为曲线箭头 Curve Arrow
+ * 这里是箭头， todo 扩展成为曲线箭头 Curve ArrowArrow
  * <path d="M 0 0 L 10 10 z"> + 箭头
  *
  * 目前只有两个点，起点和终点。 todo 三个点， 起点，curve点 ，和终点
@@ -24,12 +25,12 @@ export class Line {
     name: String(this.id),
     strokeWidth: 1,
     strokeUniform: true,
-    fill: 'red',
+    fill: 'rgba(0,0,0,0)',
     hoverCursor: 'default',
     hasBorders: true,
     stroke: 'red',
     borderColor: '#00bfff',
-    selectable: true,
+    selectable: false,
     hasControls: true,
     flipX: false,
     flipY: false,
@@ -51,28 +52,11 @@ export class Line {
   // 生成箭头的svg路径
   svgPath2String(svgPath: pointType[]) {
     const [mouseFrom, mouseTo] = svgPath
-    const x1 = mouseFrom.x
-    const x2 = mouseTo.x
-    const y1 = mouseFrom.y
-    const y2 = mouseTo.y
-    const w = x2 - x1
-    const h = y2 - y1
-    const sh = Math.cos(Math.PI / 4) * 16
-    const sin = h / Math.sqrt(w ** 2 + h ** 2)
-    const cos = w / Math.sqrt(w ** 2 + h ** 2)
-    const w1 = (16 * sin) / 4
-    const h1 = (16 * cos) / 4
-    const centerx = sh * cos
-    const centery = sh * sin
 
-    let path = ` M ${x1} ${y1}`
-    path += ` L ${x2 - centerx + w1} ${y2 - centery - h1}`
-    path += ` L ${x2 - centerx + w1 * 2} ${y2 - centery - h1 * 2}`
-    path += ` L ${x2} ${y2}`
-    path += ` L ${x2 - centerx - w1 * 2} ${y2 - centery + h1 * 2}`
-    path += ` L ${x2 - centerx - w1} ${y2 - centery + h1}`
-    path += ' Z'
-
+    const path = `
+     M ${mouseFrom.x} ${mouseFrom.y}
+     L ${mouseTo.x} ${mouseTo.y}
+     z`
     return path
   }
 
@@ -81,6 +65,7 @@ export class Line {
   }
 
   getFabricObject(): FabricObject {
+    // return new RoughPath(this.svgPathString, this.config, undefined)
     return new fabric.Path(this.svgPathString, this.config)
   }
 
@@ -89,8 +74,23 @@ export class Line {
     this.canvas.add(this.fabricObject)
   }
 
-  update() {
+  update(location: { x: number; y: number }[]) {
+    const [mouseFrom, mouseTo] = location
 
+    const path = this.svgPath2String([mouseFrom, mouseTo])
+    const updatedPath = new fabric.Path(path)
+
+    if (this.fabricObject) {
+      this.fabricObject.set({
+        path: updatedPath.path,
+        width: updatedPath.width,
+        height: updatedPath.height,
+        pathOffset: updatedPath.pathOffset,
+        top: updatedPath.top,
+        left: updatedPath.left,
+      } as any)
+    }
+    this.canvas.renderAll()
   }
 
   remove() {
