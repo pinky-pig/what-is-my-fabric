@@ -1,7 +1,6 @@
 import type { IObjectOptions, Object as TObject } from 'fabric/fabric-impl'
 import { fabric } from 'fabric'
 import useCanvas from '../control/useCanvas'
-// import { RoughPath } from './rough-path'
 import { useFabricStore } from '~/store/modules/fabric'
 
 export type insertType = 'D' | 'M' | 'L' | 'V' | 'H' | 'C' | 'S' | 'Q' | 'T' | 'A' | 'Z'
@@ -65,7 +64,6 @@ export class Line {
   }
 
   getFabricObject(): FabricObject {
-    // return new RoughPath(this.svgPathString, this.config, undefined)
     return new fabric.Path(this.svgPathString, this.config)
   }
 
@@ -76,20 +74,12 @@ export class Line {
 
   update(location: { x: number; y: number }[]) {
     const [mouseFrom, mouseTo] = location
-
     const path = this.svgPath2String([mouseFrom, mouseTo])
-    const updatedPath = new fabric.Path(path)
+    const updatedPath = new fabric.Path(path, this.config)
 
-    if (this.fabricObject) {
-      this.fabricObject.set({
-        path: updatedPath.path,
-        width: updatedPath.width,
-        height: updatedPath.height,
-        pathOffset: updatedPath.pathOffset,
-        top: updatedPath.top,
-        left: updatedPath.left,
-      } as any)
-    }
+    if (this.fabricObject)
+      this.fabricObject.set(updatedPath)
+
     this.canvas.renderAll()
   }
 

@@ -12,22 +12,26 @@ onMounted(() => {
   canvas.backgroundColor = '#f5f5f5'
 
   // 简单path 更改 路径
-  const path = new fabric.Path('M 0 20 L 20 0', {
+  const path = new RoughPath('M 50 100 L 10 46 Z', {
     left: 100,
     top: 100,
     stroke: 'black',
     fill: '',
   })
+
   canvas.add(path)
   canvas.renderAll()
   setTimeout(() => {
-    const updatedPath = new fabric.Path('M 50 100 L 10 46 Z')
-    path.set({
-      path: updatedPath.path,
-      width: updatedPath.width,
-      height: updatedPath.height,
-      pathOffset: updatedPath.pathOffset,
+    const updatedPath = new RoughPath('M 0 200 L 200 0 Z', {
+      left: 100,
+      top: 100,
+      stroke: 'black',
+      fill: '',
+    }, {
+      strokeWidth: 0.1,
     })
+    path.set(updatedPath)
+
     canvas.renderAll()
   }, 3000)
 

@@ -4,7 +4,7 @@ import { IFText } from '../modules/IFText'
 import { Rect } from '../modules/Rect'
 // import { Ellipse } from '../modules/Ellipse'
 import { Ellipse } from '../modules/Ellipse'
-// import { Line } from '../modules/Line'
+import { Line } from '../modules/Line'
 import useCanvas from './useCanvas'
 import { useFabricStore } from '~/store/modules/fabric'
 
@@ -42,19 +42,14 @@ export const renderCirclePreview = () => {
   fabricStore.temp = circle
 }
 export const renderLinePreview = () => {
-  // const fabricStore = useFabricStore()
-  // const temp = fabricStore.temp
-  // if (temp) { temp.update([fabricStore.mouseFrom, fabricStore.mouseTo]) }
-  // else {
-  //   const circle = new Line([fabricStore.mouseFrom, fabricStore.mouseTo])
-  //   circle.render()
-  //   fabricStore.temp = circle
-  // }
-  // if (temp)
-  //   temp.remove()
-  // const circle = new Line([fabricStore.mouseFrom, fabricStore.mouseTo])
-  // circle.render()
-  // fabricStore.temp = circle
+  const fabricStore = useFabricStore()
+  const temp = fabricStore.temp
+  if (temp) { temp.update([fabricStore.mouseFrom, fabricStore.mouseTo]) }
+  else {
+    const line = new Line([fabricStore.mouseFrom, fabricStore.mouseTo])
+    line.render()
+    fabricStore.temp = line
+  }
 }
 
 // 增加新的textbox之前，要判断上一个是否关闭编辑状态

@@ -89,8 +89,23 @@ export class Arrow {
     this.canvas.add(this.fabricObject)
   }
 
-  update() {
+  update(location: { x: number; y: number }[]) {
+    const [mouseFrom, mouseTo] = location
 
+    const path = this.svgPath2String([mouseFrom, mouseTo])
+    const updatedPath = new fabric.Path(path)
+
+    if (this.fabricObject) {
+      this.fabricObject.set({
+        path: updatedPath.path,
+        width: updatedPath.width,
+        height: updatedPath.height,
+        pathOffset: updatedPath.pathOffset,
+        top: updatedPath.top,
+        left: updatedPath.left,
+      } as any)
+    }
+    this.canvas.renderAll()
   }
 
   remove() {
