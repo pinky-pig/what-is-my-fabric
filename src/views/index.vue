@@ -12,7 +12,7 @@ import Canvas from './canvas/index.vue'
     <!-- canvas 画布 -->
     <Canvas />
     <!-- 主要操作 -->
-    <Operate />
+    <!-- <Operate /> -->
   </div>
 </template>
 

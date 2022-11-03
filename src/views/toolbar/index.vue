@@ -14,12 +14,12 @@ const icons = {
 </script>
 
 <template>
-  <div class=" flex flex-col gap-3 h-4/5 justify-center">
+  <div class="tools flex flex-row gap-3 justify-start absolute bottom-2 z-10 p-1 rounded-lg ">
     <div
       v-for="(item, index) in fabricStore.modeList"
       :key="index"
-      :class="fabricStore.mode === item ? 'bg-blue-100' : ''"
-      class="w-10 h-10 flex justify-center items-center cursor-pointer outline-none select-none rounded-lg border-3 border-solid border-black focus:ring-2 focus:ring-offset-2 focus:ring-black"
+      :class="fabricStore.mode === item ? 'activated' : ''"
+      class="w-8 h-8 flex justify-center items-center cursor-pointer outline-none select-none rounded-lg focus:ring-2 focus:ring-offset-2 focus:ring-black"
       @click="fabricStore.handleChangeMode(item)"
     >
       <div class="w-24px h-24px" v-html="icons[item]" />
@@ -28,5 +28,11 @@ const icons = {
 </template>
 
 <style lang="less" scoped>
-
+.tools{
+  box-shadow:0px 0px 16px -1px rgba(0, 0, 0, 0.05), 0px 0px 16px -8px rgba(0, 0, 0, 0.05), 0px 0px 16px -12px rgba(0, 0, 0, 0.12), 0px 0px 2px 0px rgba(0, 0, 0, 0.08);
+}
+.activated{
+  background: rgba(65, 132, 244, 1);
+  color: white;
+}
 </style>

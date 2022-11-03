@@ -32,11 +32,11 @@ const handleClick = (key: string) => {
 </script>
 
 <template>
-  <div class=" flex flex-col gap-3 h-4/5 justify-start">
+  <div class=" flex flex-row gap-3 justify-start absolute bottom-0 right-0">
     <div
       v-for="(item, index) in operateList"
       :key="index"
-      class="w-10 h-10 flex justify-center items-center cursor-pointer outline-none select-none rounded-lg border-3 border-solid border-black focus:ring-2 focus:ring-offset-2 focus:ring-black hover:bg-gray-50"
+      class="w-8 h-8 flex justify-center items-center cursor-pointer outline-none select-none rounded-lg border-3 border-solid border-black focus:ring-2 focus:ring-offset-2 focus:ring-black hover:bg-gray-50"
       @click="handleClick(item.key)"
     >
       <div class="w-24px h-24px" v-html="item.icon" />

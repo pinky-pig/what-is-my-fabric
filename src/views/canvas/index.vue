@@ -16,7 +16,7 @@ onMounted(() => {
   initCanvas()
 
   const [,,useWatchKeyboard] = useKeyStoke()
-  setBackground()
+  // setBackground()
   addFabricCanvasEvent()
   useKeyStoke()
   useWatchKeyboard()
@@ -35,7 +35,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="wrapperRef" ref="wrapperRef" class=" w-3/5 h-4/5 rounded-md border-3 border-solid border-black overflow-hidden">
+  <div id="wrapperRef" ref="wrapperRef" class=" w-full h-full rounded-md overflow-hidden">
     <canvas id="canvas" ref="canvasRef" />
   </div>
 </template>

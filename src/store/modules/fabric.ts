@@ -5,6 +5,7 @@ import type { Arrow } from '~/views/modules/Arrow'
 import type { Text } from '~/views/modules/Text'
 import type { Line } from '~/views/modules/Line'
 import type { Rect } from '~/views/modules/Rect'
+import type { Ellipse } from '~/views/modules/Ellipse'
 
 enum Mode {
   Hand = 'Hand',
@@ -18,7 +19,7 @@ enum Mode {
 }
 export const maxStep = 10 // 保存的最大步数
 export type TMode = keyof typeof Mode
-export type TObjects = Arrow | Line
+export type TObjects = Arrow | Line | Rect | Ellipse | Text
 export interface IFabricState {
   wrapperRef: null | HTMLDivElement
   canvasRef: null | HTMLCanvasElement
