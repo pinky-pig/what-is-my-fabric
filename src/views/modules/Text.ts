@@ -14,7 +14,7 @@ export interface pointType { x: number; y: number }
  * 目前只有两个点，起点和终点。 todo 三个点， 起点，curve点 ，和终点
  */
 
-export class IFText {
+export class Text {
   svgPath: pointType[]
   canvas = useCanvas()[0]
   fabricStore = useFabricStore()

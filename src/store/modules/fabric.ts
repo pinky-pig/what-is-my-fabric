@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import useCanvas, { toggleSelection } from '~/views/control/useCanvas'
 import { exitRenderTextPreview } from '~/views/control/useDraw'
 import type { Arrow } from '~/views/modules/Arrow'
-import type { IFText } from '~/views/modules/IFText'
+import type { Text } from '~/views/modules/Text'
 import type { Line } from '~/views/modules/Line'
 import type { Rect } from '~/views/modules/Rect'
 
@@ -33,7 +33,7 @@ export interface IFabricState {
   isCtrlKey: boolean
   zoom: number
   activeObjectId: number | null
-  temp: Arrow | IFText | Rect | null // 上一个对象
+  temp: Arrow | Text | Rect | null // 上一个对象
   objects: TObjects[] // 所有的对象
   history: string[] // 操作历史
   redoHistory: object[] // 回退操作历史

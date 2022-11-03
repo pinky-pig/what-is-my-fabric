@@ -1,6 +1,6 @@
 import type { IText } from 'fabric/fabric-impl'
 import { Arrow } from '../modules/Arrow'
-import { IFText } from '../modules/IFText'
+import { Text } from '../modules/Text'
 import { Rect } from '../modules/Rect'
 // import { Ellipse } from '../modules/Ellipse'
 import { Ellipse } from '../modules/Ellipse'
@@ -70,7 +70,7 @@ export const renderTextPreview = () => {
   const fabricStore = useFabricStore()
 
   exitRenderTextPreview()
-  const Text = new IFText([fabricStore.mouseFrom, fabricStore.mouseTo])
-  Text.render()
+  const text = new Text([fabricStore.mouseFrom, fabricStore.mouseTo])
+  text.render()
   fabricStore.isTexting = true
 }
