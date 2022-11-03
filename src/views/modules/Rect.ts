@@ -1,6 +1,7 @@
 import type { IObjectOptions, Object as TObject } from 'fabric/fabric-impl'
-import { fabric } from 'fabric'
+import rough from 'roughjs'
 import useCanvas from '../control/useCanvas'
+import { RoughPath } from './rough-path'
 import { useFabricStore } from '~/store/modules/fabric'
 
 export type insertType = 'D' | 'M' | 'L' | 'V' | 'H' | 'C' | 'S' | 'Q' | 'T' | 'A' | 'Z'
@@ -20,6 +21,7 @@ export class Rect {
   fabricStore = useFabricStore()
   fabricObject: FabricObject | null = null
   id: number = Date.now()
+  seed: number = rough.newSeed()
   private _config: IObjectOptions = {
     name: String(this.id),
     strokeWidth: 1,
@@ -65,11 +67,15 @@ export class Rect {
     return this.svgPath2String(this.svgPath)
   }
 
+  get pathSeed() {
+    return this.seed
+  }
+
   getFabricObject(): FabricObject {
     // const path = new RoughPath(this.svgPathString, this.config, undefined)
     // return path
 
-    return new fabric.Path(this.svgPathString, this.config)
+    return new RoughPath(this.svgPathString, this.config)
   }
 
   render() {
@@ -77,13 +83,15 @@ export class Rect {
     this.canvas.add(this.fabricObject)
   }
 
-  update() {
-    this.fabricObject = this.getFabricObject()
-    // this.fabricObject.set()
-    // currentCircle.set('radius', radius)
-    // currentCircle.set('top', top)
-    // currentCircle.set('left', left)
-    this.canvas.requestRenderAll()
+  update(location: { x: number; y: number }[]) {
+    const [mouseFrom, mouseTo] = location
+    const path = this.svgPath2String([mouseFrom, mouseTo])
+    const updatedPath = new RoughPath(path, this.config, { seed: this.pathSeed })
+
+    if (this.fabricObject)
+      this.fabricObject.set(updatedPath)
+
+    this.canvas.renderAll()
   }
 
   remove() {

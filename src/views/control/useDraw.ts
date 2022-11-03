@@ -21,19 +21,17 @@ export const renderArrowPreview = () => {
 export const renderRectPreview = () => {
   const fabricStore = useFabricStore()
   const temp = fabricStore.temp
-  if (temp)
-    temp.remove()
-  const arrow = new Rect([fabricStore.mouseFrom, fabricStore.mouseTo])
-  arrow.render()
-
-  fabricStore.temp = arrow
+  if (temp) { temp.update([fabricStore.mouseFrom, fabricStore.mouseTo]) }
+  else {
+    const rect = new Rect([fabricStore.mouseFrom, fabricStore.mouseTo])
+    rect.render()
+    fabricStore.temp = rect
+  }
 }
 
 export const renderCirclePreview = () => {
   const fabricStore = useFabricStore()
   const temp = fabricStore.temp
-  // if (temp)
-  //   temp.update()
 
   if (temp)
     temp.remove()
