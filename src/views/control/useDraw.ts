@@ -11,11 +11,12 @@ import { useFabricStore } from '~/store/modules/fabric'
 export const renderArrowPreview = () => {
   const fabricStore = useFabricStore()
   const temp = fabricStore.temp
-  if (temp)
-    temp.remove()
-  const arrow = new Arrow([fabricStore.mouseFrom, fabricStore.mouseTo])
-  arrow.render()
-  fabricStore.temp = arrow
+  if (temp) { temp.update([fabricStore.mouseFrom, fabricStore.mouseTo]) }
+  else {
+    const arrow = new Arrow([fabricStore.mouseFrom, fabricStore.mouseTo])
+    arrow.render()
+    fabricStore.temp = arrow
+  }
 }
 
 export const renderRectPreview = () => {
@@ -32,12 +33,12 @@ export const renderRectPreview = () => {
 export const renderCirclePreview = () => {
   const fabricStore = useFabricStore()
   const temp = fabricStore.temp
-
-  if (temp)
-    temp.remove()
-  const circle = new Ellipse([fabricStore.mouseFrom, fabricStore.mouseTo])
-  circle.render()
-  fabricStore.temp = circle
+  if (temp) { temp.update([fabricStore.mouseFrom, fabricStore.mouseTo]) }
+  else {
+    const line = new Ellipse([fabricStore.mouseFrom, fabricStore.mouseTo])
+    line.render()
+    fabricStore.temp = line
+  }
 }
 export const renderLinePreview = () => {
   const fabricStore = useFabricStore()
