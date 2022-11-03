@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import useCanvas from '../control/useCanvas'
+import useCanvas, { toggleSelection } from '../control/useCanvas'
 
 import { setBackground } from '../control/useOperate'
 import useKeyStoke from '../events/useKeyStoke'
@@ -29,6 +29,7 @@ onMounted(() => {
     left: 150,
     top: 150,
   }, undefined)
+
   const [canvas] = useCanvas()
   canvas.add(path).renderAll()
 })

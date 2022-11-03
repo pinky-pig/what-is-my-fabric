@@ -35,28 +35,6 @@ onMounted(() => {
     canvas.renderAll()
   }, 3000)
 
-  // 复杂一点的path更改
-  // const roughPath = new RoughPath('M 100, 100 m -75, 0 a75,75 0 1,0 150,0 a75,75 0 1,0 -150,0', {
-  //   stroke: 'black',
-  //   strokeWidth: 2,
-  //   fill: 'red',
-  //   left: 150,
-  //   top: 150,
-  // }, null)
-  // canvas.add(roughPath)
-  // canvas.renderAll()
-
-  // setTimeout(() => {
-  //   const updatedPath = new fabric.Path('M 50 100 L 10 46 Z')
-  //   roughPath.set({
-  //     path: updatedPath.path,
-  //     width: updatedPath.width,
-  //     height: updatedPath.height,
-  //     pathOffset: updatedPath.pathOffset,
-  //   })
-  //   canvas.renderAll()
-  // }, 3000)
-
   // 导出图片
   const btn = document.getElementById('btn')
   btn.onclick = function () {
