@@ -137,6 +137,7 @@ export const useFabricStore = defineStore({
           toggleSelection(false)
           canvas.isDrawingMode = true
           canvas.freeDrawingBrush.color = 'red'
+
           break
 
         default:

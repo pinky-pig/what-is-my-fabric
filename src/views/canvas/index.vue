@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
+import { getStroke } from 'perfect-freehand'
 import useCanvas, { toggleSelection } from '../control/useCanvas'
 
 import { setBackground } from '../control/useOperate'
 import useKeyStoke from '../events/useKeyStoke'
 import { addFabricCanvasEvent } from '../events'
 import { RoughPath } from '../modules/rough-path'
+import { getSvgPathFromStroke } from '../utils'
 import { useFabricStore } from '~/store/modules/fabric'
 const store = useFabricStore()
 const [,initCanvas] = useCanvas()
@@ -32,6 +34,20 @@ onMounted(() => {
 
   const [canvas] = useCanvas()
   canvas.add(path).renderAll()
+
+  const inputPoints = [
+    [0, 0],
+    [10, 5],
+    [20, 8],
+  ]
+
+  const stroke = getStroke(inputPoints)
+  const pathData = getSvgPathFromStroke(stroke)
+  const p = new RoughPath(pathData, {
+    left: 150,
+    top: 150,
+  }, undefined)
+  canvas.add(p).renderAll()
 })
 </script>
 

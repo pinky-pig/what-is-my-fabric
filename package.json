@@ -19,6 +19,7 @@
     "canvas-confetti": "^1.5.1",
     "fabric": "^5.2.4",
     "naive-ui": "^2.33.5",
+    "perfect-freehand": "^1.2.0",
     "pinia": "^2.0.22",
     "prism-theme-vars": "^0.2.4",
     "roughjs": "^4.5.2",
