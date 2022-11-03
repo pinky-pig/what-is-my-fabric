@@ -31,7 +31,7 @@ export class Base {
     hoverCursor: 'default',
     hasBorders: true,
     stroke: 'red',
-    borderColor: '#00bfff',
+    borderColor: 'rgb(66, 133, 244)',
     selectable: false,
     hasControls: true,
     flipX: false,
