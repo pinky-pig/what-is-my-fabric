@@ -1,6 +1,6 @@
 import { fabric } from 'fabric'
 import type { IEvent } from 'fabric/fabric-impl'
-import { renderArrowPreview, renderCirclePreview, renderLinePreview, renderRectPreview } from '../control/useDraw'
+import { renderArrowPreview, renderCirclePreview, renderDrawPreview, renderLinePreview, renderRectPreview } from '../control/useDraw'
 import useCanvas from '../control/useCanvas'
 import useKeyStoke from './useKeyStoke'
 
@@ -68,6 +68,16 @@ export const useMouseMove = (evt: IEvent<MouseEvent>) => {
       const { x, y } = evt.absolutePointer
       fabricStore.mouseTo = { x, y }
       renderLinePreview()
+    }
+  }
+
+  // 6.自由绘制
+  if (fabricStore.isDrawing && (fabricStore.mode === 'FreeDraw' && evt.button === 1)) {
+    if (evt.absolutePointer) {
+      const { x, y } = evt.absolutePointer
+      fabricStore.mouseTo = { x, y }
+      fabricStore.freeDrawPoints.push({ x, y })
+      renderDrawPreview()
     }
   }
 }

@@ -1,74 +1,74 @@
-<script setup>
-import { nextTick, onMounted, ref } from 'vue'
-import { fabric } from 'fabric'
-import rough from 'roughjs'
-import { RoughCircle } from '../modules/rough-circle'
-import { RoughPath } from '../modules/rough-path'
-import { testSvg2path } from '../modules/svg2path'
+<script setup lang="ts">
+import type { StrokeOptions } from 'perfect-freehand'
+import { getStroke } from 'perfect-freehand'
+import { getSvgPathFromStroke } from '../utils/index'
 
-onMounted(() => {
-  window.canvas = new fabric.Canvas('c')
-
-  canvas.backgroundColor = '#f5f5f5'
-
-  // 简单path 更改 路径
-  const path = new RoughPath('M 50 100 L 10 46 Z', {
-    left: 100,
-    top: 100,
-    stroke: 'black',
-    fill: '',
-  })
-
-  canvas.add(path)
-  canvas.renderAll()
-  setTimeout(() => {
-    const updatedPath = new RoughPath('M 0 200 L 200 0 Z', {
-      left: 100,
-      top: 100,
-      stroke: 'black',
-      fill: '',
-    }, {
-      strokeWidth: 0.1,
-    })
-    path.set(updatedPath)
-
-    canvas.renderAll()
-  }, 3000)
-
-  // 导出图片
-  const btn = document.getElementById('btn')
-  btn.onclick = function () {
-    const dataURL = canvas.toDataURL({
-      width: 500,
-      height: 500,
-      left: 0,
-      top: 0,
-      format: 'png',
-    })
-    const w = window.open('about:blank', 'image from canvas')
-    w.document.write(`<img src='${dataURL}' alt='from canvas'/>`)
-  }
+const options: StrokeOptions = {
+  size: 32,
+  thinning: 0.5,
+  smoothing: 0.5,
+  streamline: 0.5,
+  easing: t => t,
+  start: {
+    taper: 0,
+    easing: t => t,
+    cap: true,
+  },
+  end: {
+    taper: 100,
+    easing: t => t,
+    cap: true,
+  },
+}
+const points = ref<(number[] | {
+  x: number
+  y: number
+  pressure?: number
+})[]>([])
+const pathData = ref('')
+watch(() => points.value, () => {
+  const stroke = getStroke(points.value, options)
+  pathData.value = getSvgPathFromStroke(stroke)
 })
 
-onMounted(() => {
-  testSvg2path()
-})
+function handlePointerDown(e) {
+  e.target.setPointerCapture(e.pointerId)
+  points.value = [[e.pageX, e.pageY, e.pressure]]
+}
+
+function handlePointerMove(e) {
+  if (e.buttons !== 1)
+    return
+
+  points.value = [...points.value, [e.pageX, e.pageY, e.pressure]]
+}
 </script>
 
 <template>
-  <canvas id="c" width="600" height="600" />
-
-  <svg width="100" height="100">
-    <circle cx="50" cy="50" r="40" />
+  <svg @pointerdown="handlePointerDown" @pointermove="handlePointerMove">
+    <path :d="pathData" />
   </svg>
-
-  <button id="btn">
-    export
-  </button>
 </template>
 
 <style scoped>
-canvas {
-    border: 1px solid lightgray;
+html,
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  user-select: none;
+}
+
+svg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: #ffffff;
+  touch-action: none;
 }
 </style>

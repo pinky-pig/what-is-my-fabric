@@ -22,32 +22,6 @@ onMounted(() => {
   addFabricCanvasEvent()
   useKeyStoke()
   useWatchKeyboard()
-
-  // 测试 rough.js 的使用
-  const path = new RoughPath('M 100, 100 m -75, 0 a75,75 0 1,0 150,0 a75,75 0 1,0 -150,0', {
-    stroke: 'black',
-    strokeWidth: 2,
-    fill: 'red',
-    left: 150,
-    top: 150,
-  }, undefined)
-
-  const [canvas] = useCanvas()
-  canvas.add(path).renderAll()
-
-  const inputPoints = [
-    [0, 0],
-    [10, 5],
-    [20, 8],
-  ]
-
-  const stroke = getStroke(inputPoints)
-  const pathData = getSvgPathFromStroke(stroke)
-  const p = new RoughPath(pathData, {
-    left: 150,
-    top: 150,
-  }, undefined)
-  canvas.add(p).renderAll()
 })
 </script>
 

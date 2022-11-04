@@ -5,6 +5,7 @@ import { Rect } from '../modules/Rect'
 // import { Ellipse } from '../modules/Ellipse'
 import { Ellipse } from '../modules/Ellipse'
 import { Line } from '../modules/Line'
+import { Draw } from '../modules/Draw'
 import useCanvas from './useCanvas'
 import { useFabricStore } from '~/store/modules/fabric'
 
@@ -48,6 +49,17 @@ export const renderLinePreview = () => {
     const line = new Line([fabricStore.mouseFrom, fabricStore.mouseTo])
     line.render()
     fabricStore.temp = line
+  }
+}
+
+export const renderDrawPreview = () => {
+  const fabricStore = useFabricStore()
+  const temp = fabricStore.temp
+  if (temp) { temp.update(fabricStore.freeDrawPoints) }
+  else {
+    const draw = new Draw(fabricStore.freeDrawPoints)
+    draw.render()
+    fabricStore.temp = draw
   }
 }
 

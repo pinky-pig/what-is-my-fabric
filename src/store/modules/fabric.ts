@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import useCanvas, { toggleSelection } from '~/views/control/useCanvas'
+import { toggleSelection } from '~/views/control/useCanvas'
 import { exitRenderTextPreview } from '~/views/control/useDraw'
 import type { Arrow } from '~/views/modules/Arrow'
 import type { Text } from '~/views/modules/Text'
@@ -27,6 +27,7 @@ export interface IFabricState {
   modeList: TMode[]
   mouseFrom: { x: number; y: number }
   mouseTo: { x: number; y: number }
+  freeDrawPoints: { x: number; y: number }[]
   isMouseDown: boolean
   isCanvasDragging: boolean
   isDrawing: boolean
@@ -50,6 +51,7 @@ export const useFabricStore = defineStore({
       modeList: Object.keys(Mode) as TMode[],
       mouseFrom: { x: 0, y: 0 },
       mouseTo: { x: 0, y: 0 },
+      freeDrawPoints: [],
       isCanvasDragging: false,
       isDrawing: false,
       isTexting: false,
@@ -95,6 +97,7 @@ export const useFabricStore = defineStore({
       if (this.temp) {
         this.objects.push(this.temp)
         this.temp = null
+        this.freeDrawPoints = []
       }
 
       this.redoHistory = []
@@ -105,11 +108,6 @@ export const useFabricStore = defineStore({
         return
       if (mode)
         this.mode = mode
-
-      const [canvas] = useCanvas()
-
-      // 将自由绘制模式关闭
-      canvas.isDrawingMode = false
 
       switch (this.mode) {
         case 'Hand':
@@ -135,9 +133,9 @@ export const useFabricStore = defineStore({
           break
         case 'FreeDraw':
           toggleSelection(false)
-          canvas.isDrawingMode = true
-          canvas.freeDrawingBrush.color = 'red'
-
+          // 这里使用 perfect-freehand ，所以将 fabric.js 的笔刷禁止了
+          // canvas.isDrawingMode = true
+          // canvas.freeDrawingBrush.color = 'red'
           break
 
         default:
