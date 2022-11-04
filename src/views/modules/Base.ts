@@ -1,6 +1,7 @@
 import type { IObjectOptions, Object as TObject } from 'fabric/fabric-impl'
 // import { fabric } from 'fabric'
 import rough from 'roughjs'
+import type { Options } from 'roughjs/bin/core'
 import useCanvas from '../control/useCanvas'
 import { RoughPath } from './rough-path'
 import { useFabricStore } from '~/store/modules/fabric'
@@ -39,6 +40,12 @@ export class Base {
     evented: true,
   }
 
+  private _roughOption: Options = {
+    fill: 'green',
+    fillStyle: 'hachure',
+    seed: rough.newSeed(),
+  }
+
   constructor(svgPath: pointType[]) {
     this.svgPath = svgPath
   }
@@ -49,6 +56,14 @@ export class Base {
 
   get config(): IObjectOptions {
     return this._config
+  }
+
+  set roughOption(newConfig: Options) {
+    Object.assign(this._roughOption, newConfig)
+  }
+
+  get roughOption(): Options {
+    return this._roughOption
   }
 
   // 生成svg路径
@@ -71,7 +86,7 @@ export class Base {
   }
 
   getFabricObject(): FabricObject {
-    return new RoughPath(this.svgPathString, this.config, { seed: this.pathSeed })
+    return new RoughPath(this.svgPathString, this.config, { seed: this.pathSeed, fill: 'green', strokeWidth: 5 })
   }
 
   render() {
@@ -82,7 +97,7 @@ export class Base {
   update(location: { x: number; y: number }[]) {
     const [mouseFrom, mouseTo] = location
     const path = this.svgPath2String([mouseFrom, mouseTo])
-    const updatedPath = new RoughPath(path, this.config, { seed: this.pathSeed })
+    const updatedPath = new RoughPath(path, this.config, { seed: this.pathSeed, fill: 'green', strokeWidth: 5 })
 
     if (this.fabricObject) {
       updatedPath.oCoords = this.fabricObject.oCoords
