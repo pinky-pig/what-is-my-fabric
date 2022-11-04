@@ -44,6 +44,8 @@ export class Base {
     fill: 'green',
     fillStyle: 'hachure',
     seed: rough.newSeed(),
+    strokeWidth: 1,
+    roughness: 1,
   }
 
   constructor(svgPath: pointType[]) {
@@ -86,7 +88,7 @@ export class Base {
   }
 
   getFabricObject(): FabricObject {
-    return new RoughPath(this.svgPathString, this.config, { seed: this.pathSeed, fill: 'green', strokeWidth: 5 })
+    return new RoughPath(this.svgPathString, this.config, this.roughOption)
   }
 
   render() {
@@ -97,7 +99,7 @@ export class Base {
   update(location: { x: number; y: number }[]) {
     const [mouseFrom, mouseTo] = location
     const path = this.svgPath2String([mouseFrom, mouseTo])
-    const updatedPath = new RoughPath(path, this.config, { seed: this.pathSeed, fill: 'green', strokeWidth: 5 })
+    const updatedPath = new RoughPath(path, this.config, this.roughOption)
 
     if (this.fabricObject) {
       updatedPath.oCoords = this.fabricObject.oCoords
