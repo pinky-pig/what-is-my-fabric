@@ -1,74 +1,65 @@
 <script setup lang="ts">
-import type { StrokeOptions } from 'perfect-freehand'
-import { getStroke } from 'perfect-freehand'
-import { getSvgPathFromStroke } from '../utils/index'
+import rough from 'roughjs'
 
-const options: StrokeOptions = {
-  size: 32,
-  thinning: 0.5,
-  smoothing: 0.5,
-  streamline: 0.5,
-  easing: t => t,
-  start: {
-    taper: 0,
-    easing: t => t,
-    cap: true,
-  },
-  end: {
-    taper: 100,
-    easing: t => t,
-    cap: true,
-  },
-}
-const points = ref<(number[] | {
-  x: number
-  y: number
-  pressure?: number
-})[]>([])
-const pathData = ref('')
-watch(() => points.value, () => {
-  const stroke = getStroke(points.value, options)
-  pathData.value = getSvgPathFromStroke(stroke)
+let roughCanvas: any = null
+let context: any = null
+
+const seed = rough.newSeed()
+
+const mouseFrom = ref({ x: 0, y: 0 })
+const mouseTo = ref({ x: 0, y: 0 })
+const previous = ref()
+onMounted(() => {
+  const canvas = document.getElementById('canvas') as HTMLCanvasElement
+  context = canvas.getContext('2d') as CanvasRenderingContext2D
+  roughCanvas = rough.canvas(canvas, { options: { fill: 'blue', roughness: 1.5 } })
+
+  const generator = roughCanvas.generator
+  const rect2 = generator.rectangle(10, 120, 100, 100, { fill: 'red', seed })
+  roughCanvas.draw(rect2)
+
+  const step = (count) => {
+    context.clearRect(200, 120, 100, 100)
+    const rect1 = generator.rectangle(200, 120, 100, 100, { fill: 'red', seed })
+
+    roughCanvas.draw(rect1)
+    requestAnimationFrame(step)
+  }
+  requestAnimationFrame(step)
 })
 
-function handlePointerDown(e) {
-  e.target.setPointerCapture(e.pointerId)
-  points.value = [[e.pageX, e.pageY, e.pressure]]
+const drawRect = () => {
+  let path = `M ${mouseFrom.value.x} ${mouseFrom.value.y}`
+  path += ` L ${mouseTo.value.x} ${mouseFrom.value.y}`
+  path += ` L ${mouseTo.value.x} ${mouseTo.value.y}`
+  path += ` L ${mouseFrom.value.x} ${mouseTo.value.y}`
+  path += ` L ${mouseFrom.value.x} ${mouseFrom.value.y} z`
+
+  if (previous.value)
+    context.clearRect(0, 0, 800, 800)
+
+  const p = roughCanvas.path(path, { fill: 'green' })
+  roughCanvas.draw(p)
+
+  previous.value = p
 }
 
-function handlePointerMove(e) {
-  if (e.buttons !== 1)
-    return
+const handleDown = (e: MouseEvent) => {
+  mouseFrom.value.x = e.offsetX
+  mouseFrom.value.y = e.offsetY
+}
+const handleMove = (e: MouseEvent) => {
+  mouseTo.value.x = e.offsetX
+  mouseTo.value.y = e.offsetY
 
-  points.value = [...points.value, [e.pageX, e.pageY, e.pressure]]
+  drawRect()
 }
 </script>
 
 <template>
-  <svg @pointerdown="handlePointerDown" @pointermove="handlePointerMove">
-    <path :d="pathData" />
-  </svg>
+  <canvas id="canvas" width="800" height="800" class="border border-black" @mousedown="handleDown" @mousemove="handleMove" />
 </template>
 
-<style scoped>
-html,
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+<style lang="less" scoped>
 
-body {
-  user-select: none;
-}
-
-svg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background-color: #ffffff;
-  touch-action: none;
-}
 </style>

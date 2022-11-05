@@ -2,10 +2,12 @@ import type { Options } from 'roughjs/bin/core'
 import { fabric } from 'fabric'
 import roughjs from 'roughjs/bin/rough'
 import type { IPathOptions, Point } from 'fabric/fabric-impl'
+import { withCustomMathRandom } from '../utils/random'
 
 export const RoughPath: { new (path: string | Point[], config: IPathOptions, roughOption?: Options): fabric.Path } = fabric.util.createClass(fabric.Path, {
   type: 'roughPath',
   instance: null,
+  fillInstance: null,
   roughOptions: null,
   initialize(path, options, roughOptions) {
     this.roughOptions = roughOptions
@@ -35,7 +37,29 @@ export const RoughPath: { new (path: string | Point[], config: IPathOptions, rou
             }
           }))
         .join(' ')
-      this.instance = rc.path(path, this.roughOptions)
+      // this.instance = rc.path(path, this.roughOptions)
+
+      const createPath = (path: any, style: any) => {
+        return rc.path(path, style)
+      }
+      const generateShape = (path: any, style: any) =>
+        withCustomMathRandom(746071638, () => {
+          return createPath(path, {
+            stroke: 'rgba(0, 0, 0, 0)',
+            roughness: 2,
+            ...style,
+          })
+        })
+
+      this.instance = generateShape(path, {
+        stroke: 'black',
+        strokeWidth: 2,
+      })
+
+      this.fillInstance = generateShape(path, {
+        fill: 'green',
+        fillStyle: 'hachure',
+      })
     }
   },
 })

@@ -41,11 +41,9 @@ export class Base {
   }
 
   private _roughOption: Options = {
-    fill: 'green',
-    fillStyle: 'hachure',
-    seed: rough.newSeed(),
-    strokeWidth: 1,
-    roughness: 1,
+    seed: this.pathSeed,
+    strokeWidth: 3,
+    roughness: 3,
   }
 
   constructor(svgPath: pointType[]) {
