@@ -24,12 +24,13 @@ export class Text {
     name: String(this.id),
     left: 0,
     top: 0,
-    fontSize: Number(24),
-    fill: 'red',
+    fontSize: Number(36),
+    fill: 'rgba(65, 132, 244, 1)',
     charSpacing: Number(10),
     lineHeight: Number(36),
     selectable: false,
     editable: true,
+    fontFamily: 'LXGW WenKai,Neucha, LXGW WenKai Mono,Patrick Hand,Patrick Hand SC',
   }
 
   constructor(svgPath: pointType[]) {

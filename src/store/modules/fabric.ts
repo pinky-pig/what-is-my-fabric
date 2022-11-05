@@ -11,7 +11,6 @@ enum Mode {
   Hand = 'Hand',
   FreeDraw = 'FreeDraw',
   Line = 'Line',
-  Curve = 'Curve',
   Rect = 'Rect',
   Ellipse = 'Ellipse',
   Arrow = 'Arrow',
