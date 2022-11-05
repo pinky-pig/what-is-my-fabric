@@ -15,8 +15,9 @@ export const RoughPath: { new (path: string | Point[], config: IPathOptions, rou
   },
   _render(ctx) {
     const rc = roughjs.canvas(ctx.canvas)
-    if (this.instance) {
+    if (this.instance && this.fillInstance) {
       rc.draw(this.instance)
+      rc.draw(this.fillInstance)
     }
     else {
       const l = -this.pathOffset.x
