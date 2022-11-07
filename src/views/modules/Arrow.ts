@@ -4,8 +4,8 @@ export class Arrow extends Base {
   svgPath2String(svgPath: pointType[]) {
     const [mouseFrom, mouseTo] = svgPath
     const x1 = mouseFrom.x
-    const x2 = mouseTo.x
     const y1 = mouseFrom.y
+    const x2 = mouseTo.x
     const y2 = mouseTo.y
     const w = x2 - x1
     const h = y2 - y1

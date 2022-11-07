@@ -1,65 +1,160 @@
 <script setup lang="ts">
-import rough from 'roughjs'
+import { fabric } from 'fabric'
 
-let roughCanvas: any = null
-let context: any = null
+const renderArrow = ({ mouseFrom, mouseTo }) => {
+  // 三条线，一条直线，两条翼。其之间夹角一样
 
-const seed = rough.newSeed()
-
-const mouseFrom = ref({ x: 0, y: 0 })
-const mouseTo = ref({ x: 0, y: 0 })
-const previous = ref()
+}
 onMounted(() => {
-  const canvas = document.getElementById('canvas') as HTMLCanvasElement
-  context = canvas.getContext('2d') as CanvasRenderingContext2D
-  roughCanvas = rough.canvas(canvas, { options: { fill: 'blue', roughness: 1.5 } })
+  const canvas = new fabric.Canvas('c') as any
 
-  const generator = roughCanvas.generator
-  const rect2 = generator.rectangle(10, 120, 100, 100, { fill: 'red', seed })
-  roughCanvas.draw(rect2)
+  canvas.backgroundColor = '#f5f5f5'
 
-  const step = (count) => {
-    context.clearRect(200, 120, 100, 100)
-    const rect1 = generator.rectangle(200, 120, 100, 100, { fill: 'red', seed })
+  fabric.Object.prototype.originX = fabric.Object.prototype.originY = 'center'
 
-    roughCanvas.draw(rect1)
-    requestAnimationFrame(step)
+  canvas.on({
+    'object:selected': onObjectSelected,
+    'object:moving': onObjectMoving,
+    'selection:cleared': onSelectionCleared,
+  });
+
+  (function drawQuadratic() {
+    const line = new fabric.Path('M 65 0 Q 100, 100, 200, 0', { fill: '', stroke: 'black', objectCaching: false })
+
+    if (!line.path)
+      return
+    line.path[0][1] = 100
+    line.path[0][2] = 100
+
+    line.path[1][1] = 200
+    line.path[1][2] = 200
+
+    line.path[1][3] = 300
+    line.path[1][4] = 100
+
+    line.selectable = false
+    canvas.add(line)
+
+    const p1 = makeCurvePoint(200, 200, null, line, null)
+    p1.name = 'p1'
+    canvas.add(p1)
+
+    const p0 = makeCurveCircle(100, 100, line, p1, null)
+    p0.name = 'p0'
+    canvas.add(p0)
+
+    const p2 = makeCurveCircle(300, 100, null, p1, line)
+    p2.name = 'p2'
+    canvas.add(p2)
+  })()
+
+  function makeCurveCircle(left, top, line1, line2, line3) {
+    const c = new fabric.Circle({
+      left,
+      top,
+      strokeWidth: 5,
+      radius: 12,
+      fill: '#fff',
+      stroke: '#666',
+    }) as any
+
+    c.hasBorders = c.hasControls = false
+
+    c.line1 = line1
+    c.line2 = line2
+    c.line3 = line3
+
+    return c
   }
-  requestAnimationFrame(step)
+
+  function makeCurvePoint(left, top, line1, line2, line3) {
+    const c = new fabric.Circle({
+      left,
+      top,
+      strokeWidth: 8,
+      radius: 14,
+      fill: '#fff',
+      stroke: '#666',
+    }) as any
+
+    c.hasBorders = c.hasControls = false
+
+    c.line1 = line1
+    c.line2 = line2
+    c.line3 = line3
+
+    return c
+  }
+
+  function onObjectSelected(e) {
+    const activeObject = e.target
+
+    if (activeObject.name === 'p0' || activeObject.name === 'p2') {
+      activeObject.line2.animate('opacity', '1', {
+        duration: 200,
+        onChange: canvas.renderAll.bind(canvas),
+      })
+      activeObject.line2.selectable = true
+    }
+  }
+
+  function onSelectionCleared(e) {
+    const activeObject = e.target
+    if (activeObject.name === 'p0' || activeObject.name === 'p2') {
+      activeObject.line2.animate('opacity', '0', {
+        duration: 200,
+        onChange: canvas.renderAll.bind(canvas),
+      })
+      activeObject.line2.selectable = false
+    }
+    else if (activeObject.name === 'p1') {
+      activeObject.animate('opacity', '0', {
+        duration: 200,
+        onChange: canvas.renderAll.bind(canvas),
+      })
+      activeObject.selectable = false
+    }
+  }
+
+  function onObjectMoving(e) {
+    if (e.target.name === 'p0' || e.target.name === 'p2') {
+      const p = e.target
+
+      if (p.line1) {
+        p.line1.path[0][1] = p.left
+        p.line1.path[0][2] = p.top
+      }
+      else if (p.line3) {
+        p.line3.path[1][3] = p.left
+        p.line3.path[1][4] = p.top
+      }
+    }
+    else if (e.target.name === 'p1') {
+      const p = e.target
+
+      if (p.line2) {
+        p.line2.path[1][1] = p.left
+        p.line2.path[1][2] = p.top
+      }
+    }
+    else if (e.target.name === 'p0' || e.target.name === 'p2') {
+      const p = e.target
+
+      p.line1 && p.line1.set({ x2: p.left, y2: p.top })
+      p.line2 && p.line2.set({ x1: p.left, y1: p.top })
+      p.line3 && p.line3.set({ x1: p.left, y1: p.top })
+      p.line4 && p.line4.set({ x1: p.left, y1: p.top })
+    }
+  }
 })
-
-const drawRect = () => {
-  let path = `M ${mouseFrom.value.x} ${mouseFrom.value.y}`
-  path += ` L ${mouseTo.value.x} ${mouseFrom.value.y}`
-  path += ` L ${mouseTo.value.x} ${mouseTo.value.y}`
-  path += ` L ${mouseFrom.value.x} ${mouseTo.value.y}`
-  path += ` L ${mouseFrom.value.x} ${mouseFrom.value.y} z`
-
-  if (previous.value)
-    context.clearRect(0, 0, 800, 800)
-
-  const p = roughCanvas.path(path, { fill: 'green' })
-  roughCanvas.draw(p)
-
-  previous.value = p
-}
-
-const handleDown = (e: MouseEvent) => {
-  mouseFrom.value.x = e.offsetX
-  mouseFrom.value.y = e.offsetY
-}
-const handleMove = (e: MouseEvent) => {
-  mouseTo.value.x = e.offsetX
-  mouseTo.value.y = e.offsetY
-
-  drawRect()
-}
 </script>
 
 <template>
-  <canvas id="canvas" width="800" height="800" class="border border-black" @mousedown="handleDown" @mousemove="handleMove" />
+  <canvas id="c" width="600" height="600" />
 </template>
 
-<style lang="less" scoped>
-
+<style scoped>
+canvas {
+  border: 1px solid lightgray;
+}
 </style>
