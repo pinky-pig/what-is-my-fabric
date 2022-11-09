@@ -105,21 +105,17 @@ export function calculateCoords(start, end, angle) {
   const y1 = end[1]
 
   const sin = Math.sin(angle)
-  const cos = Math.cos(angle)
+  let cos = Math.cos(angle)
 
-  // const x2 = x + (x1 - x) * cos - (y1 - y) * sin
-  // const y2 = y + (y1 - y) * cos + (x1 - x) * sin
-
-  let x2 = 0
-  let y2 = 0
+  // 因为 sin 函数和 cos 函数的 不包括钝角
+  // 互为补角的两个角的sin值相等，cos和tan互为相反数。
   if (Math.abs(angle) > (Math.PI / 2)) {
-    x2 = x + (x - x1) * cos - (y - y1) * sin
-    y2 = y + (y - y1) * cos + (x - x1) * sin
+    // sin = -sin
+    cos = -cos
   }
-  else {
-    x2 = x + (x1 - x) * cos - (y1 - y) * sin
-    y2 = y + (y1 - y) * cos + (x1 - x) * sin
-  }
+
+  const x2 = x + (x1 - x) * cos - (y1 - y) * sin
+  const y2 = y + (y1 - y) * cos + (x1 - x) * sin
 
   return [x2, y2]
 }
