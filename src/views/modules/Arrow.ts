@@ -34,7 +34,7 @@ export class Arrow extends Base {
     const mouseFromPoint = [mouseFrom.x, mouseFrom.y]
     const mouseToPoint = [mouseTo.x, mouseTo.y]
 
-    // 这里得出平行与x轴的箭头
+    // 这里得出平行于x轴的箭头
     const coords = horizontalArrow(mouseFromPoint, mouseToPoint)
 
     // 计算角度
@@ -48,6 +48,7 @@ export class Arrow extends Base {
     path += ` L ${points[2][0]} ${points[2][1]}`
     path += ` M ${points[1][0]} ${points[1][1]}`
     path += ` L ${points[3][0]} ${points[3][1]}`
+
     return path
   }
 
@@ -71,6 +72,33 @@ export class Arrow extends Base {
 
 // 计算平行于x轴的箭头的P3和P4两个点。角度设为30度，h是高度，可以体现两侧的长度
 export function horizontalArrow(start, end, h = 10) {
+  // const x = start[0]
+  // const y = start[1]
+  // const x1 = end[0]
+  // const y1 = end[1]
+  // // 弦的长度
+  // const s = Math.sqrt((x1 - x) ** 2 + (y1 - y) ** 2)
+  // // 第一个点是start点
+  // const first = start
+  // // 第二个点是以x是弦长，方向是朝end的方向
+
+  // // 符号要跟x1的相同
+  // const sign = (x1 - x) !== 0 ? (x1 - x) / Math.abs((x1 - x)) : 1
+
+  // const second = sign > 0 ? [x + s, start[1]] : [x - s, start[1]]
+  // // 第三个点是通过tan求出坐标，角度是30度 弧度为 Math.PI / 6
+  // const tan = Math.tan(Math.PI / 6)
+  // const w = h / tan
+  // const three = sign > 0 ? [second[0] - w, y + h] : [second[0] + w, y + h]
+  // // 第四个点跟第三个x轴一样，y轴成对称
+  // const four = sign > 0 ? [second[0] - w, y - h] : [second[0] + w, y - h]
+  // return [
+  //   first, second,
+  //   three, four,
+  // ]
+
+  // 这里进行修改，上面的是方向跟end方向一致的平行于x轴的
+  // 这里改成方向 跟x轴正方向一致的，且平行于x轴
   const x = start[0]
   const y = start[1]
   const x1 = end[0]
@@ -81,16 +109,11 @@ export function horizontalArrow(start, end, h = 10) {
   const first = start
   // 第二个点是以x是弦长，方向是朝end的方向
 
-  // 符号要跟x1的相同
-  const sign = (x1 - x) !== 0 ? (x1 - x) / Math.abs((x1 - x)) : 1
-
-  const second = sign > 0 ? [x + s, start[1]] : [x - s, start[1]]
-  // 第三个点是通过tan求出坐标，角度是30度 弧度为 Math.PI / 6
+  const second = [x + s, start[1]]
   const tan = Math.tan(Math.PI / 6)
   const w = h / tan
-  const three = sign > 0 ? [second[0] - w, y + h] : [second[0] + w, y + h]
-  // 第四个点跟第三个x轴一样，y轴成对称
-  const four = sign > 0 ? [second[0] - w, y - h] : [second[0] + w, y - h]
+  const three = [second[0] - w, y + h]
+  const four = [second[0] - w, y - h]
   return [
     first, second,
     three, four,
@@ -105,14 +128,7 @@ export function calculateCoords(start, end, angle) {
   const y1 = end[1]
 
   const sin = Math.sin(angle)
-  let cos = Math.cos(angle)
-
-  // 因为 sin 函数和 cos 函数的 不包括钝角
-  // 互为补角的两个角的sin值相等，cos和tan互为相反数。
-  if (Math.abs(angle) > (Math.PI / 2)) {
-    // sin = -sin
-    cos = -cos
-  }
+  const cos = Math.cos(angle)
 
   const x2 = x + (x1 - x) * cos - (y1 - y) * sin
   const y2 = y + (y1 - y) * cos + (x1 - x) * sin
