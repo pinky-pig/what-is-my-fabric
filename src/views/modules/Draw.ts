@@ -7,21 +7,21 @@ import { Base } from './Base'
 export interface pointType { x: number; y: number }
 export class Draw extends Base {
   private _config_Draw: StrokeOptions = {
-    size: 16,
-    thinning: 0.5,
+    size: 4.25,
+    thinning: 0.618,
     smoothing: 0.5,
     streamline: 0.5,
-    easing: t => t,
-    start: {
-      taper: 0,
-      easing: t => t,
-      cap: true,
-    },
-    end: {
-      taper: 100,
-      easing: t => t,
-      cap: true,
-    },
+    // easing: t => t,
+    // start: {
+    //   taper: 0,
+    //   easing: t => t,
+    //   cap: true,
+    // },
+    // end: {
+    //   taper: 100,
+    //   easing: t => t,
+    //   cap: true,
+    // },
   }
 
   // 生成svg路径
