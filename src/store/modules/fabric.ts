@@ -24,9 +24,9 @@ export interface IFabricState {
   canvasRef: null | HTMLCanvasElement
   mode: TMode
   modeList: TMode[]
-  mouseFrom: { x: number; y: number }
-  mouseTo: { x: number; y: number }
-  freeDrawPoints: { x: number; y: number }[]
+  mouseFrom: { x: number; y: number; pressure?: number }
+  mouseTo: { x: number; y: number; pressure?: number }
+  freeDrawPoints: { x: number; y: number; pressure?: number }[]
   isMouseDown: boolean
   isCanvasDragging: boolean
   isDrawing: boolean
@@ -73,6 +73,14 @@ export const useFabricStore = defineStore({
     },
     getHeight() {
       return this.wrapperRef?.offsetHeight || 750
+    },
+
+    setMouseFrom(data: { x?: number; y?: number; pressure?: number }) {
+      Object.assign(this.mouseFrom, data)
+    },
+
+    setFreeDrawPoints(data: { x?: number; y?: number; pressure?: number }) {
+      Object.assign(this.freeDrawPoints.at(-1) || {}, data)
     },
 
     // 改变是否绘制

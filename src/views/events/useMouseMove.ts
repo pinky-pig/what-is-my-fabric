@@ -71,12 +71,12 @@ export const useMouseMove = (evt: IEvent<MouseEvent>) => {
     }
   }
 
-  // 6.自由绘制
+  // 6. 自由绘制
   if (fabricStore.isDrawing && (fabricStore.mode === 'FreeDraw' && evt.button === 1)) {
     if (evt.absolutePointer) {
       const { x, y } = evt.absolutePointer
       fabricStore.mouseTo = { x, y }
-      fabricStore.freeDrawPoints.push({ x, y })
+      fabricStore.setFreeDrawPoints({ x, y })
       renderDrawPreview()
     }
   }

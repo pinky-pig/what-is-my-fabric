@@ -6,6 +6,8 @@ import { useMouseDown } from './useMouseDown'
 import { useMouseMove } from './useMouseMove'
 import { useMouseUp } from './useMouseUp'
 import { useMouseWheel } from './useMouseWheel'
+import { usePointerDown } from './usePointerDown'
+import { usePointerMove } from './usePointerMove'
 
 export const addFabricCanvasEvent = () => {
   const [canvas] = useCanvas()
@@ -13,4 +15,7 @@ export const addFabricCanvasEvent = () => {
   canvas.on('mouse:move', useMouseMove)
   canvas.on('mouse:up', useMouseUp)
   canvas.on('mouse:wheel', useMouseWheel)
+
+  usePointerDown()
+  usePointerMove()
 }

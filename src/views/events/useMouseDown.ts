@@ -25,7 +25,7 @@ export const useMouseDown = (evt: IEvent<MouseEvent>) => {
       fabricStore.handleChangeIsDrawing(true)
       if (evt.absolutePointer) {
         const { x, y } = evt.absolutePointer
-        fabricStore.mouseFrom = { x, y }
+        fabricStore.setMouseFrom({ x, y })
       }
     }
 
