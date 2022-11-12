@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      background: #ddd;
+      display: flex;
+      justify-content: center;
+    }
+
+    svg {
+      margin: 0 auto;
+      width: 400px;
+      background: 400px;
+      border: 1px solid white;
+    }
+
+  </style>
+</head>
+
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" onmousemove="clickEvent(this)">
+    <g>
+      <path id="path" d="M10 10 S 10 75 50 50" fill="transparent" stroke-width="0.5" stroke="#000"
+        stroke-miterlimit="10" />
+    </g>
+
+    <circle cx="10" cy="10" r="1" stroke-width="0.2" fill="red" />
+    <circle id="end-control" cx="50" cy="50" r="1" stroke-width="0.2" fill="red" />
+    <g class="pen">
+      <circle id="curve" cx="10" cy="75" r="1" stroke-width="0.2" fill="green" />
+
+      <path id="path-curve" d="M10 75 L 50 50" stroke="green" stroke-miterlimit="1" stroke-width="0.2"></path>
+
+      <circle id="cursor" cx="90" cy="25" r="1" stroke-width="0.2" fill="rebeccapurple" />
+
+      <path id="path-cursor" d="M50 50 L 90 25" stroke="blue" stroke-miterlimit="1" stroke-width="0.2"></path>
+    </g>
+  </svg>
+</body>
+<script>
+  const curve = document.getElementById('curve')
+  const cursor = document.getElementById('cursor')
+  const pCurve = document.getElementById('path-curve')
+  const pCursor = document.getElementById('path-cursor')
+
+  const path = document.getElementById('path')
+
+  function getPosition(e) {
+    const rect = e.target.getBoundingClientRect()
+    let x = e.clientX - rect.left
+    let y = e.clientY - rect.top
+    x = x / 4 //
+    y = y / 4 // Specific to demo at the moment turn 400px to view 100
+    return {
+      x,
+      y,
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  function clickEvent(item) {
+    const e = event || window.event
+
+    // eslint-disable-next-line eqeqeq
+    if (e.target == item && e.which == 1) {
+      const position = getPosition(e)
+
+      const pathDirection = `M10 10 S ${position.x} ${position.y} 50 50 `
+      //
+      cursor.setAttribute('cx', position.x)
+      cursor.setAttribute('cy', position.y)
+
+      //
+      curve.setAttribute('cx', 100 - position.x)
+      curve.setAttribute('cy', 100 - position.y)
+
+      //
+      pCurve.setAttribute('d',
+        `M${100 - position.x
+        } ${100 - position.y
+        } L 50 50`)
+
+      pCursor.setAttribute('d',
+        `M 50 50 L ${position.x
+        } ${position.y}`)
+
+      //
+      path.setAttribute('d', pathDirection)
+    }
+  }
+
+</script>
+
+</html>
