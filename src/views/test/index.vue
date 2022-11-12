@@ -11,6 +11,43 @@ const p = computed(() => {
     S ${pointEnd.value[0]} ${pointEnd.value[1]} ${pointEnd.value[0]} ${pointEnd.value[1]}
   `
 })
+
+const calArrowHeadCoords = (point: number[], h = 10) => {
+  // 设置角度为30度
+  const x = h * Math.sqrt(3)
+  return [
+    [x, point[1] + h],
+    [x, point[1] - h],
+  ]
+}
+
+const arrowHeadPath = computed(() => {
+  const coords = calArrowHeadCoords(pointEnd.value)
+
+  return `
+  M ${pointEnd.value[0]} ${pointEnd.value[1]}
+  L ${coords[0][0]} ${coords[0][1]}
+  M ${pointEnd.value[0]} ${pointEnd.value[1]}
+  L ${coords[1][0]} ${coords[1][1]}
+  `
+})
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// const calArrowHeadOrientation = (pointControl: [number, number], point: [number, number]) => {
+//   const angle = calculateAngle(pointControl, point)
+//   const coords = calArrowHeadCoords(pointEnd.value)
+//   coords = coords.map((item: number[]) => {
+//     return calculateCoords(item, angle)
+//   })
+// }
+// function calculateAngle(start: [number, number], end: [number, number]) {
+//   const distanceX = end[0] - start[0]
+//   const distanceY = end[1] - start[1]
+//   const baseAngle = Math.atan2(distanceY, distanceX)
+//   return baseAngle
+// }
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 let isDragging = false
 const handleMove = (e) => {
   if (isDragging)
@@ -27,6 +64,7 @@ const handleUp = () => {
 <template>
   <svg @mousemove="handleMove" @mouseup="handleUp">
     <path :d="p" fill="transparent" stroke="black" />
+    <path :d="arrowHeadPath" fill="transparent" stroke="black" />
     <circle ref="start" :cx="pointStart[0]" :cy="pointStart[1]" r="10" stroke-width="0.2" fill="red" />
     <circle ref="end" :cx="pointEnd[0]" :cy="pointEnd[1]" r="10" stroke-width="0.2" fill="red" />
     <circle ref="control1" :cx="pointMiddle[0] - 100" :cy="pointMiddle[1] " r="10" stroke-width="0.2" fill="green" />
