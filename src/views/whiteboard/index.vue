@@ -1,9 +1,9 @@
 <script setup lang="ts">
-
+import PathCanvas from './path-canvas/index.vue'
 </script>
 
 <template>
-  whiteboard
+  <PathCanvas />
 </template>
 
 <style lang="less" scoped>
