@@ -32,14 +32,12 @@ const cfg = ref({
   viewPortWidth: 0,
   viewPortHeight: 0,
 })
-const viewPortZoom = ref(0)
+const viewPortZoom = ref(1)
 const setViewPort = () => {
   if (!svgWrapperRef.value)
     return
   cfg.value.viewPortWidth = svgWrapperRef.value.offsetWidth
   cfg.value.viewPortHeight = svgWrapperRef.value.offsetHeight
-
-  viewPortZoom.value = cfg.value.viewPortWidth / svgWrapperRef.value.offsetWidth
 }
 onMounted(() => {
   setViewPort()
@@ -54,6 +52,7 @@ const drag = (event: MouseEvent | TouchEvent) => {
     const y = cfg.value.viewPortY + (oriPt.y - pt.y)
     const w = cfg.value.viewPortWidth
     const h = cfg.value.viewPortHeight
+
     updateViewPort(x, y, w, h)
   }
   draggedEvt = event
@@ -71,6 +70,8 @@ function updateViewPort(x: number, y: number, w: number | null, h: number | null
   if (!svgWrapperRef.value)
     return
 
+  // 这里的w,h比例应该跟画布的比例相同。虽然在调用这个方法之前计算的w、h也是根据比例计算的。
+  // 这里经过下面的计算不出意外得出的值应该跟其之前相同
   if (w === null && h !== null)
     w = svgWrapperRef.value.offsetWidth * h / svgWrapperRef.value.offsetHeight
 
@@ -79,7 +80,6 @@ function updateViewPort(x: number, y: number, w: number | null, h: number | null
 
   if (!w || !h)
     return
-
   cfg.value.viewPortX = parseFloat((1 * x).toPrecision(6))
   cfg.value.viewPortY = parseFloat((1 * y).toPrecision(6))
   cfg.value.viewPortWidth = parseFloat((1 * w).toPrecision(4))
