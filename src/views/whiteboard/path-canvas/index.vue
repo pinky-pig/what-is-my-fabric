@@ -4,7 +4,7 @@ import type { StrokeOptions } from 'perfect-freehand'
 import { getStroke } from 'perfect-freehand'
 import { getSvgPathFromStroke } from '../../utils/index'
 const options: StrokeOptions = {
-  size: 16,
+  size: 10,
   thinning: 0.618,
   smoothing: 0.5,
   streamline: 0.5,
@@ -17,7 +17,7 @@ const points = ref<(number[] | {
 const pathData = ref('')
 watch(() => points.value, () => {
   const stroke = getStroke(points.value, options)
-  pathData.value += getSvgPathFromStroke(stroke)
+  pathData.value = getSvgPathFromStroke(stroke)
 })
 
 const { Ctrl } = useMagicKeys()
@@ -32,11 +32,14 @@ const cfg = ref({
   viewPortWidth: 0,
   viewPortHeight: 0,
 })
+const viewPortZoom = ref(0)
 const setViewPort = () => {
   if (!svgWrapperRef.value)
     return
   cfg.value.viewPortWidth = svgWrapperRef.value.offsetWidth
   cfg.value.viewPortHeight = svgWrapperRef.value.offsetHeight
+
+  viewPortZoom.value = cfg.value.viewPortWidth / svgWrapperRef.value.offsetWidth
 }
 onMounted(() => {
   setViewPort()
@@ -57,11 +60,10 @@ const drag = (event: MouseEvent | TouchEvent) => {
 }
 
 function eventToLocation(event: MouseEvent | TouchEvent, idx = 0): { x: number; y: number } {
-  const canvas = document.querySelector('#svgCanvasRef') as MaybeElementRef<MaybeElement>
-  const { top, left } = useElementBounding(canvas)
+  const { top, left } = useElementBounding(svgWrapperRef)
   const touch = event instanceof MouseEvent ? event : event.touches[idx]
-  const x = cfg.value.viewPortX + (touch.clientX - left.value) * 1
-  const y = cfg.value.viewPortY + (touch.clientY - top.value) * 1
+  const x = cfg.value.viewPortX + (touch.clientX - left.value) * viewPortZoom.value
+  const y = cfg.value.viewPortY + (touch.clientY - top.value) * viewPortZoom.value
   return { x, y }
 }
 
@@ -82,6 +84,7 @@ function updateViewPort(x: number, y: number, w: number | null, h: number | null
   cfg.value.viewPortY = parseFloat((1 * y).toPrecision(6))
   cfg.value.viewPortWidth = parseFloat((1 * w).toPrecision(4))
   cfg.value.viewPortHeight = parseFloat((1 * h).toPrecision(4))
+  viewPortZoom.value = cfg.value.viewPortWidth / svgWrapperRef.value.offsetWidth
 }
 
 function handlePointerDown(e) {
@@ -92,7 +95,6 @@ function handlePointerDown(e) {
 function handlePointerMove(e) {
   if (isPressedCtrl.value) {
     // 移动画布
-    // 开始
     drag(e)
   }
   else {
@@ -106,6 +108,22 @@ function handlePointerMove(e) {
 function handlePointerUp(e) {
   draggedEvt = null
 }
+
+function handleWheel(e) {
+  e.preventDefault()
+  const scale = 1.005 ** e.deltaY
+  const pt = eventToLocation(e)
+  zoomViewPort(scale, pt)
+}
+function zoomViewPort(scale: number, pt?: { x: number; y: number }) {
+  if (!pt)
+    pt = { x: cfg.value.viewPortX + 0.5 * cfg.value.viewPortWidth, y: cfg.value.viewPortY + 0.5 * cfg.value.viewPortHeight }
+  const x = cfg.value.viewPortX + ((pt.x - cfg.value.viewPortX) - scale * (pt.x - cfg.value.viewPortX))
+  const y = cfg.value.viewPortY + ((pt.y - cfg.value.viewPortY) - scale * (pt.y - cfg.value.viewPortY))
+  const w = scale * cfg.value.viewPortWidth
+  const h = scale * cfg.value.viewPortHeight
+  updateViewPort(x, y, w, h)
+}
 </script>
 
 <template>
@@ -118,6 +136,7 @@ function handlePointerUp(e) {
       @pointerdown="handlePointerDown"
       @pointermove="handlePointerMove"
       @pointerup="handlePointerUp"
+      @wheel="handleWheel"
     >
       <path :d="pathData" />
     </svg>
