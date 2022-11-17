@@ -1,37 +1,36 @@
 <script setup lang="ts">
 import type { StrokeOptions } from 'perfect-freehand'
 import { getStroke } from 'perfect-freehand'
-import { getSvgPathFromStroke } from '../../utils/index'
+import { storeToRefs } from 'pinia'
+import { getSvgPathFromStroke } from '../../../utils/index'
+import { isPressedCtrl, useKeyEvents } from '../../hooks/useKeyEvents'
+import { useZoomEvents } from '../../hooks/useZoomEvents'
+import { useResizeObserver } from '../../hooks/useResizeObserver'
+import { useSvgStore } from '~/store/modules/svg'
+
+// free-hand的配置
 const options: StrokeOptions = {
   size: 10,
   thinning: 0.618,
   smoothing: 0.5,
   streamline: 0.5,
 }
-const points = ref<(number[] | {
-  x: number
-  y: number
-  pressure?: number
-})[]>([])
+
+// 全局状态 pinia
+const store = useSvgStore()
+// 设置画布的Dom
+const { svgWrapperRef, svgCanvasRef } = storeToRefs(store)
+// 设置画布的尺寸，缩放比例，自由绘制的点的集合
+const { cfg, viewPortZoom, freeDrawPoints } = storeToRefs(store)
+// 监听键盘按键
+useKeyEvents()
+
 const pathData = ref('')
-watch(() => points.value, () => {
-  const stroke = getStroke(points.value, options)
+watch(() => freeDrawPoints.value, () => {
+  const stroke = getStroke(freeDrawPoints.value, options)
   pathData.value = getSvgPathFromStroke(stroke)
 })
 
-const { Ctrl } = useMagicKeys()
-const isPressedCtrl = ref(false)
-watch(Ctrl, (v) => {
-  isPressedCtrl.value = v
-})
-const svgWrapperRef = ref<HTMLElement>()
-const cfg = ref({
-  viewPortX: 0,
-  viewPortY: 0,
-  viewPortWidth: 0,
-  viewPortHeight: 0,
-})
-const viewPortZoom = ref(1)
 const setViewPort = () => {
   if (!svgWrapperRef.value)
     return
@@ -89,7 +88,7 @@ function updateViewPort(x: number, y: number, w: number | null, h: number | null
 function handlePointerDown(e) {
   e.target.setPointerCapture(e.pointerId)
   const pt = eventToLocation(e)
-  points.value = [[pt.x, pt.y, e.pressure]]
+  freeDrawPoints.value = [[pt.x, pt.y, e.pressure]]
 }
 function handlePointerMove(e) {
   if (isPressedCtrl.value) {
@@ -101,45 +100,17 @@ function handlePointerMove(e) {
       return
 
     const pt = eventToLocation(e)
-    points.value = [...points.value, [pt.x, pt.y, e.pressure]]
+    freeDrawPoints.value = [...freeDrawPoints.value, [pt.x, pt.y, e.pressure]]
   }
 }
 function handlePointerUp(e) {
   draggedEvt = null
 }
 
-function handleWheel(e) {
-  e.preventDefault()
-  const scale = 1.005 ** e.deltaY
-  const pt = eventToLocation(e)
-  zoomViewPort(scale, pt)
-}
-function zoomViewPort(scale: number, pt?: { x: number; y: number }) {
-  if (!pt)
-    pt = { x: cfg.value.viewPortX + 0.5 * cfg.value.viewPortWidth, y: cfg.value.viewPortY + 0.5 * cfg.value.viewPortHeight }
-  const x = cfg.value.viewPortX + ((pt.x - cfg.value.viewPortX) - scale * (pt.x - cfg.value.viewPortX))
-  const y = cfg.value.viewPortY + ((pt.y - cfg.value.viewPortY) - scale * (pt.y - cfg.value.viewPortY))
-  const w = scale * cfg.value.viewPortWidth
-  const h = scale * cfg.value.viewPortHeight
-  updateViewPort(x, y, w, h)
-}
-
-const { width, height } = useElementBounding(svgWrapperRef)
-watch([width, height], (newValue, oldValue) => {
-  // 过滤一下第一次。因为监听的是dom的长宽，第一次肯定会触发，长宽从0到设置的值。
-  // 这个时候的差值就是dom元素本身，而不是窗口偏移的值，所以这个时候跳出方法
-  if (oldValue[0] === 0 && oldValue[1] === 0)
-    return
-
-  const distanceX = (newValue[0] - oldValue[0]) * viewPortZoom.value
-  const distanceY = (newValue[1] - oldValue[1]) * viewPortZoom.value
-  const x = cfg.value.viewPortX
-  const y = cfg.value.viewPortY
-  const w = cfg.value.viewPortWidth + distanceX
-  const h = cfg.value.viewPortHeight + distanceY
-
-  updateViewPort(x, y, w, h)
-})
+// 监听画布缩放
+useZoomEvents(cfg, svgWrapperRef, viewPortZoom)
+// 监听窗口尺寸改变
+useResizeObserver(cfg, svgWrapperRef, viewPortZoom)
 </script>
 
 <template>
@@ -152,7 +123,6 @@ watch([width, height], (newValue, oldValue) => {
       @pointerdown="handlePointerDown"
       @pointermove="handlePointerMove"
       @pointerup="handlePointerUp"
-      @wheel="handleWheel"
     >
       <path :d="pathData" />
     </svg>

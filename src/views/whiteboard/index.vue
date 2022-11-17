@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PathCanvas from './path-canvas/index.vue'
+import PathCanvas from './components/canvas/index.vue'
 </script>
 
 <template>
