@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { MaybeElement, MaybeElementRef } from '@vueuse/core'
 import type { StrokeOptions } from 'perfect-freehand'
 import { getStroke } from 'perfect-freehand'
 import { getSvgPathFromStroke } from '../../utils/index'
@@ -124,6 +123,23 @@ function zoomViewPort(scale: number, pt?: { x: number; y: number }) {
   const h = scale * cfg.value.viewPortHeight
   updateViewPort(x, y, w, h)
 }
+
+const { width, height } = useElementBounding(svgWrapperRef)
+watch([width, height], (newValue, oldValue) => {
+  // 过滤一下第一次。因为监听的是dom的长宽，第一次肯定会触发，长宽从0到设置的值。
+  // 这个时候的差值就是dom元素本身，而不是窗口偏移的值，所以这个时候跳出方法
+  if (oldValue[0] === 0 && oldValue[1] === 0)
+    return
+
+  const distanceX = newValue[0] - oldValue[0]
+  const distanceY = newValue[1] - oldValue[1]
+  const x = cfg.value.viewPortX
+  const y = cfg.value.viewPortY
+  const w = cfg.value.viewPortWidth + distanceX
+  const h = cfg.value.viewPortHeight + distanceY
+
+  updateViewPort(x, y, w, h)
+})
 </script>
 
 <template>
