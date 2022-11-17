@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Ref } from 'vue'
+import { Uuid } from '../utils/uuid'
 import { isPressedCtrl } from './useKeyEvents'
 
 interface cfgType {
@@ -8,6 +10,7 @@ interface cfgType {
   viewPortHeight: number
 }
 
+// 上一次的拖拽事件
 let draggedEvt: MouseEvent | TouchEvent | null = null
 /**
    * 监听画布上的事件 （ onPointerDown|onPointerMove|onPointerUp ）
@@ -24,6 +27,7 @@ export function useCanvasEvents(
     y: number
     pressure?: number
   })[]>,
+  elementsRef: Ref<{ id: string; path: string }[]>,
 ) {
   // 更新设置viewBox的值（响应式，由参数传进来）
   function updateViewPort(x: number, y: number, w: number | null, h: number | null) {
@@ -83,7 +87,13 @@ export function useCanvasEvents(
     }
   }
   function handlePointerUp() {
+    // 将上次的拖拽事件置为初始状态
     draggedEvt = null
+
+    // elementsRef.value.push({
+    //   id: Uuid.uniqueId(),
+    //   path: freeDrawPointsRef.value,
+    // })
   }
 
   // 初始化画布

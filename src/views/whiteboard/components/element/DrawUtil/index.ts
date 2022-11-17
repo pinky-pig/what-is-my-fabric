@@ -1,4 +1,3 @@
-import { fabric } from 'fabric'
 import type { StrokeOptions } from 'perfect-freehand'
 import getStroke from 'perfect-freehand'
 import { Base } from '../BaseUtil/index'
@@ -29,11 +28,11 @@ export class Draw extends Base {
     // return new fabric.Path(this.svgPathString, this._config_Draw as any)
   }
 
-  update(location: (number[] | {
-    x: number
-    y: number
-    pressure?: number
-  })[]) {
+  // update(location: (number[] | {
+  //   x: number
+  //   y: number
+  //   pressure?: number
+  // })[]) {
 
-  }
+  // }
 }

@@ -5,5 +5,5 @@ export class Uuid {
       : `${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`.replace(/[018]/g, Uuid.uniqueId)
   }
 }
-// const uuid = Utils.uniqueId()
+// const uuid = Uuid.uniqueId()
 // console.log(uuid)

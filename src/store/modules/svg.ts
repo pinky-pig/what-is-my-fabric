@@ -22,12 +22,14 @@ export interface SvgState {
   svgCanvasRef: null | HTMLCanvasElement
   cfg: cfgState
   viewPortZoom: number
-  Objects: [] // 所有的数据集合，按要素类型分为几种
+  elements: { id: string; path: string }[] // 所有的数据集合，按要素类型分为几种
   freeDrawPoints: (number[] | {
     x: number
     y: number
     pressure?: number
   })[] // 自由绘制的点的集合
+  isDrawing: boolean // 是否正在绘制
+  isCanvasStateChanging: false // 画布的状态是否正在改变 平移 | 缩放 |
 }
 
 export const useSvgStore = defineStore({
@@ -43,8 +45,10 @@ export const useSvgStore = defineStore({
         viewPortHeight: 0,
       },
       viewPortZoom: 1,
-      Objects: [],
+      elements: [],
       freeDrawPoints: [],
+      isDrawing: false,
+      isCanvasStateChanging: false,
     }
   },
   getters: {
