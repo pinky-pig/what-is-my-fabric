@@ -51,7 +51,7 @@ export function useCanvasEvents(
     const y = cfgRef.value.viewPortY + (touch.clientY - top.value) * viewPortZoomRef.value
     return { x, y }
   }
-
+  // 拖拽画布
   function dragCanvas(event: MouseEvent | TouchEvent) {
     const pt = eventToLocation(event)
     if (draggedEvt) {
@@ -85,6 +85,17 @@ export function useCanvasEvents(
   function handlePointerUp() {
     draggedEvt = null
   }
+
+  // 初始化画布
+  function setViewPort() {
+    if (!canvasRef.value)
+      return
+    cfgRef.value.viewPortWidth = canvasRef.value.offsetWidth
+    cfgRef.value.viewPortHeight = canvasRef.value.offsetHeight
+  }
+  onMounted(() => {
+    setViewPort()
+  })
 
   // 监听鼠标滚轮事件
   useEventListener(canvasRef, 'pointerdown', handlePointerDown)

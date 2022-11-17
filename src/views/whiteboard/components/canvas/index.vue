@@ -9,14 +9,6 @@ import { useResizeObserver } from '../../hooks/useResizeObserver'
 import { useCanvasEvents } from '../../hooks/useCanvasEvents'
 import { useSvgStore } from '~/store/modules/svg'
 
-// free-hand的配置
-const options: StrokeOptions = {
-  size: 10,
-  thinning: 0.618,
-  smoothing: 0.5,
-  streamline: 0.5,
-}
-
 // 全局状态 pinia
 const store = useSvgStore()
 // 设置画布的Dom
@@ -26,28 +18,26 @@ const { cfg, viewPortZoom, freeDrawPoints } = storeToRefs(store)
 // 监听键盘按键
 useKeyEvents()
 
-const pathData = ref('')
-watch(() => freeDrawPoints.value, () => {
-  const stroke = getStroke(freeDrawPoints.value, options)
-  pathData.value = getSvgPathFromStroke(stroke)
-})
-
-const setViewPort = () => {
-  if (!svgWrapperRef.value)
-    return
-  cfg.value.viewPortWidth = svgWrapperRef.value.offsetWidth
-  cfg.value.viewPortHeight = svgWrapperRef.value.offsetHeight
-}
-onMounted(() => {
-  setViewPort()
-})
-
 // 监听画布缩放
 useZoomEvents(cfg, svgWrapperRef, viewPortZoom)
 // 监听窗口尺寸改变
 useResizeObserver(cfg, svgWrapperRef, viewPortZoom)
 // 监听画布触发事件（包括拖拽画布）
 useCanvasEvents(cfg, svgWrapperRef, viewPortZoom, freeDrawPoints)
+
+// free-hand的配置
+const options: StrokeOptions = {
+  size: 10,
+  thinning: 0.618,
+  smoothing: 0.5,
+  streamline: 0.5,
+}
+// 自由绘制
+const pathData = ref('')
+watch(() => freeDrawPoints.value, () => {
+  const stroke = getStroke(freeDrawPoints.value, options)
+  pathData.value = getSvgPathFromStroke(stroke)
+})
 </script>
 
 <template>
