@@ -131,8 +131,8 @@ watch([width, height], (newValue, oldValue) => {
   if (oldValue[0] === 0 && oldValue[1] === 0)
     return
 
-  const distanceX = newValue[0] - oldValue[0]
-  const distanceY = newValue[1] - oldValue[1]
+  const distanceX = (newValue[0] - oldValue[0]) * viewPortZoom.value
+  const distanceY = (newValue[1] - oldValue[1]) * viewPortZoom.value
   const x = cfg.value.viewPortX
   const y = cfg.value.viewPortY
   const w = cfg.value.viewPortWidth + distanceX
