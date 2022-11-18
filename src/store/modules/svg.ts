@@ -31,7 +31,7 @@ export interface SvgState {
     y: number
     pressure?: number
   })[] // 自由绘制的点的集合
-  freeDrawPoints2Path: string // 自由绘制的点生成的Path
+  currentDrawingPath: string // 自由绘制的点生成的Path
   mouseFrom: { x: number; y: number; pressure?: number }
   mouseTo: { x: number; y: number; pressure?: number }
   isDrawing: boolean // 是否正在绘制
@@ -55,7 +55,7 @@ export const useSvgStore = defineStore({
       modeList: Object.keys(Mode) as ModeTypes[],
       elements: [],
       freeDrawPoints: [],
-      freeDrawPoints2Path: '',
+      currentDrawingPath: '',
       mouseFrom: { x: 0, y: 0 },
       mouseTo: { x: 0, y: 0 },
       isDrawing: false,
@@ -96,9 +96,9 @@ export const useSvgStore = defineStore({
       this.elements.push({
         id: generateUuid(),
         type: this.mode,
-        path: this.freeDrawPoints2Path,
+        path: this.currentDrawingPath,
       })
-      this.freeDrawPoints2Path = ''
+      this.currentDrawingPath = ''
     },
   },
 })

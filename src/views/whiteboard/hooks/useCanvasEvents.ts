@@ -46,7 +46,7 @@ export function useCanvasEvents() {
         smoothing: 0.5,
         streamline: 0.5,
       }
-      store.freeDrawPoints2Path = computed(() => {
+      store.currentDrawingPath = computed(() => {
         return getSvgPathFromStroke(
           getStroke(freeDrawPoints.value, options),
         )

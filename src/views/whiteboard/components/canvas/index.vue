@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import type { StrokeOptions } from 'perfect-freehand'
-import { getStroke } from 'perfect-freehand'
 import { storeToRefs } from 'pinia'
-import { getSvgPathFromStroke } from '../../../utils'
 import { useKeyEvents } from '../../hooks/useKeyEvents'
 import { useZoomEvents } from '../../hooks/useZoomEvents'
 import { useResizeObserver } from '../../hooks/useResizeObserver'
@@ -35,7 +32,7 @@ useCanvasEvents()
       class="w-full h-full"
     >
       <g>
-        <path :d="store.freeDrawPoints2Path" />
+        <path :d="store.currentDrawingPath" />
       </g>
       <g v-for="element in elements" :key="element.id">
         <path :d="element.path" />
