@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { generateUuid } from '~/views/whiteboard/utils'
 
 enum Mode {
   Hand = 'Hand',
@@ -26,11 +25,6 @@ export interface SvgState {
   mode: ModeTypes // 当前绘制工具类型
   modeList: ModeTypes[] // 全部绘制工具类型
   elements: { id: string;type: ModeTypes; path: string }[] // 所有的数据集合，按要素类型分为几种
-  freeDrawPoints: (number[] | {
-    x: number
-    y: number
-    pressure?: number
-  })[] // 自由绘制的点的集合
   currentDrawingPath: string // 自由绘制的点生成的Path
   mouseFrom: { x: number; y: number; pressure?: number }
   mouseTo: { x: number; y: number; pressure?: number }
@@ -54,7 +48,6 @@ export const useSvgStore = defineStore({
       mode: 'FreeDraw',
       modeList: Object.keys(Mode) as ModeTypes[],
       elements: [],
-      freeDrawPoints: [],
       currentDrawingPath: '',
       mouseFrom: { x: 0, y: 0 },
       mouseTo: { x: 0, y: 0 },
@@ -93,12 +86,12 @@ export const useSvgStore = defineStore({
         this.finishDraw()
     },
     finishDraw() {
-      this.elements.push({
-        id: generateUuid(),
-        type: this.mode,
-        path: this.currentDrawingPath,
-      })
-      this.currentDrawingPath = ''
+      // this.elements.push({
+      //   id: generateUuid(),
+      //   type: this.mode,
+      //   path: this.currentDrawingPath,
+      // })
+      // this.currentDrawingPath = ''
     },
   },
 })

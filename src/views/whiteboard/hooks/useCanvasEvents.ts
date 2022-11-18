@@ -1,11 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import getStroke from 'perfect-freehand'
 import { storeToRefs } from 'pinia'
-import { getSvgPathFromStroke } from '../utils'
+import type { Ref } from 'vue'
+import { generateFreeDrawPath } from '../components/element/DrawUtil'
+import { generateUuid } from '../utils'
 import { useSvgStore } from '~/store/modules/svg'
+
+type freeHandPointsType = (number[] | {
+  x: number
+  y: number
+  pressure?: number
+})[]
 
 // 上一次的拖拽事件
 let draggedEvt: MouseEvent | TouchEvent | null = null
+// 自由绘制的点的集合
+const freeDrawPoints: Ref<freeHandPointsType> = ref([])
 /**
  * 监听画布上的事件 （ onPointerDown|onPointerMove|onPointerUp ）
  * 这里其实主要目的就是将画布上的坐标传给store中
@@ -14,9 +22,9 @@ let draggedEvt: MouseEvent | TouchEvent | null = null
  * onPointerUp -> 设置状态
  * @param store 这里的参数都是在 store 中
  */
-export function useCanvasEvents() {
+export function useCanvasEvents(currentDrawingElement: any) {
   const store = useSvgStore()
-  const { cfg, svgWrapperRef, viewPortZoom, freeDrawPoints, elements } = storeToRefs(store)
+  const { cfg, svgWrapperRef, viewPortZoom } = storeToRefs(store)
 
   function handlePointerDown(e: PointerEvent) {
     // 1. 设置拖拽状态
@@ -40,22 +48,19 @@ export function useCanvasEvents() {
       const pt = eventToLocation(e)
       freeDrawPoints.value = [...freeDrawPoints.value, [pt.x, pt.y, e.pressure]]
 
-      const options = {
-        size: 10,
-        thinning: 0.618,
-        smoothing: 0.5,
-        streamline: 0.5,
+      currentDrawingElement.value = {
+        id: generateUuid(),
+        type: 'FreeDraw',
+        path: generateFreeDrawPath(freeDrawPoints.value),
       }
-      store.currentDrawingPath = computed(() => {
-        return getSvgPathFromStroke(
-          getStroke(freeDrawPoints.value, options),
-        )
-      }).value
     }
   }
   function handlePointerUp() {
     // 将上次的拖拽事件置为初始状态
     draggedEvt = null
+    // 自由绘制的点的集合置为初始状态
+    freeDrawPoints.value = []
+    store.elements.push(currentDrawingElement.value)
 
     // 拖拽停止
     if (store.isCanvasStateChanging)
