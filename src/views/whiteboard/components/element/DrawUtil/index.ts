@@ -6,7 +6,7 @@ export interface pointType { x: number; y: number }
 export class Draw extends Base {
   // freehand 配置
   private _config_Draw: StrokeOptions = {
-    size: 4.25,
+    size: 10,
     thinning: 0.618,
     smoothing: 0.5,
     streamline: 0.5,

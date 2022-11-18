@@ -2,7 +2,7 @@
 import type { StrokeOptions } from 'perfect-freehand'
 import { getStroke } from 'perfect-freehand'
 import { storeToRefs } from 'pinia'
-import { getSvgPathFromStroke } from '../../../utils/index'
+import { getSvgPathFromStroke } from '../../../utils'
 import { useKeyEvents } from '../../hooks/useKeyEvents'
 import { useZoomEvents } from '../../hooks/useZoomEvents'
 import { useResizeObserver } from '../../hooks/useResizeObserver'
@@ -23,21 +23,7 @@ useZoomEvents(cfg, svgWrapperRef, viewPortZoom)
 // 监听窗口尺寸改变
 useResizeObserver(cfg, svgWrapperRef, viewPortZoom)
 // 监听画布触发事件（包括拖拽画布）
-useCanvasEvents(cfg, svgWrapperRef, viewPortZoom, freeDrawPoints, elements)
-
-// free-hand的配置
-const options: StrokeOptions = {
-  size: 10,
-  thinning: 0.618,
-  smoothing: 0.5,
-  streamline: 0.5,
-}
-// 自由绘制
-const pathData = ref('')
-watch(() => freeDrawPoints.value, () => {
-  const stroke = getStroke(freeDrawPoints.value, options)
-  pathData.value = getSvgPathFromStroke(stroke)
-})
+useCanvasEvents()
 </script>
 
 <template>
@@ -49,7 +35,7 @@ watch(() => freeDrawPoints.value, () => {
       class="w-full h-full"
     >
       <g>
-        <path :d="pathData" />
+        <path :d="store.freeDrawPoints2Path" />
       </g>
       <g v-for="element in elements" :key="element.id">
         <path :d="element.path" />

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { generateUuid } from '~/views/whiteboard/utils'
 
 enum Mode {
   Hand = 'Hand',
@@ -22,14 +23,19 @@ export interface SvgState {
   svgCanvasRef: null | HTMLCanvasElement
   cfg: cfgState
   viewPortZoom: number
-  elements: { id: string; path: string }[] // 所有的数据集合，按要素类型分为几种
+  mode: ModeTypes // 当前绘制工具类型
+  modeList: ModeTypes[] // 全部绘制工具类型
+  elements: { id: string;type: ModeTypes; path: string }[] // 所有的数据集合，按要素类型分为几种
   freeDrawPoints: (number[] | {
     x: number
     y: number
     pressure?: number
   })[] // 自由绘制的点的集合
+  freeDrawPoints2Path: string // 自由绘制的点生成的Path
+  mouseFrom: { x: number; y: number; pressure?: number }
+  mouseTo: { x: number; y: number; pressure?: number }
   isDrawing: boolean // 是否正在绘制
-  isCanvasStateChanging: false // 画布的状态是否正在改变 平移 | 缩放 |
+  isCanvasStateChanging: boolean // 画布的状态是否正在改变 平移 | 缩放 |
 }
 
 export const useSvgStore = defineStore({
@@ -45,8 +51,13 @@ export const useSvgStore = defineStore({
         viewPortHeight: 0,
       },
       viewPortZoom: 1,
+      mode: 'FreeDraw',
+      modeList: Object.keys(Mode) as ModeTypes[],
       elements: [],
       freeDrawPoints: [],
+      freeDrawPoints2Path: '',
+      mouseFrom: { x: 0, y: 0 },
+      mouseTo: { x: 0, y: 0 },
       isDrawing: false,
       isCanvasStateChanging: false,
     }
@@ -60,6 +71,34 @@ export const useSvgStore = defineStore({
     },
     getHeight() {
       return this.svgWrapperRef?.offsetHeight || 750
+    },
+    // 改变是否拖拽画布
+    changeCanvasState(flag: boolean) {
+      this.isCanvasStateChanging = flag
+      if (flag) {
+        // toggleSelection(false)
+        this.mode = 'Hand'
+        this.changeIsDrawing(false)
+      }
+      else {
+        this.mode = 'FreeDraw'
+        // toggleSelection(true)
+      }
+    },
+    // 改变是否正在绘制状态
+    changeIsDrawing(flag: boolean) {
+      this.isDrawing = flag
+      // 绘制结束
+      if (!flag)
+        this.finishDraw()
+    },
+    finishDraw() {
+      this.elements.push({
+        id: generateUuid(),
+        type: this.mode,
+        path: this.freeDrawPoints2Path,
+      })
+      this.freeDrawPoints2Path = ''
     },
   },
 })
