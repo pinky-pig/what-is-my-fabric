@@ -4,7 +4,7 @@ import { useKeyEvents } from '../../hooks/useKeyEvents'
 import { useZoomEvents } from '../../hooks/useZoomEvents'
 import { useResizeObserver } from '../../hooks/useResizeObserver'
 import { useCanvasEvents } from '../../hooks/useCanvasEvents'
-import type { ModeTypes } from '~/store/modules/svg'
+import type { CurrentElementType, ModeTypes } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 // 全局状态 pinia
 const store = useSvgStore()
@@ -20,11 +20,7 @@ useZoomEvents(cfg, svgWrapperRef, viewPortZoom)
 // 监听窗口尺寸改变
 useResizeObserver(cfg, svgWrapperRef, viewPortZoom)
 // 监听画布触发事件（包括拖拽画布）
-const currentDrawingElement = ref<{
-  id: string
-  type: ModeTypes
-  path: string
-}>()
+const currentDrawingElement = ref<CurrentElementType>()
 useCanvasEvents(currentDrawingElement)
 </script>
 
@@ -37,10 +33,20 @@ useCanvasEvents(currentDrawingElement)
       class="w-full h-full"
     >
       <g :id="currentDrawingElement?.id">
-        <path :d="currentDrawingElement?.path" />
+        <path
+          :d="currentDrawingElement?.path"
+          :stroke="currentDrawingElement?.style.stroke"
+          :fill="currentDrawingElement?.style.fill"
+          :strokeWidth="currentDrawingElement?.style.strokeWidth"
+        />
       </g>
       <g v-for="element in elements" :id="element?.id" :key="element.id">
-        <path :d="element.path" />
+        <path
+          :d="element.path"
+          :stroke="element?.style.stroke"
+          :fill="element?.style.fill"
+          :strokeWidth="element?.style.strokeWidth"
+        />
       </g>
     </svg>
   </div>

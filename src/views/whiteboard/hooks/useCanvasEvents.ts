@@ -2,6 +2,8 @@ import { storeToRefs } from 'pinia'
 import type { Ref } from 'vue'
 import { generateFreeDrawPath } from '../components/element/DrawUtil'
 import { generateUuid } from '../utils'
+import { useRenderElement } from './useRenderElement'
+import type { CurrentElementType } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 
 type freeHandPointsType = (number[] | {
@@ -22,7 +24,7 @@ const freeDrawPoints: Ref<freeHandPointsType> = ref([])
  * onPointerUp -> 设置状态
  * @param store 这里的参数都是在 store 中
  */
-export function useCanvasEvents(currentDrawingElement: any) {
+export function useCanvasEvents(currentDrawingElement: Ref<CurrentElementType | undefined>) {
   const store = useSvgStore()
   const { cfg, svgWrapperRef, viewPortZoom } = storeToRefs(store)
 
@@ -39,19 +41,32 @@ export function useCanvasEvents(currentDrawingElement: any) {
     }
   }
   function handlePointerMove(e: PointerEvent) {
+    const pt = eventToLocation(e)
+
     // 1. 拖拽移动画布
     if (e.ctrlKey && store.isCanvasStateChanging)
       dragCanvas(e)
 
     // 2. 自由绘制
     if (store.mode === 'FreeDraw' && e.buttons === 1) {
-      const pt = eventToLocation(e)
       freeDrawPoints.value = [...freeDrawPoints.value, [pt.x, pt.y, e.pressure]]
-
       currentDrawingElement.value = {
         id: generateUuid(),
         type: 'FreeDraw',
         path: generateFreeDrawPath(freeDrawPoints.value),
+        style: { fill: 'transparent', stroke: 'black', strokeWidth: 2 },
+      }
+    }
+
+    // 3.绘制图形
+    if (store.mode !== 'FreeDraw' && store.mode !== 'Hand' && e.buttons === 1) {
+      store.mouseTo = { x: pt.x, y: pt.y, pressure: e.pressure }
+      const element = useRenderElement(store.mouseFrom, store.mouseTo, store.mode)
+      currentDrawingElement.value = {
+        id: generateUuid(),
+        type: 'FreeDraw',
+        path: element.path,
+        style: element.style,
       }
     }
   }
@@ -60,7 +75,9 @@ export function useCanvasEvents(currentDrawingElement: any) {
     draggedEvt = null
     // 自由绘制的点的集合置为初始状态
     freeDrawPoints.value = []
-    store.elements.push(currentDrawingElement.value)
+    // 将当前的绘制对象添加给所有的要素中
+    if (currentDrawingElement.value)
+      store.elements.push(currentDrawingElement.value)
 
     // 拖拽停止
     if (store.isCanvasStateChanging)

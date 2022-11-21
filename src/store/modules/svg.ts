@@ -16,6 +16,17 @@ export interface cfgState {
   viewPortWidth: number
   viewPortHeight: number
 }
+interface ElementStyle {
+  stroke: string
+  fill: string
+  strokeWidth: number
+}
+export interface CurrentElementType {
+  id: string
+  type: ModeTypes
+  path: string
+  style: ElementStyle
+}
 
 export interface SvgState {
   svgWrapperRef: null | HTMLDivElement
@@ -24,7 +35,7 @@ export interface SvgState {
   viewPortZoom: number
   mode: ModeTypes // 当前绘制工具类型
   modeList: ModeTypes[] // 全部绘制工具类型
-  elements: { id: string;type: ModeTypes; path: string }[] // 所有的数据集合，按要素类型分为几种
+  elements: CurrentElementType[] // 所有的数据集合，按要素类型分为几种
   currentDrawingPath: string // 自由绘制的点生成的Path
   mouseFrom: { x: number; y: number; pressure?: number }
   mouseTo: { x: number; y: number; pressure?: number }

@@ -23,14 +23,17 @@ export class ArrowUtil {
 
   }
 
-  getSvgElement = (mouseFromPoint: number[], mouseToPoint: number[], isDarkMode: boolean): string | void => {
+  getSvgElement = (mouseFromPoint: number[], mouseToPoint: number[], isDarkMode: boolean) => {
     const element = getArrowDefaultPath(mouseFromPoint, mouseToPoint)
 
     const style = getShapeStyle({
       color: ColorStyle.Blue, size: SizeStyle.Small, isFilled: false, dash: DashStyle.Solid,
     }, isDarkMode)
     console.log(style)
-    return element
+    return {
+      path: element,
+      style,
+    }
   }
 
   renderElement() {
