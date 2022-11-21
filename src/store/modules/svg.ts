@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-enum Mode {
+enum IMode {
   Hand = 'Hand',
   FreeDraw = 'FreeDraw',
   Line = 'Line',
@@ -9,7 +9,7 @@ enum Mode {
   Arrow = 'Arrow',
   Text = 'Text',
 }
-export type ModeTypes = keyof typeof Mode
+export type ModeTypes = keyof typeof IMode
 export interface cfgState {
   viewPortX: number
   viewPortY: number
@@ -46,7 +46,7 @@ export const useSvgStore = defineStore({
       },
       viewPortZoom: 1,
       mode: 'FreeDraw',
-      modeList: Object.keys(Mode) as ModeTypes[],
+      modeList: Object.keys(IMode) as ModeTypes[],
       elements: [],
       currentDrawingPath: '',
       mouseFrom: { x: 0, y: 0 },
@@ -92,6 +92,13 @@ export const useSvgStore = defineStore({
       //   path: this.currentDrawingPath,
       // })
       // this.currentDrawingPath = ''
+    },
+
+    handleChangeMode(mode?: ModeTypes) {
+      if (mode === this.mode)
+        return
+      if (mode)
+        this.mode = mode
     },
   },
 })
