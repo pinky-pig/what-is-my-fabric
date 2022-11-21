@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import type { Options } from 'roughjs/bin/core'
 import rough from 'roughjs'
 import { getShapeStyle } from '../shared'
@@ -24,15 +23,12 @@ export class ArrowUtil {
   }
 
   getSvgElement = (mouseFromPoint: number[], mouseToPoint: number[], isDarkMode: boolean) => {
-    const element = getArrowDefaultPath(mouseFromPoint, mouseToPoint)
-
-    const style = getShapeStyle({
-      color: ColorStyle.Blue, size: SizeStyle.Small, isFilled: false, dash: DashStyle.Solid,
-    }, isDarkMode)
-    console.log(style)
     return {
-      path: element,
-      style,
+      path: getArrowDefaultPath(mouseFromPoint, mouseToPoint),
+      style: getShapeStyle(
+        { color: ColorStyle.Blue, size: SizeStyle.Small, isFilled: false, dash: DashStyle.Solid },
+        isDarkMode,
+      ),
     }
   }
 

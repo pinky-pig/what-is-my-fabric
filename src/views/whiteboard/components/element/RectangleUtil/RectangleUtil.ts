@@ -24,15 +24,11 @@ export class RectangleUtil {
   }
 
   getSvgElement = (mouseFromPoint: number[], mouseToPoint: number[], isDarkMode: boolean) => {
-    const element = getRectDefaultPath(mouseFromPoint, mouseToPoint)
-
-    const style = getShapeStyle({
-      color: ColorStyle.Blue, size: SizeStyle.Small, isFilled: false, dash: DashStyle.Solid,
-    }, isDarkMode)
-    console.log(style)
     return {
-      path: element,
-      style,
+      path: getRectDefaultPath(mouseFromPoint, mouseToPoint),
+      style: getShapeStyle({
+        color: ColorStyle.Blue, size: SizeStyle.Small, isFilled: false, dash: DashStyle.Solid,
+      }, isDarkMode),
     }
   }
 

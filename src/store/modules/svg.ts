@@ -20,6 +20,8 @@ interface ElementStyle {
   stroke: string
   fill: string
   strokeWidth: number
+  left?: number
+  top?: number
 }
 export interface CurrentElementType {
   id: string

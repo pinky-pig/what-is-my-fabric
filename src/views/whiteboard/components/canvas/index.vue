@@ -40,6 +40,7 @@ useCanvasEvents(currentDrawingElement)
           :strokeWidth="currentDrawingElement?.style.strokeWidth"
         />
       </g>
+
       <g v-for="element in elements" :id="element?.id" :key="element.id">
         <path
           :d="element.path"
@@ -48,6 +49,28 @@ useCanvasEvents(currentDrawingElement)
           :strokeWidth="element?.style.strokeWidth"
         />
       </g>
+
+      <foreignObject x="10" y="100" overflow="visible" width="100" height="100">
+        <p
+          contentEditable="true"
+          style="
+            display:table-cell;
+            padding:10px;
+            border:1px solid red;
+            background-color:white;
+            opacity:0.5;
+            font-family:Verdana;
+            font-size:20px;
+            white-space: pre;
+            word-wrap: normal;
+            overflow: visible;
+            overflow-y: visible;
+            overflow-x:visible;"
+        >
+          Write here some text.
+        </p>
+      </foreignObject>
+
     </svg>
   </div>
 </template>
