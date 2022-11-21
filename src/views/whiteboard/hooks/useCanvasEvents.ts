@@ -54,7 +54,7 @@ export function useCanvasEvents(currentDrawingElement: Ref<CurrentElementType | 
         id: generateUuid(),
         type: 'FreeDraw',
         path: generateFreeDrawPath(freeDrawPoints.value),
-        style: { fill: 'transparent', stroke: 'black', strokeWidth: 2 },
+        style: { fill: 'black', stroke: 'black', strokeWidth: 2 },
       }
     }
 
