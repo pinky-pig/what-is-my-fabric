@@ -4,7 +4,7 @@ enum IMode {
   Hand = 'Hand',
   FreeDraw = 'FreeDraw',
   Line = 'Line',
-  Rect = 'Rect',
+  Rectangle = 'Rectangle',
   Ellipse = 'Ellipse',
   Arrow = 'Arrow',
   Text = 'Text',

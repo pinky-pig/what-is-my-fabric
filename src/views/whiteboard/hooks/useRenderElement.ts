@@ -1,4 +1,4 @@
-import { Arrow } from '../components/element'
+import { Arrow, Rectangle } from '../components/element'
 import type { ModeTypes } from '~/store/modules/svg'
 export const useRenderElement = (
   mouseFromPoint: { x: number; y: number; pressure?: number },
@@ -10,6 +10,8 @@ export const useRenderElement = (
   switch (elementType) {
     case 'Arrow':
       return Arrow.getSvgElement(startPoint, endPoint, false)
+    case 'Rectangle':
+      return Rectangle.getSvgElement(startPoint, endPoint, false)
 
     default:
       break
