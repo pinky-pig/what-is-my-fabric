@@ -38,6 +38,9 @@ export function useCanvasEvents(currentDrawingElement: Ref<CurrentElementType | 
     // 2. 设置绘制状态
     if (store.mode !== 'Hand') {
       store.changeIsDrawing(true)
+      if (e.target)
+        (e.target as Element).setPointerCapture(e.pointerId)
+
       freeDrawPoints.value = [[pt.x, pt.y, e.pressure]]
     }
   }
@@ -77,8 +80,10 @@ export function useCanvasEvents(currentDrawingElement: Ref<CurrentElementType | 
     // 自由绘制的点的集合置为初始状态
     freeDrawPoints.value = []
     // 将当前的绘制对象添加给所有的要素中
-    if (currentDrawingElement.value)
+    if (currentDrawingElement.value) {
       store.elements.push(currentDrawingElement.value)
+      currentDrawingElement.value = undefined
+    }
 
     // 拖拽停止
     if (store.isCanvasStateChanging)

@@ -5,6 +5,7 @@ import { useZoomEvents } from '../../hooks/useZoomEvents'
 import { useResizeObserver } from '../../hooks/useResizeObserver'
 import { useCanvasEvents } from '../../hooks/useCanvasEvents'
 import { useContainerBox } from '../../hooks/useContainerBox'
+import { useBoundsBox } from '../../hooks/useBounds'
 import type { CurrentElementType, ModeTypes } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 // 全局状态 pinia
@@ -22,9 +23,11 @@ useZoomEvents(cfg, svgWrapperRef, viewPortZoom)
 useResizeObserver(cfg, svgWrapperRef, viewPortZoom)
 // 监听画布触发事件（包括拖拽画布）
 const currentDrawingElement = ref<CurrentElementType>()
-const containerBoxElement = ref<CurrentElementType>()
 useCanvasEvents(currentDrawingElement)
+// 框选的预选框
+const containerBoxElement = ref<CurrentElementType>()
 useContainerBox(containerBoxElement)
+useBoundsBox()
 </script>
 
 <template>
@@ -36,7 +39,7 @@ useContainerBox(containerBoxElement)
       class="w-full h-full"
     >
       <!-- 当前绘制的要素 -->
-      <g :id="currentDrawingElement?.id">
+      <g v-if="currentDrawingElement" :id="currentDrawingElement?.id">
         <path
           :d="currentDrawingElement?.path"
           :stroke="currentDrawingElement?.style.stroke"
