@@ -29,14 +29,15 @@ export function useCanvasEvents(currentDrawingElement: Ref<CurrentElementType | 
   const { cfg, svgWrapperRef, viewPortZoom } = storeToRefs(store)
 
   function handlePointerDown(e: PointerEvent) {
+    const pt = eventToLocation(e)
+    store.mouseFrom = { x: pt.x, y: pt.y, pressure: e.pressure }
+
     // 1. 设置拖拽状态
     if (e.buttons === 1 && e.ctrlKey)
       store.changeCanvasState(true)
     // 2. 设置绘制状态
     if (store.mode !== 'Hand') {
       store.changeIsDrawing(true)
-      const pt = eventToLocation(e)
-      store.mouseFrom = { x: pt.x, y: pt.y, pressure: e.pressure }
       freeDrawPoints.value = [[pt.x, pt.y, e.pressure]]
     }
   }
@@ -47,7 +48,7 @@ export function useCanvasEvents(currentDrawingElement: Ref<CurrentElementType | 
     if (e.ctrlKey && store.isCanvasStateChanging)
       dragCanvas(e)
 
-    // 2. 自由绘制
+    // 2. 自由画笔绘制
     if (store.mode === 'FreeDraw' && e.buttons === 1) {
       freeDrawPoints.value = [...freeDrawPoints.value, [pt.x, pt.y, e.pressure]]
       currentDrawingElement.value = {
@@ -58,13 +59,13 @@ export function useCanvasEvents(currentDrawingElement: Ref<CurrentElementType | 
       }
     }
 
-    // 3.绘制图形
+    // 3. 绘制 element 图形
     if (store.mode !== 'FreeDraw' && store.mode !== 'Hand' && e.buttons === 1) {
       store.mouseTo = { x: pt.x, y: pt.y, pressure: e.pressure }
       const element = useRenderElement(store.mouseFrom, store.mouseTo, store.mode)
       currentDrawingElement.value = {
         id: generateUuid(),
-        type: 'FreeDraw',
+        type: store.mode,
         path: element.path,
         style: element.style,
       }

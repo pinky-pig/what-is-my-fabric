@@ -4,6 +4,7 @@ import { useKeyEvents } from '../../hooks/useKeyEvents'
 import { useZoomEvents } from '../../hooks/useZoomEvents'
 import { useResizeObserver } from '../../hooks/useResizeObserver'
 import { useCanvasEvents } from '../../hooks/useCanvasEvents'
+import { useContainerBox } from '../../hooks/useContainerBox'
 import type { CurrentElementType, ModeTypes } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 // 全局状态 pinia
@@ -21,7 +22,9 @@ useZoomEvents(cfg, svgWrapperRef, viewPortZoom)
 useResizeObserver(cfg, svgWrapperRef, viewPortZoom)
 // 监听画布触发事件（包括拖拽画布）
 const currentDrawingElement = ref<CurrentElementType>()
+const containerBoxElement = ref<CurrentElementType>()
 useCanvasEvents(currentDrawingElement)
+useContainerBox(containerBoxElement)
 </script>
 
 <template>
@@ -32,6 +35,7 @@ useCanvasEvents(currentDrawingElement)
       :viewBox="`${cfg.viewPortX} ${cfg.viewPortY} ${cfg.viewPortWidth} ${cfg.viewPortHeight}`"
       class="w-full h-full"
     >
+      <!-- 当前绘制的要素 -->
       <g :id="currentDrawingElement?.id">
         <path
           :d="currentDrawingElement?.path"
@@ -40,7 +44,7 @@ useCanvasEvents(currentDrawingElement)
           :strokeWidth="currentDrawingElement?.style.strokeWidth"
         />
       </g>
-
+      <!-- 已经绘制的要素 -->
       <g v-for="element in elements" :id="element?.id" :key="element.id">
         <path
           :d="element.path"
@@ -49,7 +53,7 @@ useCanvasEvents(currentDrawingElement)
           :strokeWidth="element?.style.strokeWidth"
         />
       </g>
-
+      <!-- 当前的文字要素 -->
       <foreignObject x="10" y="100" overflow="visible" width="100" height="100">
         <p
           contentEditable="true"
@@ -70,6 +74,15 @@ useCanvasEvents(currentDrawingElement)
           Write here some text.
         </p>
       </foreignObject>
+      <!-- 框选预选框 -->
+      <g v-if="containerBoxElement" :id="containerBoxElement?.id">
+        <path
+          :d="containerBoxElement?.path"
+          :stroke="containerBoxElement?.style.stroke"
+          :fill="containerBoxElement?.style.fill"
+          :strokeWidth="containerBoxElement?.style.strokeWidth"
+        />
+      </g>
 
     </svg>
   </div>
