@@ -16,18 +16,22 @@ export interface cfgState {
   viewPortWidth: number
   viewPortHeight: number
 }
-interface ElementStyle {
+export interface ElementStyle {
+  left?: number
+  top?: number
   stroke: string
   fill: string
   strokeWidth: number
-  left?: number
-  top?: number
+  backgroundColor?: string
+  roughness?: string
+  opacity?: string
 }
 export interface CurrentElementType {
-  id: string
-  type: ModeTypes
-  path: string
-  style: ElementStyle
+  id: string // uuid
+  type: ModeTypes // 类型 圆、矩形、直线、、、
+  path: string // 路径
+  style: ElementStyle // 样式
+  isSelected: boolean // 是否选中
 }
 
 export interface SvgState {

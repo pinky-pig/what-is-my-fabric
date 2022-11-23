@@ -59,6 +59,7 @@ export function useCanvasEvents(currentDrawingElement: Ref<CurrentElementType | 
         type: 'FreeDraw',
         path: generateFreeDrawPath(freeDrawPoints.value),
         style: { fill: 'black', stroke: 'black', strokeWidth: 2 },
+        isSelected: false,
       }
     }
 
@@ -71,6 +72,7 @@ export function useCanvasEvents(currentDrawingElement: Ref<CurrentElementType | 
         type: store.mode,
         path: element.path,
         style: element.style,
+        isSelected: false,
       }
     }
   }
