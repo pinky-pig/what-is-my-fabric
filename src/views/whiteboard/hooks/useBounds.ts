@@ -1,6 +1,6 @@
 import { storeToRefs } from 'pinia'
 import { getClosestElementBounds } from '../utils/bounds'
-import type { ElementStyle } from '~/store/modules/svg'
+// import type { ElementStyle } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 
 export function rotate(
