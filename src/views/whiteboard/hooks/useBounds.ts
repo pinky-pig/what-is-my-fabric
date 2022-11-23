@@ -57,38 +57,38 @@ export function browserComputePathBoundingBox(path) {
 //   return element.height >= 0 ? element.y + element.height : element.y
 // }
 
-export function getDiamondPoints(element: ElementStyle) {
-  const topX = Math.floor(element.width / 2) + 1
-  const topY = 0
-  const rightX = element.width
-  const rightY = Math.floor(element.height / 2) + 1
-  const bottomX = topX
-  const bottomY = element.height
-  const leftX = topY
-  const leftY = rightY
+// export function getDiamondPoints(element: ElementStyle) {
+//   const topX = Math.floor(element.width / 2) + 1
+//   const topY = 0
+//   const rightX = element.width
+//   const rightY = Math.floor(element.height / 2) + 1
+//   const bottomX = topX
+//   const bottomY = element.height
+//   const leftX = topY
+//   const leftY = rightY
 
-  return [topX, topY, rightX, rightY, bottomX, bottomY, leftX, leftY]
-}
+//   return [topX, topY, rightX, rightY, bottomX, bottomY, leftX, leftY]
+// }
 
-export function getArrowPoints(element: ElementStyle) {
-  const x1 = 0
-  const y1 = 0
-  const x2 = element.width
-  const y2 = element.height
+// export function getArrowPoints(element: ElementStyle) {
+//   const x1 = 0
+//   const y1 = 0
+//   const x2 = element.width
+//   const y2 = element.height
 
-  const size = 30 // pixels
-  const distance = Math.hypot(x2 - x1, y2 - y1)
-  // Scale down the arrow until we hit a certain size so that it doesn't look weird
-  const minSize = Math.min(size, distance / 2)
-  const xs = x2 - ((x2 - x1) / distance) * minSize
-  const ys = y2 - ((y2 - y1) / distance) * minSize
+//   const size = 30 // pixels
+//   const distance = Math.hypot(x2 - x1, y2 - y1)
+//   // Scale down the arrow until we hit a certain size so that it doesn't look weird
+//   const minSize = Math.min(size, distance / 2)
+//   const xs = x2 - ((x2 - x1) / distance) * minSize
+//   const ys = y2 - ((y2 - y1) / distance) * minSize
 
-  const angle = 20 // degrees
-  const [x3, y3] = rotate(xs, ys, x2, y2, (-angle * Math.PI) / 180)
-  const [x4, y4] = rotate(xs, ys, x2, y2, (angle * Math.PI) / 180)
+//   const angle = 20 // degrees
+//   const [x3, y3] = rotate(xs, ys, x2, y2, (-angle * Math.PI) / 180)
+//   const [x4, y4] = rotate(xs, ys, x2, y2, (angle * Math.PI) / 180)
 
-  return [x1, y1, x2, y2, x3, y3, x4, y4]
-}
+//   return [x1, y1, x2, y2, x3, y3, x4, y4]
+// }
 
 /**
  * 1. 绘制框选预选框
