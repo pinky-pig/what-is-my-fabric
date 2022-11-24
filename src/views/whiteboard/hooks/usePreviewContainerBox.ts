@@ -6,7 +6,7 @@ import { ColorStyle, DashStyle, SizeStyle } from '../types'
 import type { CurrentElementType } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 
-export function useContainerBox(containerBoxElement: Ref<CurrentElementType | undefined>) {
+export function usePreviewContainerBox(containerBoxElement: Ref<CurrentElementType | undefined>) {
   const store = useSvgStore()
   const { cfg, svgWrapperRef, viewPortZoom } = storeToRefs(store)
 
@@ -25,6 +25,7 @@ export function useContainerBox(containerBoxElement: Ref<CurrentElementType | un
           ...style,
           fill: `${style.fill}60`,
         },
+        isSelected: false,
       }
     }
   }

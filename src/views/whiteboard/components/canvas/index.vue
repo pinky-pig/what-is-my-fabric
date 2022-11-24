@@ -4,8 +4,9 @@ import { useKeyEvents } from '../../hooks/useKeyEvents'
 import { useZoomEvents } from '../../hooks/useZoomEvents'
 import { useResizeObserver } from '../../hooks/useResizeObserver'
 import { useCanvasEvents } from '../../hooks/useCanvasEvents'
-import { useContainerBox } from '../../hooks/useContainerBox'
+import { usePreviewContainerBox } from '../../hooks/usePreviewContainerBox'
 import { useBoundsBox } from '../../hooks/useBounds'
+import Bounds from '../bounds/index.vue'
 import type { CurrentElementType, ModeTypes } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 // 全局状态 pinia
@@ -25,9 +26,9 @@ useResizeObserver(cfg, svgWrapperRef, viewPortZoom)
 const currentDrawingElement = ref<CurrentElementType>()
 useCanvasEvents(currentDrawingElement)
 // 框选的预选框
-const containerBoxElement = ref<CurrentElementType>()
-useContainerBox(containerBoxElement)
-useBoundsBox()
+const previewContainerBoxElement = ref<CurrentElementType>()
+usePreviewContainerBox(previewContainerBoxElement)
+// 实际的选框
 </script>
 
 <template>
@@ -78,15 +79,16 @@ useBoundsBox()
         </p>
       </foreignObject>
       <!-- 框选预选框 -->
-      <g v-if="containerBoxElement" :id="containerBoxElement?.id">
+      <g v-if="previewContainerBoxElement" :id="previewContainerBoxElement?.id">
         <path
-          :d="containerBoxElement?.path"
-          :stroke="containerBoxElement?.style.stroke"
-          :fill="containerBoxElement?.style.fill"
-          :strokeWidth="containerBoxElement?.style.strokeWidth"
+          :d="previewContainerBoxElement?.path"
+          :stroke="previewContainerBoxElement?.style.stroke"
+          :fill="previewContainerBoxElement?.style.fill"
+          :strokeWidth="previewContainerBoxElement?.style.strokeWidth"
         />
       </g>
-
+      <!-- 实际选择框 -->
+      <Bounds />
     </svg>
   </div>
 </template>
