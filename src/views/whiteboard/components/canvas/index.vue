@@ -29,6 +29,14 @@ useCanvasEvents(currentDrawingElement)
 const previewContainerBoxElement = ref<CurrentElementType>()
 usePreviewContainerBox(previewContainerBoxElement)
 // 实际的选框
+const bounds = ref({
+  x: 0,
+  y: 0,
+  width: 100,
+  height: 100,
+})
+
+useBoundsBox(bounds)
 </script>
 
 <template>
@@ -88,7 +96,7 @@ usePreviewContainerBox(previewContainerBoxElement)
         />
       </g>
       <!-- 实际选择框 -->
-      <Bounds />
+      <Bounds :bounds="bounds" />
     </svg>
   </div>
 </template>

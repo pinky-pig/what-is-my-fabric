@@ -1,7 +1,7 @@
 import { storeToRefs } from 'pinia'
 import type { Ref } from 'vue'
-import { Rectangle } from '../components/element'
-import { generateUuid } from '../utils'
+// import { Rectangle } from '../components/element'
+// import { generateUuid } from '../utils'
 import { browserComputePathBoundingBox } from '../utils/bounds'
 import type { CurrentElementType } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
@@ -16,12 +16,16 @@ import { useSvgStore } from '~/store/modules/svg'
  * 7. 只选择一个的时候，可以放大缩小旋转等。
  * 8. 选中多个的时候，只能移动位置
  */
-export function useBoundsBox(boundBoxElement: Ref<CurrentElementType | undefined>) {
+export interface BoundsType {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+export function useBoundsBox(bounds: Ref< BoundsType>) {
   const store = useSvgStore()
   const { svgWrapperRef, elements } = storeToRefs(store)
 
-  // eslint-disable-next-line no-console
-  console.log(boundBoxElement)
   function handlePointerDown() {
     elements.value.forEach((element: CurrentElementType) => {
       element.isSelected = true
@@ -29,13 +33,14 @@ export function useBoundsBox(boundBoxElement: Ref<CurrentElementType | undefined
     elements.value.forEach((element: CurrentElementType) => {
       if (element.isSelected) {
         const { x, y, width, height } = browserComputePathBoundingBox(element.path)
-        elements.value.push({
-          id: generateUuid(),
-          type: 'FreeDraw',
-          path: Rectangle.getSvgElement([x, y], [x + width, y + height], false).path,
-          style: { fill: 'none', stroke: 'black', strokeWidth: 2 },
-          isSelected: false,
-        })
+        bounds.value = { x, y, width, height }
+        // elements.value.push({
+        //   id: generateUuid(),
+        //   type: 'FreeDraw',
+        //   path: Rectangle.getSvgElement([x, y], [x + width, y + height], false).path,
+        //   style: { fill: 'none', stroke: 'black', strokeWidth: 2 },
+        //   isSelected: false,
+        // })
       }
     })
   }

@@ -14,12 +14,21 @@ const { size, isHidden, bounds, edge } = defineProps({
   isHidden: { default: false },
 })
 const { x, y, height, width } = bounds
-const coords = {
+const coords = ref({
   top_edge: [(x + width - size) / 2, y - (size / 2)],
   bottom_edge: [(x + width - size) / 2, y + height - (size / 2)],
   left_edge: [x - (size / 2), (y + height - size) / 2],
   right_edge: [x + width - size / 2, (y + height - size) / 2],
-}
+})
+watch(() => bounds, (nVal, oVal) => {
+  const { x, y, height, width } = nVal
+  coords.value = {
+    top_edge: [(x + width - size) / 2, y - (size / 2)],
+    bottom_edge: [(x + width - size) / 2, y + height - (size / 2)],
+    left_edge: [x - (size / 2), (y + height - size) / 2],
+    right_edge: [x + width - size / 2, (y + height - size) / 2],
+  }
+})
 </script>
 
 <template>

@@ -2,6 +2,8 @@
 const { bounds, isLocked, isHidden } = defineProps({
   bounds: {
     default: {
+      x: 0,
+      y: 0,
       width: 100,
       height: 100,
     },
@@ -14,8 +16,8 @@ const { bounds, isLocked, isHidden } = defineProps({
 <template>
   <rect
     :class="isLocked ? 'center-handle' : 'center-handle-dash'"
-    :x="0"
-    :y="0"
+    :x="bounds.x"
+    :y="bounds.y"
     :width="bounds.width + 2"
     :height="bounds.height + 2"
     :style="{ opacity: isHidden ? 0 : 1 }"
