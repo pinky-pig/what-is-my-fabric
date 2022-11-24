@@ -14,7 +14,7 @@ const store = useSvgStore()
 // 设置画布的Dom
 const { svgWrapperRef, svgCanvasRef } = storeToRefs(store)
 // 设置画布的尺寸，缩放比例，自由绘制的点的集合（当前正在绘制的要素），所有的已添加的要素
-const { cfg, viewPortZoom, elements } = storeToRefs(store)
+const { cfg, viewPortZoom, elements, selectedBounds } = storeToRefs(store)
 // 监听键盘按键
 useKeyEvents()
 
@@ -29,14 +29,7 @@ useCanvasEvents(currentDrawingElement)
 const previewContainerBoxElement = ref<CurrentElementType>()
 usePreviewContainerBox(previewContainerBoxElement)
 // 实际的选框
-const bounds = ref({
-  x: 0,
-  y: 0,
-  width: 100,
-  height: 100,
-})
-
-useBoundsBox(bounds)
+useBoundsBox()
 </script>
 
 <template>
@@ -96,7 +89,7 @@ useBoundsBox(bounds)
         />
       </g>
       <!-- 实际选择框 -->
-      <Bounds :bounds="bounds" />
+      <Bounds :bounds="selectedBounds" />
     </svg>
   </div>
 </template>

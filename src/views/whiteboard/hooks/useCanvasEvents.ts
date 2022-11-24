@@ -2,6 +2,7 @@ import { storeToRefs } from 'pinia'
 import type { Ref } from 'vue'
 import { generateFreeDrawPath } from '../components/element/DrawUtil'
 import { generateUuid } from '../utils'
+import { browserComputePathBoundingBox } from '../utils/bounds'
 import { useRenderElement } from './useRenderElement'
 import type { CurrentElementType } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
@@ -84,6 +85,7 @@ export function useCanvasEvents(currentDrawingElement: Ref<CurrentElementType | 
     // 将当前的绘制对象添加给所有的要素中
     if (currentDrawingElement.value) {
       store.elements.push(currentDrawingElement.value)
+      store.selectedBounds = browserComputePathBoundingBox(currentDrawingElement.value?.path)
       currentDrawingElement.value = undefined
     }
 

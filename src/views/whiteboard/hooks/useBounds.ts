@@ -1,8 +1,6 @@
 import { storeToRefs } from 'pinia'
-import type { Ref } from 'vue'
 // import { Rectangle } from '../components/element'
 // import { generateUuid } from '../utils'
-import { browserComputePathBoundingBox } from '../utils/bounds'
 import type { CurrentElementType } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 
@@ -16,13 +14,7 @@ import { useSvgStore } from '~/store/modules/svg'
  * 7. 只选择一个的时候，可以放大缩小旋转等。
  * 8. 选中多个的时候，只能移动位置
  */
-export interface BoundsType {
-  x: number
-  y: number
-  width: number
-  height: number
-}
-export function useBoundsBox(bounds: Ref< BoundsType>) {
+export function useBoundsBox() {
   const store = useSvgStore()
   const { svgWrapperRef, elements } = storeToRefs(store)
 
@@ -32,8 +24,8 @@ export function useBoundsBox(bounds: Ref< BoundsType>) {
     })
     elements.value.forEach((element: CurrentElementType) => {
       if (element.isSelected) {
-        const { x, y, width, height } = browserComputePathBoundingBox(element.path)
-        bounds.value = { x, y, width, height }
+        // const { x, y, width, height } = browserComputePathBoundingBox(element.path)
+        // bounds.value = { x, y, width, height }
         // elements.value.push({
         //   id: generateUuid(),
         //   type: 'FreeDraw',

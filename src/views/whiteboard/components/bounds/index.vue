@@ -20,14 +20,14 @@ const { bounds } = defineProps({
 <template>
   <g id="SVGBounds" class="tl-centered-g">
     <CenterHandle :bounds="bounds" />
-    <EdgeHandle :bounds="bounds" edge="top_edge" />
+    <!-- <EdgeHandle :bounds="bounds" edge="top_edge" />
     <EdgeHandle :bounds="bounds" edge="bottom_edge" />
     <EdgeHandle :bounds="bounds" edge="left_edge" />
     <EdgeHandle :bounds="bounds" edge="right_edge" />
     <CornerHandle :bounds="bounds" corner="top_left_corner" />
     <CornerHandle :bounds="bounds" corner="top_right_corner" />
     <CornerHandle :bounds="bounds" corner="bottom_right_corner" />
-    <CornerHandle :bounds="bounds" corner="bottom_left_corner" />
+    <CornerHandle :bounds="bounds" corner="bottom_left_corner" /> -->
   </g>
 </template>
 
