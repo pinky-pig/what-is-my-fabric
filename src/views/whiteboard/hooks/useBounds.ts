@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 // import { generateUuid } from '../utils'
 import type { Ref } from 'vue'
 import { browserComputePathBoundingBox } from '../utils/bounds'
+import { generateUuid } from '../utils'
 import { useSvgStore } from '~/store/modules/svg'
 
 /**
@@ -16,6 +17,7 @@ import { useSvgStore } from '~/store/modules/svg'
  * 8. 选中多个的时候，只能移动位置
  */
 export interface ElementBound {
+  id: string
   elementId: string
   bounds: {
     x: number
@@ -32,6 +34,7 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>) {
     elements.value.forEach((element) => {
       if (element.isSelected) {
         selectedBounds.value?.push({
+          id: generateUuid(),
           elementId: element.id,
           bounds: browserComputePathBoundingBox(element?.path),
         })
