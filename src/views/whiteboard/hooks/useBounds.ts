@@ -1,7 +1,8 @@
 import { storeToRefs } from 'pinia'
 // import { Rectangle } from '../components/element'
 // import { generateUuid } from '../utils'
-import type { CurrentElementType } from '~/store/modules/svg'
+import type { Ref } from 'vue'
+import { browserComputePathBoundingBox } from '../utils/bounds'
 import { useSvgStore } from '~/store/modules/svg'
 
 /**
@@ -14,27 +15,34 @@ import { useSvgStore } from '~/store/modules/svg'
  * 7. 只选择一个的时候，可以放大缩小旋转等。
  * 8. 选中多个的时候，只能移动位置
  */
-export function useBoundsBox() {
+export interface ElementBound {
+  elementId: string
+  bounds: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }
+}
+export function useBoundsBox(selectedBounds: Ref<ElementBound[]>) {
   const store = useSvgStore()
   const { svgWrapperRef, elements } = storeToRefs(store)
 
-  function handlePointerDown() {
-    elements.value.forEach((element: CurrentElementType) => {
-      element.isSelected = true
-    })
-    elements.value.forEach((element: CurrentElementType) => {
+  watch(() => elements, () => {
+    elements.value.forEach((element) => {
       if (element.isSelected) {
-        // const { x, y, width, height } = browserComputePathBoundingBox(element.path)
-        // bounds.value = { x, y, width, height }
-        // elements.value.push({
-        //   id: generateUuid(),
-        //   type: 'FreeDraw',
-        //   path: Rectangle.getSvgElement([x, y], [x + width, y + height], false).path,
-        //   style: { fill: 'none', stroke: 'black', strokeWidth: 2 },
-        //   isSelected: false,
-        // })
+        selectedBounds.value?.push({
+          elementId: element.id,
+          bounds: browserComputePathBoundingBox(element?.path),
+        })
       }
     })
+  }, {
+    deep: true,
+  })
+
+  function handlePointerDown() {
+
   }
   function handlePointerMove() {
   }

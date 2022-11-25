@@ -5,16 +5,18 @@ import { useZoomEvents } from '../../hooks/useZoomEvents'
 import { useResizeObserver } from '../../hooks/useResizeObserver'
 import { useCanvasEvents } from '../../hooks/useCanvasEvents'
 import { usePreviewContainerBox } from '../../hooks/usePreviewContainerBox'
+import type { ElementBound } from '../../hooks/useBounds'
 import { useBoundsBox } from '../../hooks/useBounds'
 import Bounds from '../bounds/index.vue'
-import type { CurrentElementType, ModeTypes } from '~/store/modules/svg'
+import { browserComputePathBoundingBox } from '../../utils/bounds'
+import type { CurrentElementType } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 // 全局状态 pinia
 const store = useSvgStore()
 // 设置画布的Dom
 const { svgWrapperRef, svgCanvasRef } = storeToRefs(store)
 // 设置画布的尺寸，缩放比例，自由绘制的点的集合（当前正在绘制的要素），所有的已添加的要素
-const { cfg, viewPortZoom, elements, selectedBounds } = storeToRefs(store)
+const { cfg, viewPortZoom, elements } = storeToRefs(store)
 // 监听键盘按键
 useKeyEvents()
 
@@ -29,7 +31,8 @@ useCanvasEvents(currentDrawingElement)
 const previewContainerBoxElement = ref<CurrentElementType>()
 usePreviewContainerBox(previewContainerBoxElement)
 // 实际的选框
-useBoundsBox()
+const selectedBounds = ref<ElementBound[]>([])
+useBoundsBox(selectedBounds)
 </script>
 
 <template>
@@ -89,7 +92,7 @@ useBoundsBox()
         />
       </g>
       <!-- 实际选择框 -->
-      <Bounds :bounds="selectedBounds" />
+      <Bounds v-for="item in selectedBounds" :key="item.elementId" :bounds="item.bounds" />
     </svg>
   </div>
 </template>

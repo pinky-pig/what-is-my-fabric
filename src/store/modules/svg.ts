@@ -33,12 +33,6 @@ export interface CurrentElementType {
   style: ElementStyle // 样式
   isSelected: boolean // 是否选中
 }
-export interface BoundsType {
-  x: number
-  y: number
-  width: number
-  height: number
-}
 
 export interface SvgState {
   svgWrapperRef: null | HTMLDivElement
@@ -53,7 +47,6 @@ export interface SvgState {
   mouseTo: { x: number; y: number; pressure?: number }
   isDrawing: boolean // 是否正在绘制
   isCanvasStateChanging: boolean // 画布的状态是否正在改变 平移 | 缩放 |
-  selectedBounds: BoundsType
 }
 
 export const useSvgStore = defineStore({
@@ -77,12 +70,6 @@ export const useSvgStore = defineStore({
       mouseTo: { x: 0, y: 0 },
       isDrawing: false,
       isCanvasStateChanging: false,
-      selectedBounds: {
-        x: 0,
-        y: 0,
-        width: 100,
-        height: 100,
-      },
     }
   },
   getters: {
