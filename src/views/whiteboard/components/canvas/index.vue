@@ -31,9 +31,7 @@ const previewContainerBoxElement = ref<CurrentElementType>()
 usePreviewContainerBox(previewContainerBoxElement)
 // 实际的选框
 const selectedBounds = ref<ElementBound[]>([])
-onMounted(() => {
-  useBoundsBox(selectedBounds)
-})
+useBoundsBox(selectedBounds)
 </script>
 
 <template>

@@ -47,10 +47,9 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>) {
   })
 
   function handlePointerDown(e: PointerEvent) {
+    // 这里点击，只能选择一个
     const pt = eventToLocation(e)
-
     const ele = getElementAtPosition(pt.x, pt.y)
-
     if (ele) {
       elements.value.forEach((element) => {
         if (element.id === ele.id)
@@ -61,11 +60,12 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>) {
     }
   }
   function handlePointerMove() {
+    // 这里框选，可以选择多个，，但是多个只是选择效果，其会生成一个更大的范围，用以操作
   }
   function handlePointerUp() {
   }
 
-  // 监听鼠标滚轮事件
+  // 监听鼠标事件
   watch(() => store.mode, (nVal) => {
     if (nVal === 'Hand') {
       if (svgWrapperRef.value) {
@@ -115,14 +115,14 @@ function hitTest(
 
   if (element.type === 'Ellipse') {
     // https://stackoverflow.com/a/46007540/232122
-    const px = Math.abs(x - element.x - element.width / 2)
-    const py = Math.abs(y - element.y - element.height / 2)
+    const px = Math.abs(x - element.bound.x - element.bound.width / 2)
+    const py = Math.abs(y - element.bound.y - element.bound.height / 2)
 
     let tx = 0.707
     let ty = 0.707
 
-    const a = element.width / 2
-    const b = element.height / 2;
+    const a = element.bound.width / 2
+    const b = element.bound.height / 2;
 
     [0, 1, 2, 3].forEach(() => {
       const xx = a * tx
