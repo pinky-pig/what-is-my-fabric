@@ -92,7 +92,7 @@ useBoundsBox(selectedBounds)
         />
       </g>
       <!-- 实际选择框 -->
-      <Bounds v-for="item in selectedBounds" :key="item.id" :bounds="item.bounds" />
+      <Bounds v-for="item in selectedBounds" :key="item.id" :element-bound="item" />
     </svg>
   </div>
 </template>

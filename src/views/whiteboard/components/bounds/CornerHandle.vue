@@ -38,6 +38,6 @@ const coords = {
 .corner-handle{
   fill: none;
   stroke: black;
-  stroke-width: 2px;
+  stroke-width: 1px;
 }
 </style>

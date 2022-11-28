@@ -15,19 +15,10 @@ const { size, isHidden, bounds, edge } = defineProps({
 })
 const { x, y, height, width } = bounds
 const coords = ref({
-  top_edge: [(x + width - size) / 2, y - (size / 2)],
-  bottom_edge: [(x + width - size) / 2, y + height - (size / 2)],
-  left_edge: [x - (size / 2), (y + height - size) / 2],
-  right_edge: [x + width - size / 2, (y + height - size) / 2],
-})
-watch(() => bounds, (nVal, oVal) => {
-  const { x, y, height, width } = nVal
-  coords.value = {
-    top_edge: [(x + width - size) / 2, y - (size / 2)],
-    bottom_edge: [(x + width - size) / 2, y + height - (size / 2)],
-    left_edge: [x - (size / 2), (y + height - size) / 2],
-    right_edge: [x + width - size / 2, (y + height - size) / 2],
-  }
+  top_edge: [x + (width - size) / 2, y - (size / 2)],
+  bottom_edge: [x + (width - size) / 2, y + height - (size / 2)],
+  left_edge: [x - (size / 2), y + (height - size) / 2],
+  right_edge: [x + width - size / 2, y + (height - size) / 2],
 })
 </script>
 
@@ -46,6 +37,6 @@ watch(() => bounds, (nVal, oVal) => {
 .edge-handle{
   fill: none;
   stroke: black;
-  stroke-width: 2px;
+  stroke-width: 1px;
 }
 </style>
