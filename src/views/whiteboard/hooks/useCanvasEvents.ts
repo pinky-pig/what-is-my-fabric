@@ -2,6 +2,7 @@ import { storeToRefs } from 'pinia'
 import type { Ref } from 'vue'
 import { generateFreeDrawPath } from '../components/element/DrawUtil'
 import { generateUuid } from '../utils'
+import { browserComputePathBoundingBox } from '../utils/bounds'
 import { useRenderElement } from './useRenderElement'
 import type { CurrentElementType } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
@@ -54,12 +55,14 @@ export function useCanvasEvents(currentDrawingElement: Ref<CurrentElementType | 
     // 2. 自由画笔绘制
     if (store.mode === 'FreeDraw' && e.buttons === 1) {
       freeDrawPoints.value = [...freeDrawPoints.value, [pt.x, pt.y, e.pressure]]
+      const path = generateFreeDrawPath(freeDrawPoints.value)
       currentDrawingElement.value = {
         id: generateUuid(),
         type: 'FreeDraw',
-        path: generateFreeDrawPath(freeDrawPoints.value),
+        path,
         style: { fill: 'black', stroke: 'black', strokeWidth: 2 },
         isSelected: false,
+        bound: browserComputePathBoundingBox(path),
       }
     }
 
@@ -72,7 +75,8 @@ export function useCanvasEvents(currentDrawingElement: Ref<CurrentElementType | 
         type: store.mode,
         path: element.path,
         style: element.style,
-        isSelected: true,
+        isSelected: false,
+        bound: browserComputePathBoundingBox(element.path),
       }
     }
   }

@@ -8,7 +8,6 @@ import { usePreviewContainerBox } from '../../hooks/usePreviewContainerBox'
 import type { ElementBound } from '../../hooks/useBounds'
 import { useBoundsBox } from '../../hooks/useBounds'
 import Bounds from '../bounds/index.vue'
-import { browserComputePathBoundingBox } from '../../utils/bounds'
 import type { CurrentElementType } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 // 全局状态 pinia
@@ -32,7 +31,9 @@ const previewContainerBoxElement = ref<CurrentElementType>()
 usePreviewContainerBox(previewContainerBoxElement)
 // 实际的选框
 const selectedBounds = ref<ElementBound[]>([])
-useBoundsBox(selectedBounds)
+onMounted(() => {
+  useBoundsBox(selectedBounds)
+})
 </script>
 
 <template>

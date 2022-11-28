@@ -32,6 +32,12 @@ export interface CurrentElementType {
   path: string // 路径
   style: ElementStyle // 样式
   isSelected: boolean // 是否选中
+  bound: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }
 }
 
 export interface SvgState {
