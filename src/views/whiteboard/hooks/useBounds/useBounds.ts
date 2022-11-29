@@ -31,6 +31,8 @@ export interface ElementBound {
     height: number
   }
 }
+let previousEvent: null | PointerEvent = null
+
 export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContainerBoxElement: Ref<CurrentElementType | undefined>) {
   const store = useSvgStore()
   const { cfg, svgWrapperRef, elements, viewPortZoom } = storeToRefs(store)
@@ -51,7 +53,11 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
   })
 
   function handlePointerDown(e: PointerEvent) {
-    // 这里点击，只能选择一个
+    // 1.如果有已经被选中的要素，设置鼠标为移动
+    if (someElementIsSelected())
+      return
+
+    // 2.点击选中，只能选择一个
     const pt = eventToLocation(e)
     const ele = getElementAtPosition(pt.x, pt.y)
     if (ele) {
@@ -66,8 +72,26 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
   function handlePointerMove(e: PointerEvent) {
     // 这里框选，可以选择多个，，但是多个只是选择效果，其会生成一个更大的范围，用以操作
     const pt = eventToLocation(e)
+    /** 1. 如果已经有选中的，那么这个时候就是移动 | 变形 要素 */
+    // 1.1 移动要素
+    const selectedElements = elements.value.filter(el => el.isSelected)
+    if (selectedElements.length > 0 && e.buttons === 1) {
+      let previousPt: null | { x: number; y: number } = null
+      if (previousEvent)
+        previousPt = eventToLocation(previousEvent)
 
-    /** 1.生成预选框 */
+      if (selectedElements.length) {
+        selectedElements.forEach((element) => {
+          if (previousPt)
+            // eslint-disable-next-line no-console
+            console.log(element)
+        })
+        previousEvent = e
+        return
+      }
+    }
+
+    /** 2.生成预选框 */
     if (store.mode === 'Hand' && e.buttons === 1) {
       store.mouseTo = { x: pt.x, y: pt.y, pressure: e.pressure }
       const style = getShapeStyle({
@@ -86,7 +110,7 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
         bound: browserComputePathBoundingBox(path),
       }
     }
-    /** 2.预选框的范围内如果有要素，设置其 isSelected 属性为 true */
+    /** 3.预选框的范围内如果有要素，设置其 isSelected 属性为 true */
     if (previewContainerBoxElement.value)
       setSelection(previewContainerBoxElement.value.bound)
   }
@@ -170,5 +194,9 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
       L ${mouseFromPoint[0]} ${mouseToPoint[1]}
       L ${mouseFromPoint[0]} ${mouseFromPoint[1]} z`
     return path
+  }
+
+  function someElementIsSelected() {
+    return elements.value.some(element => element.isSelected)
   }
 }

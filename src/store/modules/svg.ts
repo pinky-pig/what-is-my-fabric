@@ -38,7 +38,8 @@ export interface CurrentElementType {
   path: string // 路径
   style: ElementStyle // 样式
   isSelected: boolean // 是否选中
-  bound: BoundType
+  bound: BoundType // 要素所占的边界坐标
+  matrix?: string // 要素的变形
 }
 
 export interface SvgState {

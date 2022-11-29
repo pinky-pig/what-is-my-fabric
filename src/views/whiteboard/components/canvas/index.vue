@@ -50,7 +50,7 @@ useBoundsBox(selectedBounds, previewContainerBoxElement)
         />
       </g>
       <!-- 已经绘制的要素 -->
-      <g v-for="element in elements" :id="element?.id" :key="element.id">
+      <g v-for="element in elements" :id="element?.id" :key="element.id" :style="{ transform: element.matrix }">
         <path
           :d="element.path"
           :stroke="element?.style.stroke"
@@ -59,7 +59,7 @@ useBoundsBox(selectedBounds, previewContainerBoxElement)
         />
       </g>
       <!-- 当前的文字要素 -->
-      <foreignObject x="10" y="100" overflow="visible" width="100" height="100">
+      <!-- <foreignObject x="10" y="100" overflow="visible" width="100" height="100">
         <p
           contentEditable="true"
           style="
@@ -78,7 +78,7 @@ useBoundsBox(selectedBounds, previewContainerBoxElement)
         >
           Write here some text.
         </p>
-      </foreignObject>
+      </foreignObject> -->
       <!-- 框选预选框 -->
       <g v-if="previewContainerBoxElement" :id="previewContainerBoxElement?.id">
         <path
