@@ -1,5 +1,5 @@
 import { distanceBetweenPointAndSegment } from '../../utils/math'
-import type { CurrentElementType } from '~/store/modules/svg'
+import type { BoundType, CurrentElementType } from '~/store/modules/svg'
 
 export function hitTest(
   element: CurrentElementType,
@@ -63,16 +63,16 @@ export function hitTest(
   }
 }
 
-export function getElementAbsoluteX1(bound: any) {
+export function getElementAbsoluteX1(bound: BoundType) {
   return bound.width >= 0 ? bound.x : bound.x + bound.width
 }
-export function getElementAbsoluteX2(bound: any) {
+export function getElementAbsoluteX2(bound: BoundType) {
   return bound.width >= 0 ? bound.x + bound.width : bound.x
 }
-export function getElementAbsoluteY1(bound: any) {
+export function getElementAbsoluteY1(bound: BoundType) {
   return bound.height >= 0 ? bound.y : bound.y + bound.height
 }
-export function getElementAbsoluteY2(bound: any) {
+export function getElementAbsoluteY2(bound: BoundType) {
   return bound.height >= 0 ? bound.y + bound.height : bound.y
 }
 

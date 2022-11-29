@@ -65,9 +65,9 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
   }
   function handlePointerMove(e: PointerEvent) {
     // 这里框选，可以选择多个，，但是多个只是选择效果，其会生成一个更大的范围，用以操作
-    // setSelection()
-
     const pt = eventToLocation(e)
+
+    /** 1.生成预选框 */
     if (store.mode === 'Hand' && e.buttons === 1) {
       store.mouseTo = { x: pt.x, y: pt.y, pressure: e.pressure }
       const style = getShapeStyle({
@@ -86,6 +86,7 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
         bound: browserComputePathBoundingBox(path),
       }
     }
+    /** 2.预选框的范围内如果有要素，设置其 isSelected 属性为 true */
     if (previewContainerBoxElement.value)
       setSelection(previewContainerBoxElement.value.bound)
   }
@@ -110,8 +111,13 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
       }
     }
   })
-
-  function getElementAtPosition(x: number, y: number) {
+  /**
+   * 获取鼠标点击的位置的要素
+   * @param x x 坐标
+   * @param y y 坐标
+   * @returns 鼠标点击的位置的要素
+   */
+  function getElementAtPosition(x: number, y: number): CurrentElementType | null {
     let hitElement: CurrentElementType | null = null
     // We need to to hit testing from front (end of the array) to back (beginning of the array)
     for (let i = elements.value.length - 1; i >= 0; --i) {
@@ -120,19 +126,22 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
         break
       }
     }
-
     return hitElement
   }
+  /**
+   * 遍历所有的要素，如果其范围在预选框内，就设置其属性 isSelected 为true
+   * @param selection 预选框的bound
+   */
   function setSelection(selection: BoundType) {
     const selectionX1 = getElementAbsoluteX1(selection)
     const selectionX2 = getElementAbsoluteX2(selection)
     const selectionY1 = getElementAbsoluteY1(selection)
     const selectionY2 = getElementAbsoluteY2(selection)
-    elements.value.forEach((element) => {
-      const elementX1 = getElementAbsoluteX1(element)
-      const elementX2 = getElementAbsoluteX2(element)
-      const elementY1 = getElementAbsoluteY1(element)
-      const elementY2 = getElementAbsoluteY2(element)
+    elements.value.forEach((element: CurrentElementType) => {
+      const elementX1 = getElementAbsoluteX1(element.bound)
+      const elementX2 = getElementAbsoluteX2(element.bound)
+      const elementY1 = getElementAbsoluteY1(element.bound)
+      const elementY2 = getElementAbsoluteY2(element.bound)
       element.isSelected
         = element.type !== 'Hand'
         && selectionX1 <= elementX1
@@ -148,6 +157,12 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
     const y = cfg.value.viewPortY + (touch.clientY - top.value) * viewPortZoom.value
     return { x, y }
   }
+  /**
+   * 两点确定一个矩形，用于渲染预选框
+   * @param mouseFromPoint 起始点
+   * @param mouseToPoint 终止点
+   * @returns 矩形路径
+   */
   function getContainerBoxPath(mouseFromPoint: number[], mouseToPoint: number[]) {
     const path = `M ${mouseFromPoint[0]} ${mouseFromPoint[1]}
       L ${mouseToPoint[0]} ${mouseFromPoint[1]}
