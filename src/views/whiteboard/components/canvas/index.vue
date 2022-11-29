@@ -4,7 +4,6 @@ import { useKeyEvents } from '../../hooks/useKeyEvents'
 import { useZoomEvents } from '../../hooks/useZoomEvents'
 import { useResizeObserver } from '../../hooks/useResizeObserver'
 import { useCanvasEvents } from '../../hooks/useCanvasEvents'
-import { usePreviewContainerBox } from '../../hooks/usePreviewContainerBox'
 import type { ElementBound } from '../../hooks/useBounds'
 import { useBoundsBox } from '../../hooks/useBounds'
 import Bounds from '../bounds/index.vue'
@@ -28,10 +27,9 @@ const currentDrawingElement = ref<CurrentElementType>()
 useCanvasEvents(currentDrawingElement)
 // 框选的预选框
 const previewContainerBoxElement = ref<CurrentElementType>()
-usePreviewContainerBox(previewContainerBoxElement)
 // 实际的选框
 const selectedBounds = ref<ElementBound[]>([])
-useBoundsBox(selectedBounds)
+useBoundsBox(selectedBounds, previewContainerBoxElement)
 </script>
 
 <template>

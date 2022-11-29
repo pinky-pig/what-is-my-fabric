@@ -26,18 +26,19 @@ export interface ElementStyle {
   roughness?: string
   opacity?: string
 }
+export interface BoundType {
+  x: number
+  y: number
+  width: number
+  height: number
+}
 export interface CurrentElementType {
   id: string // uuid
   type: ModeTypes // 类型 圆、矩形、直线、、、
   path: string // 路径
   style: ElementStyle // 样式
   isSelected: boolean // 是否选中
-  bound: {
-    x: number
-    y: number
-    width: number
-    height: number
-  }
+  bound: BoundType
 }
 
 export interface SvgState {

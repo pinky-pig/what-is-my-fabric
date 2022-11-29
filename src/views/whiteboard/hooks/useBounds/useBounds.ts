@@ -4,8 +4,11 @@ import { storeToRefs } from 'pinia'
 import type { Ref } from 'vue'
 
 import { generateUuid } from '../../utils'
-import { hitTest } from './hitTest'
-import type { CurrentElementType } from '~/store/modules/svg'
+import { getShapeStyle } from '../../components/element/shared'
+import { ColorStyle, DashStyle, SizeStyle } from '../../types'
+import { browserComputePathBoundingBox } from '../../utils/bounds'
+import { getElementAbsoluteX1, getElementAbsoluteX2, getElementAbsoluteY1, getElementAbsoluteY2, hitTest } from './hitTest'
+import type { BoundType, CurrentElementType } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 
 /**
@@ -28,7 +31,7 @@ export interface ElementBound {
     height: number
   }
 }
-export function useBoundsBox(selectedBounds: Ref<ElementBound[]>) {
+export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContainerBoxElement: Ref<CurrentElementType | undefined>) {
   const store = useSvgStore()
   const { cfg, svgWrapperRef, elements, viewPortZoom } = storeToRefs(store)
 
@@ -60,10 +63,34 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>) {
       })
     }
   }
-  function handlePointerMove() {
+  function handlePointerMove(e: PointerEvent) {
     // 这里框选，可以选择多个，，但是多个只是选择效果，其会生成一个更大的范围，用以操作
+    // setSelection()
+
+    const pt = eventToLocation(e)
+    if (store.mode === 'Hand' && e.buttons === 1) {
+      store.mouseTo = { x: pt.x, y: pt.y, pressure: e.pressure }
+      const style = getShapeStyle({
+        color: ColorStyle.LightGray, size: SizeStyle.Small, isFilled: true, dash: DashStyle.Solid,
+      }, false)
+      const path = getContainerBoxPath([store.mouseFrom.x, store.mouseFrom.y], [store.mouseTo.x, store.mouseTo.y])
+      previewContainerBoxElement.value = {
+        id: generateUuid(),
+        type: 'Hand',
+        path,
+        style: {
+          ...style,
+          fill: `${style.fill}60`,
+        },
+        isSelected: false,
+        bound: browserComputePathBoundingBox(path),
+      }
+    }
+    if (previewContainerBoxElement.value)
+      setSelection(previewContainerBoxElement.value.bound)
   }
   function handlePointerUp() {
+    previewContainerBoxElement.value = undefined
   }
 
   // 监听鼠标事件
@@ -96,11 +123,37 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>) {
 
     return hitElement
   }
+  function setSelection(selection: BoundType) {
+    const selectionX1 = getElementAbsoluteX1(selection)
+    const selectionX2 = getElementAbsoluteX2(selection)
+    const selectionY1 = getElementAbsoluteY1(selection)
+    const selectionY2 = getElementAbsoluteY2(selection)
+    elements.value.forEach((element) => {
+      const elementX1 = getElementAbsoluteX1(element)
+      const elementX2 = getElementAbsoluteX2(element)
+      const elementY1 = getElementAbsoluteY1(element)
+      const elementY2 = getElementAbsoluteY2(element)
+      element.isSelected
+        = element.type !== 'Hand'
+        && selectionX1 <= elementX1
+        && selectionY1 <= elementY1
+        && selectionX2 >= elementX2
+        && selectionY2 >= elementY2
+    })
+  }
   function eventToLocation(event: MouseEvent | TouchEvent, idx = 0): { x: number; y: number } {
     const { top, left } = useElementBounding(svgWrapperRef)
     const touch = event instanceof MouseEvent ? event : event.touches[idx]
     const x = cfg.value.viewPortX + (touch.clientX - left.value) * viewPortZoom.value
     const y = cfg.value.viewPortY + (touch.clientY - top.value) * viewPortZoom.value
     return { x, y }
+  }
+  function getContainerBoxPath(mouseFromPoint: number[], mouseToPoint: number[]) {
+    const path = `M ${mouseFromPoint[0]} ${mouseFromPoint[1]}
+      L ${mouseToPoint[0]} ${mouseFromPoint[1]}
+      L ${mouseToPoint[0]} ${mouseToPoint[1]}
+      L ${mouseFromPoint[0]} ${mouseToPoint[1]}
+      L ${mouseFromPoint[0]} ${mouseFromPoint[1]} z`
+    return path
   }
 }

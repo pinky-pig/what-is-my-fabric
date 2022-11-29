@@ -75,3 +75,4 @@ export function getElementAbsoluteY1(bound: any) {
 export function getElementAbsoluteY2(bound: any) {
   return bound.height >= 0 ? bound.y + bound.height : bound.y
 }
+
