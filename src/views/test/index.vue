@@ -1,117 +1,53 @@
 <script setup lang="ts">
-const middle = ref(null)
-const end = ref(null)
-const pointStart = ref([50, 200])
-const pointEnd = ref([800, 200])
-const pointMiddle = ref([600, 100])
-const p = computed(() => {
-  return `
-    M ${pointStart.value[0]} ${pointStart.value[1]}
-    C ${pointStart.value[0]} ${pointStart.value[1]} ${pointMiddle.value[0] - 100} ${pointMiddle.value[1]} ${pointMiddle.value[0]} ${pointMiddle.value[1]}
-    S ${pointEnd.value[0]} ${pointEnd.value[1]} ${pointEnd.value[0]} ${pointEnd.value[1]}
-  `
+onMounted(() => {
+  const root = document.getElementsByTagName('svg')[0]
+  const ls = document.getElementsByTagName('line')
+  const cs = document.getElementsByTagName('circle')
+  document.addEventListener('click', showCs, false)
+  function showCs(e) {
+    const t = e.target
+    if (t.tagName !== 'line')
+      return
+    const ctm = t.getScreenCTM()
+    const rootCTM = root.getScreenCTM()
+    showCircle(cs[0], t.x1.baseVal.value, t.y1.baseVal.value, ctm, rootCTM)
+    // showCircle(cs[1], t.x2.baseVal.value, t.y2.baseVal.value, ctm, rootCTM)
+  }
+
+  function showCircle(c, x, y, ctm, rootCTM) {
+    const pt1 = root.createSVGPoint()
+    pt1.x = x
+    pt1.y = y
+    const pt2 = pt1.matrixTransform(rootCTM.inverse().multiply(ctm))
+    // const pt2 = pt1.matrixTransform(ctm).matrixTransform(rootCTM)
+    c.cx.baseVal.value = pt2.x
+    c.cy.baseVal.value = pt2.y
+  }
 })
-
-// 计算箭头两翼的
-const calArrowHeadCoords = (point: number[], h = 50) => {
-  // 设置角度为30度
-  const x = h * Math.sqrt(3)
-  return [
-    [point[0] + x, point[1] + h],
-    [point[0] + x, point[1] - h],
-  ]
-}
-
-// 计算S控制点与终点的角度
-const calAngleControlAndEnd = (start: any, end: any) => {
-  const distanceX = end[0] - start[0]
-  const distanceY = end[1] - start[1]
-  const baseAngle = Math.atan2(distanceY, distanceX)
-  return baseAngle
-}
-
-const arrowHeadPath = ref()
-watch(() => pointMiddle.value, () => {
-  const angle = calAngleControlAndEnd([pointEnd.value[0], pointEnd.value[1]], [pointMiddle.value[0] + 100, pointMiddle.value[1]])
-  const coords = calArrowHeadCoords(pointEnd.value)
-  const c = coords.map((item) => {
-    return calculateCoords(pointEnd.value, item, angle)
-  })
-  arrowHeadPath.value = `
-    M ${pointEnd.value[0]} ${pointEnd.value[1]}
-    L ${c[0][0]} ${c[0][1]}
-    M ${pointEnd.value[0]} ${pointEnd.value[1]}
-    L ${c[1][0]} ${c[1][1]}
-  `
-}, {
-  immediate: true,
-})
-
-function calculateCoords(start: number[], end: number[], angle) {
-  const x = start[0]
-  const y = start[1]
-  const x1 = end[0]
-  const y1 = end[1]
-
-  const sin = Math.sin(angle)
-  const cos = Math.cos(angle)
-
-  const x2 = x + (x1 - x) * cos - (y1 - y) * sin
-  const y2 = y + (y1 - y) * cos + (x1 - x) * sin
-  return [x2, y2]
-}
-
-const defaultArrowHeadPath = computed(() => {
-  const coords = calArrowHeadCoords(pointEnd.value)
-
-  return `
-  M ${pointEnd.value[0]} ${pointEnd.value[1]}
-  L ${coords[0][0]} ${coords[0][1]}
-  M ${pointEnd.value[0]} ${pointEnd.value[1]}
-  L ${coords[1][0]} ${coords[1][1]}
-  `
-})
-
-let isDragging = false
-const handleMove = (e) => {
-  if (isDragging)
-    pointMiddle.value = [e.pageX, e.pageY]
-}
-const handleDown = () => {
-  isDragging = true
-}
-const handleUp = () => {
-  isDragging = false
-}
 </script>
 
 <template>
-  <svg @mousemove="handleMove" @mouseup="handleUp">
-    <path :d="p" fill="transparent" stroke="purple" />
-    <path :d="arrowHeadPath" fill="transparent" stroke="purple" />
-    <path :d="defaultArrowHeadPath" fill="transparent" stroke="black" />
+  <svg width="100%" height="100%" viewBox="0 0 1000 1000" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <text x="100" y="100">点击线条</text>
 
-    <circle ref="start" :cx="pointStart[0]" :cy="pointStart[1]" r="10" stroke-width="0.2" fill="red" />
-    <circle ref="end" :cx="pointEnd[0]" :cy="pointEnd[1]" r="10" stroke-width="0.2" fill="red" />
-    <circle ref="control1" :cx="pointMiddle[0] - 100" :cy="pointMiddle[1] " r="10" stroke-width="0.2" fill="green" />
-    <circle ref="control1" :cx="pointMiddle[0] + 100" :cy="pointMiddle[1] " r="10" stroke-width="0.2" fill="blue" />
-    <circle ref="middle" :cx="pointMiddle[0]" :cy="pointMiddle[1]" r="20" stroke-width="0.2" fill="red" @mousedown="handleDown" />
+    <line id="l1" x1="200" y1="100" x2="600" y2="100" stroke="red" stroke-width="8" />
+    <line id="l2" x1="200" y1="100" x2="600" y2="100" stroke="orange" stroke-width="8" transform="rotate(30)" />
+    <line id="l3" x1="200" y1="100" x2="600" y2="100" stroke="yellow" stroke-width="8" transform="rotate(60)" />
+    <line id="l4" x1="200" y1="100" x2="600" y2="100" stroke="green" stroke-width="8" transform="rotate(90)" />
+    <line id="l5" x1="200" y1="100" x2="600" y2="100" stroke="blue" stroke-width="8" transform="rotate(120)" />
+    <line id="l6" x1="200" y1="100" x2="600" y2="100" stroke="purple" stroke-width="8" transform="rotate(150)" />
+
+    <g transform="translate(100,100)">
+      <line id="l7" x1="200" y1="100" x2="600" y2="100" stroke="purple" stroke-width="20" transform="rotate(30)" />
+    </g>
+
+    <circle id="c1" cx="123" cy="186" r="28" stroke="green" stroke-width="10" fill="none" />
+    <circle id="c2" cx="469.6" cy="386.6" r="28" stroke="green" stroke-width="10" fill="none" />
+
+    <path d="M 0 0 L 20 20 " stroke="gray" stroke-width="8" />
   </svg>
 </template>
 
-<style scoped>
-body {
-  background: #ddd;
-  display: flex;
-  justify-content: center;
-}
-svg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background-color: #ffffff;
-  touch-action: none;
-}
+<style lang="less" scoped>
+
 </style>

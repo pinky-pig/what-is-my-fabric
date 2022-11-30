@@ -31,8 +31,6 @@ export interface ElementBound {
     height: number
   }
 }
-let previousEvent: null | PointerEvent = null
-
 export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContainerBoxElement: Ref<CurrentElementType | undefined>) {
   const store = useSvgStore()
   const { cfg, svgWrapperRef, elements, viewPortZoom } = storeToRefs(store)
@@ -76,17 +74,10 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
     // 1.1 移动要素
     const selectedElements = elements.value.filter(el => el.isSelected)
     if (selectedElements.length > 0 && e.buttons === 1) {
-      let previousPt: null | { x: number; y: number } = null
-      if (previousEvent)
-        previousPt = eventToLocation(previousEvent)
-
       if (selectedElements.length) {
         selectedElements.forEach((element) => {
-          if (previousPt)
-            // eslint-disable-next-line no-console
-            console.log(element)
+          element.path = 'M 0 0 L 100 100'
         })
-        previousEvent = e
         return
       }
     }
