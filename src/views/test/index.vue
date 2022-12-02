@@ -1,4 +1,15 @@
-<script setup lang="ts">
+<script lang="ts" setup>
+/**
+ * 1. getScreenCTM
+ */
+const c1 = ref({
+  x: 123,
+  y: 186,
+})
+const c2 = ref({
+  x: 469.6,
+  y: 386.6,
+})
 onMounted(() => {
   const root = document.getElementsByTagName('svg')[0]
   const ls = document.getElementsByTagName('line')
@@ -10,8 +21,8 @@ onMounted(() => {
       return
     const ctm = t.getScreenCTM()
     const rootCTM = root.getScreenCTM()
-    showCircle(cs[0], t.x1.baseVal.value, t.y1.baseVal.value, ctm, rootCTM)
-    // showCircle(cs[1], t.x2.baseVal.value, t.y2.baseVal.value, ctm, rootCTM)
+    showCircle(c1, t.x1.baseVal.value, t.y1.baseVal.value, ctm, rootCTM)
+    showCircle(c2, t.x2.baseVal.value, t.y2.baseVal.value, ctm, rootCTM)
   }
 
   function showCircle(c, x, y, ctm, rootCTM) {
@@ -19,9 +30,8 @@ onMounted(() => {
     pt1.x = x
     pt1.y = y
     const pt2 = pt1.matrixTransform(rootCTM.inverse().multiply(ctm))
-    // const pt2 = pt1.matrixTransform(ctm).matrixTransform(rootCTM)
-    c.cx.baseVal.value = pt2.x
-    c.cy.baseVal.value = pt2.y
+    c.value.x = pt2.x
+    c.value.y = pt2.y
   }
 })
 </script>
@@ -41,8 +51,8 @@ onMounted(() => {
       <line id="l7" x1="200" y1="100" x2="600" y2="100" stroke="purple" stroke-width="20" transform="rotate(30)" />
     </g>
 
-    <circle id="c1" cx="123" cy="186" r="28" stroke="green" stroke-width="10" fill="none" />
-    <circle id="c2" cx="469.6" cy="386.6" r="28" stroke="green" stroke-width="10" fill="none" />
+    <circle id="c1" :cx="c1.x" :cy="c1.y" r="28" stroke="green" stroke-width="10" fill="none" />
+    <circle id="c2" :cx="c2.x" :cy="c2.y" r="28" stroke="green" stroke-width="10" fill="none" />
 
     <path d="M 0 0 L 20 20 " stroke="gray" stroke-width="8" />
   </svg>
