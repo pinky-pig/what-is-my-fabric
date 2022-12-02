@@ -1,4 +1,5 @@
 import { distanceBetweenPointAndSegment } from '../../utils/math'
+import { browserComputePathBoundingBox } from '../../utils/bounds'
 import type { BoundType, CurrentElementType } from '~/store/modules/svg'
 
 export function hitTest(
@@ -9,7 +10,6 @@ export function hitTest(
   // For shapes that are composed of lines, we only enable point-selection when the distance
   // of the click is less than x pixels of any of the lines that the shape is composed of
   const lineThreshold = 10
-
   if (element.type === 'Ellipse') {
     // https://stackoverflow.com/a/46007540/232122
     const px = Math.abs(x - element.bound.x - element.bound.width / 2)
@@ -61,6 +61,21 @@ export function hitTest(
       || distanceBetweenPointAndSegment(x, y, x1, y2, x1, y1) < lineThreshold // D
     )
   }
+  else if (element.type === 'FreeDraw') {
+    const x1 = getElementAbsoluteX1(element.bound)
+    const x2 = getElementAbsoluteX2(element.bound)
+    const y1 = getElementAbsoluteY1(element.bound)
+    const y2 = getElementAbsoluteY2(element.bound)
+    // (x1, y1) --A-- (x2, y1)
+    //    |D             |B
+    // (x1, y2) --C-- (x2, y2)
+    return (
+      distanceBetweenPointAndSegment(x, y, x1, y1, x2, y1) < lineThreshold // A
+      || distanceBetweenPointAndSegment(x, y, x2, y1, x2, y2) < lineThreshold // B
+      || distanceBetweenPointAndSegment(x, y, x2, y2, x1, y2) < lineThreshold // C
+      || distanceBetweenPointAndSegment(x, y, x1, y2, x1, y1) < lineThreshold // D
+    )
+  }
 }
 
 export function getElementAbsoluteX1(bound: BoundType) {
@@ -76,3 +91,34 @@ export function getElementAbsoluteY2(bound: BoundType) {
   return bound.height >= 0 ? bound.y + bound.height : bound.y
 }
 
+export function calculateAllObjectBounds(objects: CurrentElementType[]): BoundType {
+  if (objects.length > 0) {
+    let rect = browserComputePathBoundingBox(objects[0].path)
+
+    let minX = rect.x
+    let minY = rect.y
+    let maxX = rect.x + rect.width
+    let maxY = rect.y + rect.height
+    for (let i = 1; i < objects.length; i++) {
+      rect = browserComputePathBoundingBox(objects[i].path)
+      minX = Math.min(minX, rect.x)
+      minY = Math.min(minY, rect.y)
+      maxX = Math.max(maxX, rect.x + rect.width)
+      maxY = Math.max(maxY, rect.y + rect.height)
+    }
+    return {
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY,
+    }
+  }
+  else {
+    return {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+    }
+  }
+}

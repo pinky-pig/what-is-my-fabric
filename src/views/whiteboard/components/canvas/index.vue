@@ -27,9 +27,11 @@ const currentDrawingElement = ref<CurrentElementType>()
 useCanvasEvents(currentDrawingElement)
 // 框选的预选框
 const previewContainerBoxElement = ref<CurrentElementType>()
-// 实际的选框
+// 如要要素多个，生成一个大范围的
+const selectedAllBoxElement = ref<CurrentElementType>()
+// 实际的每个要素选框
 const selectedBounds = ref<ElementBound[]>([])
-useBoundsBox(selectedBounds, previewContainerBoxElement)
+useBoundsBox(selectedBounds, previewContainerBoxElement, selectedAllBoxElement)
 </script>
 
 <template>
@@ -86,6 +88,15 @@ useBoundsBox(selectedBounds, previewContainerBoxElement)
           :stroke="previewContainerBoxElement?.style.stroke"
           :fill="previewContainerBoxElement?.style.fill"
           :strokeWidth="previewContainerBoxElement?.style.strokeWidth"
+        />
+      </g>
+      <!-- 多选要素的框 -->
+      <g v-if="selectedAllBoxElement" :id="selectedAllBoxElement?.id">
+        <path
+          :d="selectedAllBoxElement?.path"
+          :stroke="selectedAllBoxElement?.style.stroke"
+          :fill="selectedAllBoxElement?.style.fill"
+          :strokeWidth="selectedAllBoxElement?.style.strokeWidth"
         />
       </g>
       <!-- 实际选择框 -->

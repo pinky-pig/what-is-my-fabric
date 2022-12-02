@@ -1,16 +1,4 @@
-import { storeToRefs } from 'pinia'
-// import { Rectangle } from '../components/element'
-// import { generateUuid } from '../utils'
-import type { Ref } from 'vue'
-
-import { generateUuid } from '../../utils'
-import { getShapeStyle } from '../../components/element/shared'
-import { ColorStyle, DashStyle, SizeStyle } from '../../types'
-import { browserComputePathBoundingBox } from '../../utils/bounds'
-import { getElementAbsoluteX1, getElementAbsoluteX2, getElementAbsoluteY1, getElementAbsoluteY2, hitTest } from './hitTest'
-import type { BoundType, CurrentElementType } from '~/store/modules/svg'
-import { useSvgStore } from '~/store/modules/svg'
-
+/* eslint-disable no-console */
 /**
  * 1. 绘制框选预选框
  * 2. 鼠标move的时候重绘预选框
@@ -21,6 +9,20 @@ import { useSvgStore } from '~/store/modules/svg'
  * 7. 只选择一个的时候，可以放大缩小旋转等。
  * 8. 选中多个的时候，只能移动位置
  */
+import { storeToRefs } from 'pinia'
+// import { Rectangle } from '../components/element'
+// import { generateUuid } from '../utils'
+import type { Ref } from 'vue'
+
+import { generateUuid } from '../../utils'
+import { getShapeStyle } from '../../components/element/shared'
+import { ColorStyle, DashStyle, SizeStyle } from '../../types'
+import { browserComputePathBoundingBox } from '../../utils/bounds'
+import { calculateAllObjectBounds, getElementAbsoluteX1, getElementAbsoluteX2, getElementAbsoluteY1, getElementAbsoluteY2, hitTest } from './hitTest'
+// import { getTranslateFromString } from './transform-parser'
+import type { BoundType, CurrentElementType } from '~/store/modules/svg'
+import { useSvgStore } from '~/store/modules/svg'
+
 export interface ElementBound {
   id: string
   elementId: string
@@ -31,11 +33,16 @@ export interface ElementBound {
     height: number
   }
 }
-export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContainerBoxElement: Ref<CurrentElementType | undefined>) {
+export function useBoundsBox(
+  selectedBounds: Ref<ElementBound[]>,
+  previewContainerBoxElement: Ref<CurrentElementType | undefined>,
+  selectedAllBoxElement: Ref<CurrentElementType | undefined>,
+) {
   const store = useSvgStore()
   const { cfg, svgWrapperRef, elements, viewPortZoom } = storeToRefs(store)
-
+  // let previousEvent: PointerEvent | null = null
   watch(() => elements, () => {
+    // 1. 监听要素选中，然后给要素添加一个选中框
     selectedBounds.value = []
     elements.value.forEach((element) => {
       if (element.isSelected) {
@@ -46,14 +53,35 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
         })
       }
     })
+    // 2. 如果选中了多个，那么就添加一个大选择框
+    const isSelectedElements = findElementIsSelected()
+    if (isSelectedElements.length > 1) {
+      const allElementBound = calculateAllObjectBounds(isSelectedElements)
+      const path = getContainerBoxPath([allElementBound.x, allElementBound.y], [allElementBound.x + allElementBound.width, allElementBound.y + allElementBound.height])
+      const style = getShapeStyle({
+        color: ColorStyle.Indigo, size: SizeStyle.Small, isFilled: true, dash: DashStyle.Solid,
+      }, false)
+      selectedAllBoxElement.value = {
+        id: generateUuid(),
+        type: 'Hand',
+        path,
+        style: {
+          ...style,
+          fill: `${style.fill}60`,
+        },
+        isSelected: false,
+        bound: allElementBound,
+      }
+    }
+    else {
+      selectedAllBoxElement.value = undefined
+    }
   }, {
     deep: true,
   })
 
   function handlePointerDown(e: PointerEvent) {
-    // 1.如果有已经被选中的要素，设置鼠标为移动
-    if (someElementIsSelected())
-      return
+    // previousEvent = e
 
     // 2.点击选中，只能选择一个
     const pt = eventToLocation(e)
@@ -66,21 +94,23 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
           element.isSelected = false
       })
     }
+    else {
+      elements.value.forEach((element) => {
+        element.isSelected = false
+      })
+    }
+
+    // 1.如果有已经被选中的要素，并且当前鼠标点击的位置是在其范围内，那么设置鼠标为移动
+
+    if (someElementIsSelected() && getIsInBoxAtPosition(selectedAllBoxElement.value?.bound, pt))
+      console.log('选中')
   }
   function handlePointerMove(e: PointerEvent) {
+    /// ------------------------------------------------------------------------------- ///
     // 这里框选，可以选择多个，，但是多个只是选择效果，其会生成一个更大的范围，用以操作
     const pt = eventToLocation(e)
-    /** 1. 如果已经有选中的，那么这个时候就是移动 | 变形 要素 */
-    // 1.1 移动要素
-    const selectedElements = elements.value.filter(el => el.isSelected)
-    if (selectedElements.length > 0 && e.buttons === 1) {
-      if (selectedElements.length) {
-        selectedElements.forEach((element) => {
-          element.path = 'M 0 0 L 100 100'
-        })
-        return
-      }
-    }
+
+    /// ------------------------------------------------------------------------------- ///
 
     /** 2.生成预选框 */
     if (store.mode === 'Hand' && e.buttons === 1) {
@@ -104,6 +134,41 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
     /** 3.预选框的范围内如果有要素，设置其 isSelected 属性为 true */
     if (previewContainerBoxElement.value)
       setSelection(previewContainerBoxElement.value.bound)
+
+    /** 1. 如果已经有选中的，那么这个时候就是移动 | 变形 要素 */
+    // 1.1 移动要素
+    // const selectedElements = elements.value.filter(el => el.isSelected)
+    // if (selectedElements.length > 0 && e.buttons === 1) {
+    //   debugger
+
+    //   // a. 当选中的有要素的时候，按住鼠标左键拖拽
+    //   // b. 如果是第一下拖拽，那么之前肯定没有matrix
+    //   // c. 如果正在拖拽过程中，会将变形数据保存到 element.matrix
+    //   // d. 为了保证拖拽的顺滑性，将PointerEvent保存给一个 previousEvent 变量
+    //   // e. 当拖拽停止的时候，element 重新生成路径， matrix 置空
+    //   if (selectedElements.length) {
+    //     selectedElements.forEach((element) => {
+    //       if (element.matrix) {
+    //         // 如果已经有变形，说明正在拖拽中
+    //         // 需要匹配出之前的偏移量，然后再加差值
+    //         const translate = getTranslateFromString(element.matrix)
+    //         // 上一次事件
+    //         const prePt = eventToLocation(previousEvent as PointerEvent)
+    //         // 这次事件
+    //         const nowPt = eventToLocation(e)
+    //         const disX = nowPt.x - prePt.x
+    //         const disY = nowPt.y - prePt.y
+    //         element.matrix = `translate(${nowPt.x} ,${nowPt.y})`
+    //         console.log(translate)
+    //       }
+    //       else {
+    //         // 之前还没有变形，说明才刚拖拽第一次
+    //         element.matrix = 'translate(0,0)'
+    //       }
+    //     })
+    //     previousEvent = e
+    //   }
+    // }
   }
   function handlePointerUp() {
     previewContainerBoxElement.value = undefined
@@ -144,6 +209,20 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
     return hitElement
   }
   /**
+   * 判断点位是否在这个边界内。 只需要判断当前点位大于最小的x|y，小于最大的x|y
+   * @param boxBounds 边界
+   * @param position 判断的点位
+   */
+  function getIsInBoxAtPosition(boxBounds: BoundType | undefined, position: { x: number; y: number }) {
+    if (!boxBounds)
+      return false
+    const { x, y } = position
+    if (x > boxBounds.x && y > boxBounds.y && x < (boxBounds.x + boxBounds.width) && y < (boxBounds.y + boxBounds.height))
+      return true
+    else
+      return false
+  }
+  /**
    * 遍历所有的要素，如果其范围在预选框内，就设置其属性 isSelected 为true
    * @param selection 预选框的bound
    */
@@ -165,9 +244,9 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
         && selectionY2 >= elementY2
     })
   }
-  function eventToLocation(event: MouseEvent | TouchEvent, idx = 0): { x: number; y: number } {
+  function eventToLocation(event: PointerEvent | TouchEvent, idx = 0): { x: number; y: number } {
     const { top, left } = useElementBounding(svgWrapperRef)
-    const touch = event instanceof MouseEvent ? event : event.touches[idx]
+    const touch = event instanceof PointerEvent ? event : event.touches[idx]
     const x = cfg.value.viewPortX + (touch.clientX - left.value) * viewPortZoom.value
     const y = cfg.value.viewPortY + (touch.clientY - top.value) * viewPortZoom.value
     return { x, y }
@@ -189,5 +268,8 @@ export function useBoundsBox(selectedBounds: Ref<ElementBound[]>, previewContain
 
   function someElementIsSelected() {
     return elements.value.some(element => element.isSelected)
+  }
+  function findElementIsSelected() {
+    return elements.value.filter(element => element.isSelected)
   }
 }
