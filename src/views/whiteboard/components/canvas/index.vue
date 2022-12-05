@@ -52,7 +52,7 @@ useBoundsBox(selectedBounds, previewContainerBoxElement, selectedAllBoxElement)
         />
       </g>
       <!-- 已经绘制的要素 -->
-      <g v-for="element in elements" :id="element?.id" :key="element.id" :style="{ transform: element.matrix }">
+      <g v-for="element in elements" :id="element?.id" :key="element.id" :transform="element.matrix">
         <path
           :d="element.path"
           :stroke="element?.style.stroke"
@@ -100,7 +100,11 @@ useBoundsBox(selectedBounds, previewContainerBoxElement, selectedAllBoxElement)
         />
       </g>
       <!-- 实际选择框 -->
-      <Bounds v-for="item in selectedBounds" :key="item.id" :element-bound="item" />
+      <template v-for="(item) in selectedBounds" :key="item.id">
+        <Bounds :element-bound="item" vif />
+      </template>
+    <!-- <Bounds v-for="item in selectedBounds" :key="item.id" :element-bound="item" /> -->
+
     </svg>
   </div>
 </template>

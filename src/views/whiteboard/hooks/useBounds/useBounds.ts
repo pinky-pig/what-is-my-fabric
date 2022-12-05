@@ -10,16 +10,12 @@
  * 8. 选中多个的时候，只能移动位置
  */
 import { storeToRefs } from 'pinia'
-// import { Rectangle } from '../components/element'
-// import { generateUuid } from '../utils'
 import type { Ref } from 'vue'
-
 import { generateUuid } from '../../utils'
 import { getShapeStyle } from '../../components/element/shared'
 import { ColorStyle, DashStyle, SizeStyle } from '../../types'
 import { browserComputePathBoundingBox } from '../../utils/bounds'
 import { calculateAllObjectBounds, getElementAbsoluteX1, getElementAbsoluteX2, getElementAbsoluteY1, getElementAbsoluteY2, hitTest } from './hitTest'
-// import { getTranslateFromString } from './transform-parser'
 import type { BoundType, CurrentElementType } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 
@@ -40,8 +36,13 @@ export function useBoundsBox(
 ) {
   const store = useSvgStore()
   const { cfg, svgWrapperRef, elements, viewPortZoom } = storeToRefs(store)
-  // let previousEvent: PointerEvent | null = null
+  let previousEvent: PointerEvent | null = null
+  const isDraggingElement = ref(false)
   watch(() => elements, () => {
+    // 如果是正在拖拽要素，下面的新增要素的方法就不走了
+    if (isDraggingElement.value)
+      return
+
     // 1. 监听要素选中，然后给要素添加一个选中框
     selectedBounds.value = []
     elements.value.forEach((element) => {
@@ -79,12 +80,35 @@ export function useBoundsBox(
   }, {
     deep: true,
   })
+  watch(isDraggingElement, (nVal) => {
+    if (nVal) {
+      selectedBounds.value = []
+      selectedAllBoxElement.value = undefined
+    }
+    else {
+      // 重新生成bound
+      // elements.value.forEach((element) => {
+      //   if (element.isSelected && !isDraggingElement.value) {
+      //     selectedBounds.value?.push({
+      //       id: generateUuid(),
+      //       elementId: element.id,
+      //       bounds: element.bound,
+      //     })
+      //   }
+      // })
+    }
+  })
 
   function handlePointerDown(e: PointerEvent) {
-    // previousEvent = e
+    const pt = eventToLocation(e)
+    // 1.如果有已经被选中的要素，并且当前鼠标点击的位置是在其范围内，那么设置鼠标为移动
+    if (someElementIsSelected() && getIsInBoxAtPosition(selectedAllBoxElement.value?.bound, pt)) {
+      previousEvent = e
+      isDraggingElement.value = true
+      return
+    }
 
     // 2.点击选中，只能选择一个
-    const pt = eventToLocation(e)
     const ele = getElementAtPosition(pt.x, pt.y)
     if (ele) {
       elements.value.forEach((element) => {
@@ -99,11 +123,6 @@ export function useBoundsBox(
         element.isSelected = false
       })
     }
-
-    // 1.如果有已经被选中的要素，并且当前鼠标点击的位置是在其范围内，那么设置鼠标为移动
-
-    if (someElementIsSelected() && getIsInBoxAtPosition(selectedAllBoxElement.value?.bound, pt))
-      console.log('选中')
   }
   function handlePointerMove(e: PointerEvent) {
     /// ------------------------------------------------------------------------------- ///
@@ -111,6 +130,31 @@ export function useBoundsBox(
     const pt = eventToLocation(e)
 
     /// ------------------------------------------------------------------------------- ///
+    /** 1. 选中的要素移动 */
+    if (isDraggingElement.value) {
+      const selectedElements = elements.value.filter(el => el.isSelected)
+      if (selectedElements.length > 0 && e.buttons === 1) {
+        selectedElements.forEach((element) => {
+          if (element.matrix) {
+            // 如果已经有变形，说明正在拖拽中
+            // 鼠标点击开始移动的第一个点
+            const prePt = eventToLocation(previousEvent as PointerEvent)
+            // 这次事件
+            const nowPt = eventToLocation(e)
+            // 每次重新赋值给 matrix
+            const disX = nowPt.x - prePt.x
+            const disY = nowPt.y - prePt.y
+            element.matrix = `translate(${disX} ,${disY})`
+          }
+          else {
+            // 之前还没有变形，说明才刚拖拽第一次
+            element.matrix = 'translate(0, 0)'
+          }
+        })
+      }
+      console.log('移动要素')
+      return
+    }
 
     /** 2.生成预选框 */
     if (store.mode === 'Hand' && e.buttons === 1) {
@@ -134,44 +178,12 @@ export function useBoundsBox(
     /** 3.预选框的范围内如果有要素，设置其 isSelected 属性为 true */
     if (previewContainerBoxElement.value)
       setSelection(previewContainerBoxElement.value.bound)
-
-    /** 1. 如果已经有选中的，那么这个时候就是移动 | 变形 要素 */
-    // 1.1 移动要素
-    // const selectedElements = elements.value.filter(el => el.isSelected)
-    // if (selectedElements.length > 0 && e.buttons === 1) {
-    //   debugger
-
-    //   // a. 当选中的有要素的时候，按住鼠标左键拖拽
-    //   // b. 如果是第一下拖拽，那么之前肯定没有matrix
-    //   // c. 如果正在拖拽过程中，会将变形数据保存到 element.matrix
-    //   // d. 为了保证拖拽的顺滑性，将PointerEvent保存给一个 previousEvent 变量
-    //   // e. 当拖拽停止的时候，element 重新生成路径， matrix 置空
-    //   if (selectedElements.length) {
-    //     selectedElements.forEach((element) => {
-    //       if (element.matrix) {
-    //         // 如果已经有变形，说明正在拖拽中
-    //         // 需要匹配出之前的偏移量，然后再加差值
-    //         const translate = getTranslateFromString(element.matrix)
-    //         // 上一次事件
-    //         const prePt = eventToLocation(previousEvent as PointerEvent)
-    //         // 这次事件
-    //         const nowPt = eventToLocation(e)
-    //         const disX = nowPt.x - prePt.x
-    //         const disY = nowPt.y - prePt.y
-    //         element.matrix = `translate(${nowPt.x} ,${nowPt.y})`
-    //         console.log(translate)
-    //       }
-    //       else {
-    //         // 之前还没有变形，说明才刚拖拽第一次
-    //         element.matrix = 'translate(0,0)'
-    //       }
-    //     })
-    //     previousEvent = e
-    //   }
-    // }
   }
   function handlePointerUp() {
+    // 拖拽框选的预选框
     previewContainerBoxElement.value = undefined
+    // 拖拽要素
+    isDraggingElement.value = false
   }
 
   // 监听鼠标事件
