@@ -102,7 +102,9 @@ export function useBoundsBox(
   function handlePointerDown(e: PointerEvent) {
     const pt = eventToLocation(e)
     // 1.如果有已经被选中的要素，并且当前鼠标点击的位置是在其范围内，那么设置鼠标为移动
-    if (someElementIsSelected() && getIsInBoxAtPosition(selectedAllBoxElement.value?.bound, pt)) {
+    const isSelectedElements = findElementIsSelected()
+    if (someElementIsSelected()
+        && getIsInBoxAtPosition(isSelectedElements.length > 1 ? selectedAllBoxElement.value?.bound : isSelectedElements[0].bound, pt)) {
       previousEvent = e
       isDraggingElement.value = true
       return
