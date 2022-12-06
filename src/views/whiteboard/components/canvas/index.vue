@@ -43,8 +43,9 @@ useBoundsBox(selectedBounds, previewContainerBoxElement, selectedAllBoxElement)
       class="w-full h-full"
     >
       <!-- 当前绘制的要素 -->
-      <g v-if="currentDrawingElement" :id="currentDrawingElement?.id">
+      <g v-if="currentDrawingElement">
         <path
+          :id="currentDrawingElement?.id"
           :d="currentDrawingElement?.path"
           :stroke="currentDrawingElement?.style.stroke"
           :fill="currentDrawingElement?.style.fill"
@@ -52,12 +53,14 @@ useBoundsBox(selectedBounds, previewContainerBoxElement, selectedAllBoxElement)
         />
       </g>
       <!-- 已经绘制的要素 -->
-      <g v-for="element in elements" :id="element?.id" :key="element.id" :transform="element.matrix">
+      <g v-for="element in elements" :key="element.id">
         <path
+          :id="element?.id"
           :d="element.path"
           :stroke="element?.style.stroke"
           :fill="element?.style.fill"
           :strokeWidth="element?.style.strokeWidth"
+          :transform="element.matrix"
         />
       </g>
       <!-- 当前的文字要素 -->
@@ -82,8 +85,9 @@ useBoundsBox(selectedBounds, previewContainerBoxElement, selectedAllBoxElement)
         </p>
       </foreignObject> -->
       <!-- 框选预选框 -->
-      <g v-if="previewContainerBoxElement" :id="previewContainerBoxElement?.id">
+      <g v-if="previewContainerBoxElement">
         <path
+          :id="previewContainerBoxElement?.id"
           :d="previewContainerBoxElement?.path"
           :stroke="previewContainerBoxElement?.style.stroke"
           :fill="previewContainerBoxElement?.style.fill"
@@ -91,8 +95,9 @@ useBoundsBox(selectedBounds, previewContainerBoxElement, selectedAllBoxElement)
         />
       </g>
       <!-- 多选要素的框 -->
-      <g v-if="selectedAllBoxElement" :id="selectedAllBoxElement?.id">
+      <g v-if="selectedAllBoxElement">
         <path
+          :id="selectedAllBoxElement?.id"
           :d="selectedAllBoxElement?.path"
           :stroke="selectedAllBoxElement?.style.stroke"
           :fill="selectedAllBoxElement?.style.fill"
@@ -101,9 +106,8 @@ useBoundsBox(selectedBounds, previewContainerBoxElement, selectedAllBoxElement)
       </g>
       <!-- 实际选择框 -->
       <template v-for="(item) in selectedBounds" :key="item.id">
-        <Bounds :element-bound="item" vif />
+        <Bounds :element-bound="item" />
       </template>
-    <!-- <Bounds v-for="item in selectedBounds" :key="item.id" :element-bound="item" /> -->
 
     </svg>
   </div>

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import type { Options } from 'roughjs/bin/core'
 import rough from 'roughjs'
 import { getShapeStyle } from '../shared'

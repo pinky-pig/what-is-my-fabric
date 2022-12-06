@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * 1. 绘制框选预选框
  * 2. 鼠标move的时候重绘预选框
@@ -16,6 +15,7 @@ import { getShapeStyle } from '../../components/element/shared'
 import { ColorStyle, DashStyle, SizeStyle } from '../../types'
 import { browserComputePathBoundingBox } from '../../utils/bounds'
 import { calculateAllObjectBounds, getElementAbsoluteX1, getElementAbsoluteX2, getElementAbsoluteY1, getElementAbsoluteY2, hitTest } from './hitTest'
+import { recalculateDimensions } from './transform-parser'
 import type { BoundType, CurrentElementType } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 
@@ -86,16 +86,19 @@ export function useBoundsBox(
       selectedAllBoxElement.value = undefined
     }
     else {
-      // 重新生成bound
-      // elements.value.forEach((element) => {
-      //   if (element.isSelected && !isDraggingElement.value) {
-      //     selectedBounds.value?.push({
-      //       id: generateUuid(),
-      //       elementId: element.id,
-      //       bounds: element.bound,
-      //     })
-      //   }
-      // })
+      const isSelectedElements = findElementIsSelected()
+      isSelectedElements.forEach((element) => {
+        // 获取选中移动的 svg 要素
+        const selected = document.getElementById(element.id) as unknown as SVGPathElement
+        if (selected instanceof SVGPathElement) {
+          const result = recalculateDimensions(selected)
+          if (result) {
+            element.path = result
+            element.bound = browserComputePathBoundingBox(result)
+            element.matrix = ''
+          }
+        }
+      })
     }
   })
 
@@ -154,7 +157,6 @@ export function useBoundsBox(
           }
         })
       }
-      console.log('移动要素')
       return
     }
 
