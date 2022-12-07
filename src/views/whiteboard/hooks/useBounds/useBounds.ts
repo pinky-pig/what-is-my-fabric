@@ -110,20 +110,23 @@ export function useBoundsBox(
     // 1.获取点击的是否是控制点
     const clickedElement = document.elementFromPoint(e.clientX, e.clientY) as SVGElement
     if (clickedElement) {
+      let clickedElementId = ''
       switch (true) {
         case clickedElement.className.baseVal.startsWith('corner-handle') :{
-          const id = clickedElement.id.replace('corner-handle-', '')
-          console.log(id)
+          clickedElementId = clickedElement.id.replace('corner-handle-', '')
           break
         }
         case clickedElement.className.baseVal.startsWith('edge-handle'):{
-          const id = clickedElement.id.replace('edge-handle-', '')
-          console.log(id)
+          clickedElementId = clickedElement.id.replace('edge-handle-', '')
           break
         }
 
         default:
           break
+      }
+      if (clickedElementId) {
+        isResizeElement.value = true
+        return
       }
     }
 
@@ -184,8 +187,10 @@ export function useBoundsBox(
     }
 
     /** 2. 选中的要素重新设置尺寸 */
-    if (isResizeElement.value)
+    if (isResizeElement.value) {
       console.log('缩放path')
+      return
+    }
 
     /** 2.生成预选框 */
     if (store.mode === 'Hand' && e.buttons === 1) {
@@ -215,6 +220,8 @@ export function useBoundsBox(
     previewContainerBoxElement.value = undefined
     // 拖拽要素
     isDraggingElement.value = false
+    // 设置要素尺寸大小
+    isResizeElement.value = false
   }
 
   // 监听鼠标事件
