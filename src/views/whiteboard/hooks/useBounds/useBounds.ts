@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * 1. 绘制框选预选框
  * 2. 鼠标move的时候重绘预选框
@@ -38,6 +39,7 @@ export function useBoundsBox(
   const { cfg, svgWrapperRef, elements, viewPortZoom } = storeToRefs(store)
   let previousEvent: PointerEvent | null = null
   const isDraggingElement = ref(false)
+  const isResizeElement = ref(false)
   watch(() => elements, () => {
     // 如果是正在拖拽要素，下面的新增要素的方法就不走了
     if (isDraggingElement.value)
@@ -104,7 +106,24 @@ export function useBoundsBox(
 
   function handlePointerDown(e: PointerEvent) {
     const pt = eventToLocation(e)
-    // 1.如果有已经被选中的要素，并且当前鼠标点击的位置是在其范围内，那么设置鼠标为移动
+
+    // 1.获取点击的是否是控制点
+    const clickedElement = document.elementFromPoint(e.clientX, e.clientY) as SVGElement
+    if (clickedElement) {
+      switch (clickedElement.className.baseVal) {
+        case 'corner-handle':
+          console.log('corner-handle')
+          break
+        case 'edge-handle':
+          console.log('edge-handle')
+          break
+
+        default:
+          break
+      }
+    }
+
+    // 2.如果有已经被选中的要素，并且当前鼠标点击的位置是在其范围内，那么设置鼠标为移动
     const isSelectedElements = findElementIsSelected()
     if (someElementIsSelected()
         && getIsInBoxAtPosition(isSelectedElements.length > 1 ? selectedAllBoxElement.value?.bound : isSelectedElements[0].bound, pt)) {
@@ -159,6 +178,10 @@ export function useBoundsBox(
       }
       return
     }
+
+    /** 2. 选中的要素重新设置尺寸 */
+    if (isResizeElement.value)
+      console.log('缩放path')
 
     /** 2.生成预选框 */
     if (store.mode === 'Hand' && e.buttons === 1) {

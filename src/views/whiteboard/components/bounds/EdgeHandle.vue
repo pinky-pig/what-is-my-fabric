@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ControlCursor } from '~/store/modules/svg'
 const { size, isHidden, bounds, edge } = defineProps({
   bounds: {
     default: {
@@ -20,23 +21,26 @@ const coords = ref({
   left_edge: [x - (size / 2), y + (height - size) / 2],
   right_edge: [x + width - size / 2, y + (height - size) / 2],
 })
+const cursorRef = ref(ControlCursor[edge])
 </script>
 
 <template>
   <rect
-    class="edge-handle"
+    id="edge-handle"
+    :class="`edge-handle-${edge}`"
     :style="{ opacity: isHidden ? 0 : 1 }"
     :x="coords[edge][0]"
     :y="coords[edge][1]"
     :width="size"
     :height="size"
+    fill="white"
+    stroke="black"
+    stroke-width="1px"
   />
 </template>
 
 <style lang="less" scoped>
-.edge-handle{
-  fill: none;
-  stroke: black;
-  stroke-width: 1px;
+#edge-handle{
+  cursor: v-bind(cursorRef);
 }
 </style>

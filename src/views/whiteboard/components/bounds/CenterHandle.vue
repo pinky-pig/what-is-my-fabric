@@ -22,13 +22,13 @@ const { bounds, isLocked, isHidden } = defineProps({
     :height="bounds.height"
     :style="{ opacity: isHidden ? 0 : 1 }"
     pointer-events="none"
+    fill="none"
     aria-label="center handle"
   />
 </template>
 
 <style lang="less" scoped>
 .rect{
-  fill: none;
   stroke: black;
   stroke-width: 1px;
 }

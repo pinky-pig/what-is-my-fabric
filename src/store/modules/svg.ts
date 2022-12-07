@@ -9,6 +9,18 @@ enum IMode {
   Arrow = 'Arrow',
   Text = 'Text',
 }
+
+export enum ControlCursor {
+  top_left_corner = 'nwse-resize',
+  top_right_corner = 'nesw-resize',
+  bottom_left_corner = 'nwse-resize',
+  bottom_right_corner = 'nesw-resize',
+  top_edge = 'ns-resize',
+  bottom_edge = 'ns-resize',
+  left_edge = 'ew-resize',
+  right_edge = 'ew-resize',
+}
+export type ControlCursorTypes = keyof typeof ControlCursor
 export type ModeTypes = keyof typeof IMode
 export interface cfgState {
   viewPortX: number
