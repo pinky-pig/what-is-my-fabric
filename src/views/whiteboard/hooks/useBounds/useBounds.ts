@@ -110,13 +110,17 @@ export function useBoundsBox(
     // 1.获取点击的是否是控制点
     const clickedElement = document.elementFromPoint(e.clientX, e.clientY) as SVGElement
     if (clickedElement) {
-      switch (clickedElement.className.baseVal) {
-        case 'corner-handle':
-          console.log('corner-handle')
+      switch (true) {
+        case clickedElement.className.baseVal.startsWith('corner-handle') :{
+          const id = clickedElement.id.replace('corner-handle-', '')
+          console.log(id)
           break
-        case 'edge-handle':
-          console.log('edge-handle')
+        }
+        case clickedElement.className.baseVal.startsWith('edge-handle'):{
+          const id = clickedElement.id.replace('edge-handle-', '')
+          console.log(id)
           break
+        }
 
         default:
           break
