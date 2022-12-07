@@ -24,14 +24,14 @@ const { elementBound } = defineProps({
 <template>
   <g :id="`SVGBound${elementBound.elementId}`" class="tl-centered-g">
     <CenterHandle :bounds="elementBound.bounds" />
-    <EdgeHandle :bounds="elementBound.bounds" edge="top_edge" />
-    <EdgeHandle :bounds="elementBound.bounds" edge="bottom_edge" />
-    <EdgeHandle :bounds="elementBound.bounds" edge="left_edge" />
-    <EdgeHandle :bounds="elementBound.bounds" edge="right_edge" />
-    <CornerHandle :bounds="elementBound.bounds" corner="top_left_corner" />
-    <CornerHandle :bounds="elementBound.bounds" corner="top_right_corner" />
-    <CornerHandle :bounds="elementBound.bounds" corner="bottom_right_corner" />
-    <CornerHandle :bounds="elementBound.bounds" corner="bottom_left_corner" />
+    <EdgeHandle :element-bound="elementBound" edge="top_edge" />
+    <EdgeHandle :element-bound="elementBound" edge="bottom_edge" />
+    <EdgeHandle :element-bound="elementBound" edge="left_edge" />
+    <EdgeHandle :element-bound="elementBound" edge="right_edge" />
+    <CornerHandle :element-bound="elementBound" corner="top_left_corner" />
+    <CornerHandle :element-bound="elementBound" corner="top_right_corner" />
+    <CornerHandle :element-bound="elementBound" corner="bottom_right_corner" />
+    <CornerHandle :element-bound="elementBound" corner="bottom_left_corner" />
   </g>
 </template>
 

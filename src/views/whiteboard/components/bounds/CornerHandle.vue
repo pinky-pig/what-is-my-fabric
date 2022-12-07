@@ -1,21 +1,24 @@
 <script setup lang="ts">
 import { ControlCursor } from '~/store/modules/svg'
 
-const { size, isHidden, bounds, corner } = defineProps({
-  bounds: {
+const { elementBound, size, corner } = defineProps({
+  elementBound: {
     default: {
-      x: 0,
-      y: 0,
-      width: 100,
-      height: 100,
+      id: '0',
+      elementId: '0',
+      bounds: {
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 100,
+      },
     },
   },
   size: { default: 10 },
-  corner: { default: 'top_left_corner' },
-  isLocked: { default: false },
   isHidden: { default: false },
+  corner: { default: 'top_left_corner' },
 })
-const { x, y, height, width } = bounds
+const { x, y, height, width } = elementBound.bounds
 
 const coords = {
   top_left_corner: [x - (size / 2), y - (size / 2)],
@@ -28,8 +31,8 @@ const cursorRef = ref(ControlCursor[corner])
 
 <template>
   <rect
-    id="corner-handle"
-    :class="`corner-handle-${corner}`"
+    :id="`corner-handle-${elementBound.elementId}`"
+    :class="`corner-handle-${corner} corner-handle`"
     :style="{ opacity: isHidden ? 0 : 1 }"
     :x="coords[corner][0]"
     :y="coords[corner][1]"
@@ -42,7 +45,7 @@ const cursorRef = ref(ControlCursor[corner])
 </template>
 
 <style lang="less" scoped>
-#corner-handle{
+.corner-handle{
   cursor: v-bind(cursorRef);
 }
 </style>

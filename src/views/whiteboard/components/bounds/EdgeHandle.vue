@@ -1,20 +1,24 @@
 <script setup lang="ts">
 import { ControlCursor } from '~/store/modules/svg'
-const { size, isHidden, bounds, edge } = defineProps({
-  bounds: {
+const { elementBound, size, edge } = defineProps({
+  elementBound: {
     default: {
-      x: 0,
-      y: 0,
-      width: 100,
-      height: 100,
+      id: '0',
+      elementId: '0',
+      bounds: {
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 100,
+      },
     },
   },
   size: { default: 10 },
-  edge: { default: 'top_edge' },
-  isLocked: { default: false },
   isHidden: { default: false },
+  edge: { default: 'top_edge' },
 })
-const { x, y, height, width } = bounds
+
+const { x, y, height, width } = elementBound.bounds
 const coords = ref({
   top_edge: [x + (width - size) / 2, y - (size / 2)],
   bottom_edge: [x + (width - size) / 2, y + height - (size / 2)],
@@ -26,8 +30,8 @@ const cursorRef = ref(ControlCursor[edge])
 
 <template>
   <rect
-    id="edge-handle"
-    :class="`edge-handle-${edge}`"
+    :id="`edge-handle-${elementBound.elementId}`"
+    :class="`edge-handle-${edge} edge-handle`"
     :style="{ opacity: isHidden ? 0 : 1 }"
     :x="coords[edge][0]"
     :y="coords[edge][1]"
@@ -40,7 +44,7 @@ const cursorRef = ref(ControlCursor[edge])
 </template>
 
 <style lang="less" scoped>
-#edge-handle{
+.edge-handle{
   cursor: v-bind(cursorRef);
 }
 </style>
