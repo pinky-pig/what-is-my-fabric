@@ -62,6 +62,7 @@ useBoundsBox(selectedBounds, previewContainerBoxElement, selectedAllBoxElement)
           :strokeWidth="element?.style.strokeWidth"
           :transform="element.matrix"
           :transform-origin="element.matrixOrigin"
+          style="vector-effect:non-scaling-stroke"
         />
       </g>
       <!-- 当前的文字要素 -->

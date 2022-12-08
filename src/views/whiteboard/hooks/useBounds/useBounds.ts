@@ -132,7 +132,7 @@ export function useBoundsBox(
           currentElement: findElementByElementId(clickedElement.id.replace('edge-handle-', '')),
         }
       }
-      if (isResizingElement.value) {
+      if (currentResizingElement.value) {
         previousEvent = e
         return
       }
@@ -195,24 +195,46 @@ export function useBoundsBox(
     }
 
     /** 2. 选中的要素重新设置尺寸 */
-    if (isResizingElement.value) {
+    if (currentResizingElement.value) {
       if (currentResizingElement.value && currentResizingElement.value.currentElement && e.buttons === 1) {
         if (currentResizingElement.value.currentElement.matrix) {
-          console.log(111)
-          // // 如果已经有变形，说明正在拖拽中
-          // // 鼠标点击开始移动的第一个点
-          // const prePt = eventToLocation(previousEvent as PointerEvent)
-          // // 这次事件
-          // const nowPt = eventToLocation(e)
-          // // 每次重新赋值给 matrix
-          // const disX = nowPt.x - prePt.x
-          // const disY = nowPt.y - prePt.y
-          // currentResizingElement.value.currentElement.matrix = 'scale(1, 1.2)'
+          // 鼠标点击开始移动的第一个点
+          const prePt = eventToLocation(previousEvent as PointerEvent)
+          // 这次事件
+          const nowPt = eventToLocation(e)
+
+          const { width, height } = currentResizingElement.value.currentElement.bound
+
+          const dx = (nowPt.x - prePt.x)
+          const dy = (nowPt.y - prePt.y)
+
+          let sx = 1
+          let sy = 1
+
+          // 因为svg第一象限在右下，第二象限在左下，第三象限在左上，第四象限在右上
+          // 这里拖拽四条边的时候,其origin分别左右,上下相反
+          // 鼠标的差，因为是通过比值去计算的，所以这里有一个方向的差值需要取相反数
+          if (currentResizingElement.value.resizingType === 'top_edge')
+            sy = height ? (height - dy) / height : 1
+
+          else if (currentResizingElement.value.resizingType === 'bottom_edge')
+            sy = height ? (height - (-dy)) / height : 1
+
+          else if (currentResizingElement.value.resizingType === 'left_edge')
+            sx = width ? (width - dx) / width : 1
+
+          else if (currentResizingElement.value.resizingType === 'right_edge')
+            sx = width ? (width - (-dx)) / width : 1
+
+          currentResizingElement.value.currentElement.matrix = `scale(${sx}, ${sy})`
         }
         else {
           // 之前还没有变形，说明才刚拖拽第一次
-          currentResizingElement.value.currentElement.matrix = 'scale(0, 0)'
-          currentResizingElement.value.currentElement.matrixOrigin = `${calculateTransformOrigin(currentResizingElement.value.resizingType, currentResizingElement.value.currentElement.bound)}`
+          currentResizingElement.value.currentElement.matrix = 'scale(1, 1)'
+
+          const origin = calculateTransformOrigin(currentResizingElement.value.resizingType, currentResizingElement.value.currentElement.bound)
+          console.log(origin)
+          currentResizingElement.value.currentElement.matrixOrigin = `${origin[0]}px ${origin[1]}px`
         }
       }
 
@@ -356,14 +378,13 @@ export function useBoundsBox(
     const { x, y, height, width } = bounds
     switch (orientation) {
       case 'top_edge':
-        return [x + (width - size) / 2, y + height - (size / 2)]
-        break
+        return [x + width / 2, y + height]
       case 'bottom_edge':
-        return [x + (width - size) / 2, y - (size / 2)]
+        return [x + width / 2, y]
       case 'left_edge':
-        return [x - (size / 2), y + (height - size) / 2]
+        return [x + width, y + height / 2]
       case 'right_edge':
-        return [x + width - size / 2, y + (height - size) / 2]
+        return [x, y + height / 2]
 
       default:
         return [0, 0]
