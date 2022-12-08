@@ -52,6 +52,7 @@ export interface CurrentElementType {
   isSelected: boolean // 是否选中
   bound: BoundType // 要素所占的边界坐标
   matrix?: string // 要素的变形
+  matrixOrigin?: string // 要素变形的原点
 }
 
 export interface SvgState {

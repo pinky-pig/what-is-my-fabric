@@ -17,7 +17,7 @@ import { ColorStyle, DashStyle, SizeStyle } from '../../types'
 import { browserComputePathBoundingBox } from '../../utils/bounds'
 import { calculateAllObjectBounds, getElementAbsoluteX1, getElementAbsoluteX2, getElementAbsoluteY1, getElementAbsoluteY2, hitTest } from './hitTest'
 import { recalculateDimensions } from './transform-parser'
-import type { BoundType, CurrentElementType } from '~/store/modules/svg'
+import type { BoundType, ControlCursorTypes, CurrentElementType } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 
 export interface ElementBound {
@@ -30,6 +30,7 @@ export interface ElementBound {
     height: number
   }
 }
+
 export function useBoundsBox(
   selectedBounds: Ref<ElementBound[]>,
   previewContainerBoxElement: Ref<CurrentElementType | undefined>,
@@ -39,7 +40,16 @@ export function useBoundsBox(
   const { cfg, svgWrapperRef, elements, viewPortZoom } = storeToRefs(store)
   let previousEvent: PointerEvent | null = null
   const isDraggingElement = ref(false)
-  const isResizeElement = ref(false)
+  const isResizingElement = ref(false)
+
+  interface ResizingType {
+    resizingType: ControlCursorTypes
+    currentElement: CurrentElementType | undefined
+  }
+  const currentResizingElement = ref<ResizingType | null>(null)
+  watch(currentResizingElement, (nVal) => {
+    isResizingElement.value = !!nVal
+  })
   watch(() => elements, () => {
     // 如果是正在拖拽要素，下面的新增要素的方法就不走了
     if (isDraggingElement.value)
@@ -110,22 +120,20 @@ export function useBoundsBox(
     // 1.获取点击的是否是控制点
     const clickedElement = document.elementFromPoint(e.clientX, e.clientY) as SVGElement
     if (clickedElement) {
-      let clickedElementId = ''
-      switch (true) {
-        case clickedElement.className.baseVal.startsWith('corner-handle') :{
-          clickedElementId = clickedElement.id.replace('corner-handle-', '')
-          break
+      if (clickedElement.className.baseVal.startsWith('corner-handle')) {
+        currentResizingElement.value = {
+          resizingType: clickedElement.className.baseVal.replace('corner-handle-', '').split(' ')[0],
+          currentElement: findElementByElementId(clickedElement.id.replace('corner-handle-', '')),
         }
-        case clickedElement.className.baseVal.startsWith('edge-handle'):{
-          clickedElementId = clickedElement.id.replace('edge-handle-', '')
-          break
-        }
-
-        default:
-          break
       }
-      if (clickedElementId) {
-        isResizeElement.value = true
+      else if (clickedElement.className.baseVal.startsWith('edge-handle')) {
+        currentResizingElement.value = {
+          resizingType: clickedElement.className.baseVal.replace('edge-handle-', '').split(' ')[0],
+          currentElement: findElementByElementId(clickedElement.id.replace('edge-handle-', '')),
+        }
+      }
+      if (isResizingElement.value) {
+        previousEvent = e
         return
       }
     }
@@ -187,8 +195,27 @@ export function useBoundsBox(
     }
 
     /** 2. 选中的要素重新设置尺寸 */
-    if (isResizeElement.value) {
-      console.log('缩放path')
+    if (isResizingElement.value) {
+      if (currentResizingElement.value && currentResizingElement.value.currentElement && e.buttons === 1) {
+        if (currentResizingElement.value.currentElement.matrix) {
+          console.log(111)
+          // // 如果已经有变形，说明正在拖拽中
+          // // 鼠标点击开始移动的第一个点
+          // const prePt = eventToLocation(previousEvent as PointerEvent)
+          // // 这次事件
+          // const nowPt = eventToLocation(e)
+          // // 每次重新赋值给 matrix
+          // const disX = nowPt.x - prePt.x
+          // const disY = nowPt.y - prePt.y
+          // currentResizingElement.value.currentElement.matrix = 'scale(1, 1.2)'
+        }
+        else {
+          // 之前还没有变形，说明才刚拖拽第一次
+          currentResizingElement.value.currentElement.matrix = 'scale(0, 0)'
+          currentResizingElement.value.currentElement.matrixOrigin = `${calculateTransformOrigin(currentResizingElement.value.resizingType, currentResizingElement.value.currentElement.bound)}`
+        }
+      }
+
       return
     }
 
@@ -220,8 +247,8 @@ export function useBoundsBox(
     previewContainerBoxElement.value = undefined
     // 拖拽要素
     isDraggingElement.value = false
-    // 设置要素尺寸大小
-    isResizeElement.value = false
+    // 设置要改变的要素
+    currentResizingElement.value = null
   }
 
   // 监听鼠标事件
@@ -321,5 +348,25 @@ export function useBoundsBox(
   }
   function findElementIsSelected() {
     return elements.value.filter(element => element.isSelected)
+  }
+  function findElementByElementId(elementId: string): CurrentElementType | undefined {
+    return elements.value.find(element => element.id === elementId)
+  }
+  function calculateTransformOrigin(orientation: ControlCursorTypes, bounds: BoundType) {
+    const { x, y, height, width } = bounds
+    switch (orientation) {
+      case 'top_edge':
+        return [x + (width - size) / 2, y + height - (size / 2)]
+        break
+      case 'bottom_edge':
+        return [x + (width - size) / 2, y - (size / 2)]
+      case 'left_edge':
+        return [x - (size / 2), y + (height - size) / 2]
+      case 'right_edge':
+        return [x + width - size / 2, y + (height - size) / 2]
+
+      default:
+        return [0, 0]
+    }
   }
 }
