@@ -47,8 +47,26 @@ export function useBoundsBox(
     currentElement: CurrentElementType | undefined
   }
   const currentResizingElement = ref<ResizingType | null>(null)
-  watch(currentResizingElement, (nVal) => {
-    isResizingElement.value = !!nVal
+  watch(isResizingElement, (nVal) => {
+    if (nVal) {
+      console.log('开始改变元素大小')
+    }
+    else {
+      console.log('结束改变元素大小，开始生成新的')
+      const isSelectedElements = findElementIsSelected()
+      isSelectedElements.forEach((element) => {
+        // 获取选中移动的 svg 要素
+        const selected = document.getElementById(element.id) as unknown as SVGPathElement
+        if (selected instanceof SVGPathElement) {
+          const result = recalculateDimensions(selected)
+          if (result) {
+            element.path = result
+            element.bound = browserComputePathBoundingBox(result)
+            element.matrix = ''
+          }
+        }
+      })
+    }
   })
   watch(() => elements, () => {
     // 如果是正在拖拽要素，下面的新增要素的方法就不走了
@@ -133,6 +151,7 @@ export function useBoundsBox(
         }
       }
       if (currentResizingElement.value) {
+        isResizingElement.value = true
         previousEvent = e
         return
       }
@@ -271,6 +290,7 @@ export function useBoundsBox(
     isDraggingElement.value = false
     // 设置要改变的要素
     currentResizingElement.value = null
+    isResizingElement.value = false
   }
 
   // 监听鼠标事件
