@@ -1,6 +1,11 @@
 import 'pathseg'
 import { remapPath } from './path-coords'
 
+export function getMatrixFromString(str: string): string[] | null {
+  const reg = /(^|\s)matrix\([^\)]*\)/g
+  return str.match(reg)
+}
+
 export function getTransformList(elem: any) {
   if (elem.transform)
     return elem.transform.baseVal
@@ -68,7 +73,13 @@ export function recalculateDimensions(selected: SVGPathElement) {
   const tlist = getTransformList(selected)
   const N = tlist.numberOfItems
   // 3.将transform转成矩阵
-  if ((N === 1 || (N > 1 && tlist.getItem(1).type !== 3)) && tlist.getItem(0).type === 2) {
+  if (N >= 3 && tlist.getItem(N - 2).type === 3 && tlist.getItem(N - 3).type === 2 && tlist.getItem(N - 1).type === 2) {
+    m = transformListToTransform(tlist, N - 3, N - 1).matrix
+    tlist.removeItem(N - 1)
+    tlist.removeItem(N - 2)
+    tlist.removeItem(N - 3)
+  }
+  else if ((N === 1 || (N > 1 && tlist.getItem(1).type !== 3)) && tlist.getItem(0).type === 2) {
     const oldXLate = tlist.getItem(0).matrix
     const meq = transformListToTransform(tlist, 1).matrix
     const meq_inv = meq.inverse()

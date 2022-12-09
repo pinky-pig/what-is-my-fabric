@@ -61,7 +61,6 @@ useBoundsBox(selectedBounds, previewContainerBoxElement, selectedAllBoxElement)
           :fill="element?.style.fill"
           :strokeWidth="element?.style.strokeWidth"
           :transform="element.matrix"
-          :transform-origin="element.matrixOrigin"
           vector-effect="non-scaling-stroke"
         />
       </g>

@@ -222,38 +222,49 @@ export function useBoundsBox(
           // 这次事件
           const nowPt = eventToLocation(e)
 
-          const { width, height } = currentResizingElement.value.currentElement.bound
+          const { x, y, width, height } = currentResizingElement.value.currentElement.bound
 
           const dx = (nowPt.x - prePt.x)
           const dy = (nowPt.y - prePt.y)
 
           let sx = 1
           let sy = 1
+          let tx = 0
+          let ty = 0
 
           // 因为svg第一象限在右下，第二象限在左下，第三象限在左上，第四象限在右上
           // 这里拖拽四条边的时候,其origin分别左右,上下相反
           // 鼠标的差，因为是通过比值去计算的，所以这里有一个方向的差值需要取相反数
-          if (currentResizingElement.value.resizingType === 'top_edge')
+          // tx 和 ty 是用来设置其 transfrom-origin 的位置的。
+          // 如果是上，就以下边为变换原点，所以 y + height
+          // 如果是左，以右边为变换原点，所以 x + width
+          // 如果是右，以左边为变换原点，所以 x
+          // 如果是下，以上边为变换原点，所以 y
+          if (currentResizingElement.value.resizingType === 'top_edge') {
             sy = height ? (height - dy) / height : 1
+            ty = height
+          }
 
-          else if (currentResizingElement.value.resizingType === 'bottom_edge')
+          else if (currentResizingElement.value.resizingType === 'bottom_edge') {
             sy = height ? (height - (-dy)) / height : 1
+            ty = 0
+          }
 
-          else if (currentResizingElement.value.resizingType === 'left_edge')
+          else if (currentResizingElement.value.resizingType === 'left_edge') {
             sx = width ? (width - dx) / width : 1
+            tx = width
+          }
 
-          else if (currentResizingElement.value.resizingType === 'right_edge')
+          else if (currentResizingElement.value.resizingType === 'right_edge') {
             sx = width ? (width - (-dx)) / width : 1
+            tx = 0
+          }
 
-          currentResizingElement.value.currentElement.matrix = `scale(${sx}, ${sy})`
+          currentResizingElement.value.currentElement.matrix = `translate(${x + tx} ${y + ty}) scale(${sx} ${sy}) translate(${-(x + tx)} ${-(y + ty)})`
         }
         else {
           // 之前还没有变形，说明才刚拖拽第一次
-          currentResizingElement.value.currentElement.matrix = 'scale(1, 1)'
-
-          const origin = calculateTransformOrigin(currentResizingElement.value.resizingType, currentResizingElement.value.currentElement.bound)
-          console.log(origin)
-          currentResizingElement.value.currentElement.matrixOrigin = `${origin[0]}px ${origin[1]}px`
+          currentResizingElement.value.currentElement.matrix = 'translate(0 0) scale(1 1) translate(0 0)'
         }
       }
 
@@ -394,20 +405,20 @@ export function useBoundsBox(
   function findElementByElementId(elementId: string): CurrentElementType | undefined {
     return elements.value.find(element => element.id === elementId)
   }
-  function calculateTransformOrigin(orientation: ControlCursorTypes, bounds: BoundType) {
-    const { x, y, height, width } = bounds
-    switch (orientation) {
-      case 'top_edge':
-        return [x + width / 2, y + height]
-      case 'bottom_edge':
-        return [x + width / 2, y]
-      case 'left_edge':
-        return [x + width, y + height / 2]
-      case 'right_edge':
-        return [x, y + height / 2]
+  // function calculateTransformOrigin(orientation: ControlCursorTypes, bounds: BoundType) {
+  //   const { x, y, height, width } = bounds
+  //   switch (orientation) {
+  //     case 'top_edge':
+  //       return [x + width / 2, y + height]
+  //     case 'bottom_edge':
+  //       return [x + width / 2, y]
+  //     case 'left_edge':
+  //       return [x + width, y + height / 2]
+  //     case 'right_edge':
+  //       return [x, y + height / 2]
 
-      default:
-        return [0, 0]
-    }
-  }
+  //     default:
+  //       return [0, 0]
+  //   }
+  // }
 }
