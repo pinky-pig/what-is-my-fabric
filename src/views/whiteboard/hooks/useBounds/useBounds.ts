@@ -263,6 +263,36 @@ export function useBoundsBox(
             sx = width ? (width - (-dx)) / width : 1
             tx = 0
           }
+          /* -------------------------------------------------- */
+          /*                     corner                         */
+          /* -------------------------------------------------- */
+          else if (currentResizingElement.value.resizingType === 'top_left_corner') {
+            sx = width ? (width - dx) / width : 1
+            sy = height ? (height - dy) / height : 1
+            tx = width
+            ty = height
+          }
+
+          else if (currentResizingElement.value.resizingType === 'top_right_corner') {
+            sx = width ? (width - (-dx)) / width : 1
+            sy = height ? (height - dy) / height : 1
+            tx = 0
+            ty = height
+          }
+
+          else if (currentResizingElement.value.resizingType === 'bottom_left_corner') {
+            sx = width ? (width - dx) / width : 1
+            sy = height ? (height - (-dy)) / height : 1
+            tx = width
+            ty = 0
+          }
+
+          else if (currentResizingElement.value.resizingType === 'bottom_right_corner') {
+            sx = width ? (width - (-dx)) / width : 1
+            sy = height ? (height - (-dy)) / height : 1
+            tx = 0
+            ty = 0
+          }
 
           currentResizingElement.value.currentElement.matrix = `translate(${x + tx} ${y + ty}) scale(${sx} ${sy}) translate(${-(x + tx)} ${-(y + ty)})`
         }

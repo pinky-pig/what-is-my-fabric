@@ -13,8 +13,8 @@ enum IMode {
 export enum ControlCursor {
   top_left_corner = 'nwse-resize',
   top_right_corner = 'nesw-resize',
-  bottom_left_corner = 'nwse-resize',
-  bottom_right_corner = 'nesw-resize',
+  bottom_left_corner = 'nesw-resize',
+  bottom_right_corner = 'nwse-resize',
   top_edge = 'ns-resize',
   bottom_edge = 'ns-resize',
   left_edge = 'ew-resize',

@@ -23,8 +23,8 @@ const { x, y, height, width } = elementBound.bounds
 const coords = {
   top_left_corner: [x - (size / 2), y - (size / 2)],
   top_right_corner: [x + width - (size / 2), y - (size / 2)],
-  bottom_right_corner: [x - (size / 2), y + height - (size / 2)],
-  bottom_left_corner: [x + width - (size / 2), y + height - (size / 2)],
+  bottom_right_corner: [x + width - (size / 2), y + height - (size / 2)],
+  bottom_left_corner: [x - (size / 2), y + height - (size / 2)],
 }
 const cursorRef = ref(ControlCursor[corner])
 </script>
