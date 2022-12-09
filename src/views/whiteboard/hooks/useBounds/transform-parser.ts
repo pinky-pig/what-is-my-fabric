@@ -72,13 +72,14 @@ export function recalculateDimensions(selected: SVGPathElement) {
   // 2.获取变形的数组
   const tlist = getTransformList(selected)
   const N = tlist.numberOfItems
-  // 3.将transform转成矩阵
+  // 3.将transform - scale 转成矩阵
   if (N >= 3 && tlist.getItem(N - 2).type === 3 && tlist.getItem(N - 3).type === 2 && tlist.getItem(N - 1).type === 2) {
     m = transformListToTransform(tlist, N - 3, N - 1).matrix
     tlist.removeItem(N - 1)
     tlist.removeItem(N - 2)
     tlist.removeItem(N - 3)
   }
+  // 3.将transform - translate 转成矩阵
   else if ((N === 1 || (N > 1 && tlist.getItem(1).type !== 3)) && tlist.getItem(0).type === 2) {
     const oldXLate = tlist.getItem(0).matrix
     const meq = transformListToTransform(tlist, 1).matrix

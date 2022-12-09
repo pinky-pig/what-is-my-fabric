@@ -49,7 +49,8 @@ export function useBoundsBox(
   const currentResizingElement = ref<ResizingType | null>(null)
   watch(isResizingElement, (nVal) => {
     if (nVal) {
-      console.log('开始改变元素大小')
+      console.log('开始选中改变要素尺寸大小')
+      selectedBounds.value = []
     }
     else {
       console.log('结束改变元素大小，开始生成新的')
@@ -71,6 +72,9 @@ export function useBoundsBox(
   watch(() => elements, () => {
     // 如果是正在拖拽要素，下面的新增要素的方法就不走了
     if (isDraggingElement.value)
+      return
+    // 如果是正在改变要素尺寸大小，下面的新增要素
+    if (isResizingElement.value)
       return
 
     // 1. 监听要素选中，然后给要素添加一个选中框
@@ -405,20 +409,4 @@ export function useBoundsBox(
   function findElementByElementId(elementId: string): CurrentElementType | undefined {
     return elements.value.find(element => element.id === elementId)
   }
-  // function calculateTransformOrigin(orientation: ControlCursorTypes, bounds: BoundType) {
-  //   const { x, y, height, width } = bounds
-  //   switch (orientation) {
-  //     case 'top_edge':
-  //       return [x + width / 2, y + height]
-  //     case 'bottom_edge':
-  //       return [x + width / 2, y]
-  //     case 'left_edge':
-  //       return [x + width, y + height / 2]
-  //     case 'right_edge':
-  //       return [x, y + height / 2]
-
-  //     default:
-  //       return [0, 0]
-  //   }
-  // }
 }
