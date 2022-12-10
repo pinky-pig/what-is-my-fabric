@@ -22,7 +22,7 @@ const { elementBound } = defineProps({
 </script>
 
 <template>
-  <g :id="`SVGBound${elementBound.elementId}`" class="tl-centered-g">
+  <g :id="`transfrom_selection_box-${elementBound.elementId}`" class="transfrom_selection_box">
     <RotateHandle :element-bound="elementBound" center="top_center_rotate" />
     <EdgeHandle :element-bound="elementBound" edge="top_edge" />
     <EdgeHandle :element-bound="elementBound" edge="bottom_edge" />

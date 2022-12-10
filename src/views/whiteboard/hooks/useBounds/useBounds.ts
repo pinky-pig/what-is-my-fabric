@@ -49,11 +49,9 @@ export function useBoundsBox(
   const currentResizingElement = ref<ResizingType | null>(null)
   watch(isResizingElement, (nVal) => {
     if (nVal) {
-      console.log('开始选中改变要素尺寸大小')
       selectedBounds.value = []
     }
     else {
-      console.log('结束改变元素大小，开始生成新的')
       const isSelectedElements = findElementIsSelected()
       isSelectedElements.forEach((element) => {
         // 获取选中移动的 svg 要素
@@ -154,6 +152,12 @@ export function useBoundsBox(
           currentElement: findElementByElementId(clickedElement.id.replace('edge-handle-', '')),
         }
       }
+      else if (clickedElement.className.baseVal.startsWith('rotate-handle')) {
+        currentResizingElement.value = {
+          resizingType: clickedElement.className.baseVal.replace('rotate-handle-', '').split(' ')[0],
+          currentElement: findElementByElementId(clickedElement.id.replace('rotate-handle-', '')),
+        }
+      }
       if (currentResizingElement.value) {
         isResizingElement.value = true
         previousEvent = e
@@ -219,7 +223,13 @@ export function useBoundsBox(
 
     /** 2. 选中的要素重新设置尺寸 */
     if (currentResizingElement.value) {
-      if (currentResizingElement.value && currentResizingElement.value.currentElement && e.buttons === 1) {
+      // a. 拖拽缩放
+      if (
+        currentResizingElement.value
+        && e.buttons === 1
+        && currentResizingElement.value.currentElement
+        && (currentResizingElement.value.resizingType.includes('edge') || currentResizingElement.value.resizingType.includes('corner'))
+      ) {
         if (currentResizingElement.value.currentElement.matrix) {
           // 鼠标点击开始移动的第一个点
           const prePt = eventToLocation(previousEvent as PointerEvent)
@@ -299,6 +309,33 @@ export function useBoundsBox(
         else {
           // 之前还没有变形，说明才刚拖拽第一次
           currentResizingElement.value.currentElement.matrix = 'translate(0 0) scale(1 1) translate(0 0)'
+        }
+      }
+      // b. 旋转角度
+      if (
+        currentResizingElement.value
+        && e.buttons === 1
+        && currentResizingElement.value.currentElement
+        && (currentResizingElement.value.resizingType.includes('rotate'))
+      ) {
+        if (currentResizingElement.value.currentElement.matrix) {
+          // 鼠标点击开始移动的第一个点
+          // 这次事件
+          const { x, y, width, height } = currentResizingElement.value.currentElement.bound
+          // const prePt = eventToLocation(previousEvent as PointerEvent)
+          const nowPt = eventToLocation(e)
+
+          const angle = calculateAngelBetweenAB([x + width / 2, y], [nowPt.x, nowPt.y])
+
+          console.log(
+            angle * 180 / Math.PI,
+          )
+
+          currentResizingElement.value.currentElement.matrix = `translate(${x + width / 2} ${y + height / 2}) rotate(${angle * 180 / Math.PI}) translate(${-(x + width / 2)} ${-(y + height / 2)})`
+        }
+        else {
+          // 之前还没有变形，说明才旋转第一次，设置其旋转中心为图形中心 translate(${x + width / 2} ${y + height / 2}) translate(${-(x + width / 2)} ${-(y + height / 2)}
+          currentResizingElement.value.currentElement.matrix = 'translate(0 0) rotate(0) translate(0 0)'
         }
       }
 
@@ -438,5 +475,14 @@ export function useBoundsBox(
   }
   function findElementByElementId(elementId: string): CurrentElementType | undefined {
     return elements.value.find(element => element.id === elementId)
+  }
+  /**
+   * 计算向量夹角，单位是弧度
+   * @param {Array.<2>} av
+   * @param {Array.<2>} bv
+   * @returns {number}
+   */
+  function calculateAngelBetweenAB(av: [number, number], bv: [number, number]) {
+    return Math.atan2(av[1], av[0]) - Math.atan2(bv[1], bv[0])
   }
 }
