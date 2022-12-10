@@ -483,6 +483,9 @@ export function useBoundsBox(
    * @returns {number}
    */
   function calculateAngelBetweenAB(av: [number, number], bv: [number, number]) {
-    return Math.atan2(av[1], av[0]) - Math.atan2(bv[1], bv[0])
+    const distanceX = bv[0] - av[0]
+    const distanceY = bv[1] - av[1]
+    const baseAngle = Math.atan2(distanceY, distanceX)
+    return baseAngle
   }
 }
