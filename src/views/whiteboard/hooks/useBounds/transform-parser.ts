@@ -87,7 +87,7 @@ export function recalculateDimensions(selected: SVGPathElement) {
     tlist.removeItem(N - 3)
   }
   // 5.将transform - translate 转成矩阵
-  else if ((N === 1 || (N > 1 && tlist.getItem(1).type !== 3)) && tlist.getItem(0).type === 2 && tlist.getItem(N - 2).type !== 4) {
+  else if ((N === 1 || (N > 1 && tlist.getItem(1).type !== 3)) && tlist.getItem(0).type === 2) {
     const oldXLate = tlist.getItem(0).matrix
     const meq = transformListToTransform(tlist, 1).matrix
     const meq_inv = meq.inverse()

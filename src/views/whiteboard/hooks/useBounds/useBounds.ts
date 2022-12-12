@@ -53,7 +53,9 @@ export function useBoundsBox(
     else {
       const isSelectedElements = findElementIsSelected()
       isSelectedElements.forEach((element) => {
-        // 获取选中移动的 svg 要素
+        // 获取选中要更改其尺寸的 svg 要素 （transform - scale | translate | rotate）
+        // 这里scale和translate比较容易，重新生成path后，不需要再进一步考虑
+        // 但是rotate需要考虑bound，有个角度的问题
         const selected = document.getElementById(element.id) as unknown as SVGPathElement
         if (selected instanceof SVGPathElement) {
           const result = recalculateDimensions(selected)
