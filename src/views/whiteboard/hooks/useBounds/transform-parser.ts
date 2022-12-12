@@ -72,21 +72,29 @@ export function recalculateDimensions(selected: SVGPathElement) {
   // 2.获取变形的数组
   const tlist = getTransformList(selected)
   const N = tlist.numberOfItems
-  // 3.将transform - scale 转成矩阵
+  // 3.将transform - scale 转成矩阵 （因为scale和rotate都需要设置 transfrom-origin ，所以多设置两个矩阵平移）
   if (N >= 3 && tlist.getItem(N - 2).type === 3 && tlist.getItem(N - 3).type === 2 && tlist.getItem(N - 1).type === 2) {
     m = transformListToTransform(tlist, N - 3, N - 1).matrix
     tlist.removeItem(N - 1)
     tlist.removeItem(N - 2)
     tlist.removeItem(N - 3)
   }
-  // 3.将transform - translate 转成矩阵
-  else if ((N === 1 || (N > 1 && tlist.getItem(1).type !== 3)) && tlist.getItem(0).type === 2) {
+  // 4.将transform - rotate 转成矩阵（因为scale和rotate都需要设置 transfrom-origin ，所以多设置两个矩阵平移）
+  else if (N >= 3 && tlist.getItem(N - 2).type === 4 && tlist.getItem(N - 3).type === 2 && tlist.getItem(N - 1).type === 2) {
+    m = transformListToTransform(tlist, N - 3, N - 1).matrix
+    tlist.removeItem(N - 1)
+    tlist.removeItem(N - 2)
+    tlist.removeItem(N - 3)
+  }
+  // 5.将transform - translate 转成矩阵
+  else if ((N === 1 || (N > 1 && tlist.getItem(1).type !== 3)) && tlist.getItem(0).type === 2 && tlist.getItem(N - 2).type !== 4) {
     const oldXLate = tlist.getItem(0).matrix
     const meq = transformListToTransform(tlist, 1).matrix
     const meq_inv = meq.inverse()
     m = matrixMultiply(meq_inv, oldXLate, meq)
     tlist.removeItem(0)
   }
-  // 4.将要变换的要素及其变化后的要素的矩阵传入生成新的路径
+
+  // 6.将要变换的要素及其变化后的要素的矩阵传入生成新的路径
   return remapPath(selected as SVGPathElement & { pathSegList: any }, m)
 }
