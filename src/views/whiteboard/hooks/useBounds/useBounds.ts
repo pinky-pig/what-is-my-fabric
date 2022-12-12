@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * 1. 绘制框选预选框
  * 2. 鼠标move的时候重绘预选框
@@ -324,17 +323,13 @@ export function useBoundsBox(
           const { x, y, width, height } = currentResizingElement.value.currentElement.bound
           // const prePt = eventToLocation(previousEvent as PointerEvent)
           const nowPt = eventToLocation(e)
-
-          const angle = calculateAngelBetweenAB([x + width / 2, y], [nowPt.x, nowPt.y])
-
-          console.log(
-            angle * 180 / Math.PI,
-          )
-
+          // mouseDown的点为起点，现在mouseMove的点为终点，计算其与图形中心的角度，单位是弧度制
+          const angle = calculateAngelBetweenAB([x + width / 2, y], [nowPt.x, nowPt.y], [x + width / 2, y + height / 2])
+          // 转为角度制，旋转
           currentResizingElement.value.currentElement.matrix = `translate(${x + width / 2} ${y + height / 2}) rotate(${angle * 180 / Math.PI}) translate(${-(x + width / 2)} ${-(y + height / 2)})`
         }
         else {
-          // 之前还没有变形，说明才旋转第一次，设置其旋转中心为图形中心 translate(${x + width / 2} ${y + height / 2}) translate(${-(x + width / 2)} ${-(y + height / 2)}
+          // 之前还没有变形，说明才旋转第一次，设置其为初始状态
           currentResizingElement.value.currentElement.matrix = 'translate(0 0) rotate(0) translate(0 0)'
         }
       }
@@ -482,10 +477,15 @@ export function useBoundsBox(
    * @param {Array.<2>} bv
    * @returns {number}
    */
-  function calculateAngelBetweenAB(av: [number, number], bv: [number, number]) {
-    const distanceX = bv[0] - av[0]
-    const distanceY = bv[1] - av[1]
-    const baseAngle = Math.atan2(distanceY, distanceX)
-    return baseAngle
+  function calculateAngelBetweenAB(start: [number, number], end: [number, number], center: [number, number]) {
+    const calculateAngel = (av, bv) => {
+      const distanceX = bv[0] - av[0]
+      const distanceY = bv[1] - av[1]
+      const baseAngle = Math.atan2(distanceY, distanceX)
+      return baseAngle
+    }
+    const angleStart = calculateAngel(start, center)
+    const angleEnd = calculateAngel(end, center)
+    return angleEnd - angleStart
   }
 }
