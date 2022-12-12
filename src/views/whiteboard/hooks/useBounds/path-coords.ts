@@ -93,8 +93,7 @@ export function remapPath(selected: SVGPathElement & { pathSegList: any }, m: an
         break
       case 7: // relative cubic (c)
       case 6: // absolute cubic (C)
-        dStr += `${seg.x1},${seg.y1} ${seg.x2},${seg.y2} ${
-               seg.x},${seg.y} `
+        dStr += `${seg.x1},${seg.y1} ${seg.x2},${seg.y2} ${seg.x},${seg.y} `
         break
       case 9: // relative quad (q)
       case 8: // absolute quad (Q)
@@ -102,8 +101,7 @@ export function remapPath(selected: SVGPathElement & { pathSegList: any }, m: an
         break
       case 11: // relative elliptical arc (a)
       case 10: // absolute elliptical arc (A)
-        dStr += `${seg.r1},${seg.r2} ${seg.angle} ${+seg.largeArcFlag
-              } ${+seg.sweepFlag} ${seg.x},${seg.y} `
+        dStr += `${seg.r1},${seg.r2} ${seg.angle} ${+seg.largeArcFlag} ${+seg.sweepFlag} ${seg.x},${seg.y} `
         break
       case 17: // relative smooth cubic (s)
       case 16: // absolute smooth cubic (S)

@@ -43,6 +43,21 @@ export function matrixMultiply(...arg: any[]) {
   return m
 }
 
+export function getRotationAngle(elem, to_rad?: number) {
+  const selected = elem
+  // find the rotation transform (if any) and set it
+  const tlist = getTransformList(selected)
+  if (!tlist)
+    return 0 // <svg> elements have no tlist
+  const N = tlist.numberOfItems
+  for (let i = 0; i < N; ++i) {
+    const xform = tlist.getItem(i)
+    if (xform.type === 4)
+      return to_rad ? xform.angle * Math.PI / 180.0 : xform.angle
+  }
+  return 0.0
+}
+
 export function transformListToTransform(tlist, mi?: any, ma?: any) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   if (tlist === null) {
@@ -81,10 +96,7 @@ export function recalculateDimensions(selected: SVGPathElement) {
   }
   // 4.将transform - rotate 转成矩阵（因为scale和rotate都需要设置 transfrom-origin ，所以多设置两个矩阵平移）
   else if (N >= 3 && tlist.getItem(N - 2).type === 4 && tlist.getItem(N - 3).type === 2 && tlist.getItem(N - 1).type === 2) {
-    m = transformListToTransform(tlist, N - 3, N - 1).matrix
-    tlist.removeItem(N - 1)
-    tlist.removeItem(N - 2)
-    tlist.removeItem(N - 3)
+    m = transformListToTransform(tlist).matrix
   }
   // 5.将transform - translate 转成矩阵
   else if ((N === 1 || (N > 1 && tlist.getItem(1).type !== 3)) && tlist.getItem(0).type === 2) {
