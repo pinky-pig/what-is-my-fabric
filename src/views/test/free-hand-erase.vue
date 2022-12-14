@@ -35,10 +35,9 @@ watch(() => points.value, () => {
 })
 
 function handlePointerDown(e) {
-  loop()
-
   e.target.setPointerCapture(e.pointerId)
   points.value = [[e.pageX, e.pageY, e.pressure]]
+  loop()
 }
 
 function handlePointerMove(e) {

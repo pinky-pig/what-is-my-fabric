@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 
 enum IMode {
   Hand = 'Hand',
+  Erase = 'Erase',
   FreeDraw = 'FreeDraw',
   Line = 'Line',
   Rectangle = 'Rectangle',
