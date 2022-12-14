@@ -54,6 +54,7 @@ export interface CurrentElementType {
   isSelected: boolean // 是否选中
   bound: BoundType // 要素所占的边界坐标
   matrix?: string // 要素的变形
+  groupMatrix?: string // 用于 rotate 因为rotate后，bounds控制点不好控制，所以这个属性加载到 group中
 }
 
 export interface SvgState {

@@ -312,7 +312,7 @@ export function useBoundsBox(
           currentResizingElement.value.currentElement.matrix = 'translate(0 0) scale(1 1) translate(0 0)'
         }
       }
-      // b. 旋转角度
+      // b. 旋转角度。这里使用的是设置属性 rotate ，不进行重新计算坐标。当多选的时候需要重新计算 bounds
       if (
         currentResizingElement.value
         && e.buttons === 1

@@ -95,6 +95,8 @@ export function recalculateDimensions(selected: SVGPathElement) {
     tlist.removeItem(N - 3)
   }
   // 4.将transform - rotate 转成矩阵（因为scale和rotate都需要设置 transfrom-origin ，所以多设置两个矩阵平移）
+  // 修正： 设置rotate的时候，不再重新计算坐标，因为对rotate的控制点不好控制，直接设置transform属性，之后的操作相当于都是对正方向的要素进行操作，
+  // 最后设置 rotate()
   else if (N >= 3 && tlist.getItem(N - 2).type === 4 && tlist.getItem(N - 3).type === 2 && tlist.getItem(N - 1).type === 2) {
     m = transformListToTransform(tlist).matrix
   }
