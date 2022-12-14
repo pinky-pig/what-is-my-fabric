@@ -7,6 +7,7 @@ import { useCanvasEvents } from '../../hooks/useCanvasEvents'
 import type { ElementBound } from '../../hooks/useBounds'
 import { useBoundsBox } from '../../hooks/useBounds'
 import Bounds from '../bounds/index.vue'
+import { useErase } from '../../hooks/useTools'
 import type { CurrentElementType } from '~/store/modules/svg'
 import { useSvgStore } from '~/store/modules/svg'
 // 全局状态 pinia
@@ -32,6 +33,9 @@ const selectedAllBoxElement = ref<CurrentElementType>()
 // 实际的每个要素选框
 const selectedBounds = ref<ElementBound[]>([])
 useBoundsBox(selectedBounds, previewContainerBoxElement, selectedAllBoxElement)
+
+const erasePath = ref<string>()
+useErase(erasePath)
 </script>
 
 <template>
@@ -110,6 +114,8 @@ useBoundsBox(selectedBounds, previewContainerBoxElement, selectedAllBoxElement)
         <Bounds :element-bound="item" />
       </template>
 
+      <!-- 橡皮擦 -->
+      <path :d="erasePath" stroke="gray" fill="gray" style="opacity: 0.5;" />
     </svg>
   </div>
 </template>
