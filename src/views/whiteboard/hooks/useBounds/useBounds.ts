@@ -28,6 +28,7 @@ export interface ElementBound {
     width: number
     height: number
   }
+  groupMatrix: string | undefined // 用于 rotate 因为rotate后，bounds控制点不好控制，所以这个属性加载到 group中
 }
 
 export function useBoundsBox(
@@ -56,15 +57,30 @@ export function useBoundsBox(
         // 获取选中要更改其尺寸的 svg 要素 （transform - scale | translate | rotate）
         // 这里scale和translate比较容易，重新生成path后，不需要再进一步考虑
         // 但是rotate需要考虑bound，有个角度的问题
-        const selected = document.getElementById(element.id) as unknown as SVGPathElement
-        if (selected instanceof SVGPathElement) {
-          const result = recalculateDimensions(selected)
-          if (result) {
-            element.path = result
-            element.bound = browserComputePathBoundingBox(result)
-            element.matrix = ''
+
+
+        // 1. 如果有rotate，那么将其属性给group，自身的移除掉
+        // 2. 如果没有rotate，说明就是scale，重新生成path
+        const elementRotateAngle = getAngleOrOriginFromRotate(element.matrix, 'angle') as number
+        const groupElementRotateAngle = getAngleOrOriginFromRotate(element.groupMatrix, 'angle') as number
+        const elementOrigin = getAngleOrOriginFromRotate(element.matrix, 'origin')
+
+        if (elementRotateAngle) {
+          element.groupMatrix = `rotate(${elementRotateAngle + groupElementRotateAngle} ${elementOrigin[0]} ${elementOrigin[1]})`
+          element.matrix = ''
+        } else {
+          console.log(222);
+          const selected = document.getElementById(element.id) as unknown as SVGPathElement
+          if (selected instanceof SVGPathElement) {
+            const result = recalculateDimensions(selected)
+            if (result) {
+              element.path = result
+              element.bound = browserComputePathBoundingBox(result)
+              element.matrix = ''
+            }
           }
         }
+
       })
     }
   })
@@ -84,6 +100,7 @@ export function useBoundsBox(
           id: generateUuid(),
           elementId: element.id,
           bounds: element.bound,
+          groupMatrix: element.groupMatrix
         })
       }
     })
@@ -169,7 +186,7 @@ export function useBoundsBox(
     // 2.如果有已经被选中的要素，并且当前鼠标点击的位置是在其范围内，那么设置鼠标为移动
     const isSelectedElements = findElementIsSelected()
     if (someElementIsSelected()
-        && getIsInBoxAtPosition(isSelectedElements.length > 1 ? selectedAllBoxElement.value?.bound : isSelectedElements[0].bound, pt)) {
+      && getIsInBoxAtPosition(isSelectedElements.length > 1 ? selectedAllBoxElement.value?.bound : isSelectedElements[0].bound, pt)) {
       previousEvent = e
       isDraggingElement.value = true
       return
@@ -323,16 +340,16 @@ export function useBoundsBox(
           // 鼠标点击开始移动的第一个点
           // 这次事件
           const { x, y, width, height } = currentResizingElement.value.currentElement.bound
-          // const prePt = eventToLocation(previousEvent as PointerEvent)
           const nowPt = eventToLocation(e)
+          const prePt = previousEvent ? eventToLocation(previousEvent) : { x: x + width / 2, y }
           // mouseDown的点为起点，现在mouseMove的点为终点，计算其与图形中心的角度，单位是弧度制
-          const angle = calculateAngelBetweenAB([x + width / 2, y], [nowPt.x, nowPt.y], [x + width / 2, y + height / 2])
+          const angle = calculateAngelBetweenAB([prePt.x, prePt.y], [nowPt.x, nowPt.y], [x + width / 2, y + height / 2])
           // 转为角度制，旋转
-          currentResizingElement.value.currentElement.matrix = `translate(${x + width / 2} ${y + height / 2}) rotate(${angle * 180 / Math.PI}) translate(${-(x + width / 2)} ${-(y + height / 2)})`
+          currentResizingElement.value.currentElement.matrix = `rotate(${angle * 180 / Math.PI} ${x + width / 2} ${y + height / 2})`
         }
         else {
           // 之前还没有变形，说明才旋转第一次，设置其为初始状态
-          currentResizingElement.value.currentElement.matrix = 'translate(0 0) rotate(0) translate(0 0)'
+          currentResizingElement.value.currentElement.matrix = 'rotate(0)'
         }
       }
 
@@ -489,5 +506,22 @@ export function useBoundsBox(
     const angleStart = calculateAngel(start, center)
     const angleEnd = calculateAngel(end, center)
     return angleEnd - angleStart
+  }
+  /**
+   * 从rotate字符串中截取角度和旋转中心
+   * @param str rotate(90 255 170)
+   * @param type 'angle' | 'origin'
+   * @returns number | number[]
+   */
+  function getAngleOrOriginFromRotate(str: string | undefined, type: 'angle' | 'origin'): number | number[] {
+    if (!str) return 0
+    const rotateStr = str.match(/(^|\s)rotate\([^\)]*\)/g)
+    const angleStr = rotateStr ? rotateStr[0].match(/\(([^\)]*)\)/) : 0
+    const arg = angleStr ? angleStr[1].split(' ') : [0, 0, 0]
+
+    return {
+      angle: +arg[0],
+      origin: [+arg[1], +arg[2]]
+    }[type]
   }
 }

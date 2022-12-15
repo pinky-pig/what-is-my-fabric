@@ -16,13 +16,14 @@ const { elementBound } = defineProps({
         width: 100,
         height: 100,
       },
+      groupMatrix: '' as string | undefined
     },
   },
 })
 </script>
 
 <template>
-  <g :id="`transfrom_selection_box-${elementBound.elementId}`" class="transfrom_selection_box">
+  <g :id="`transfrom_selection_box-${elementBound.elementId}`" :transform="elementBound?.groupMatrix" class="transfrom_selection_box">
     <RotateHandle :element-bound="elementBound" center="top_center_rotate" />
     <EdgeHandle :element-bound="elementBound" edge="top_edge" />
     <EdgeHandle :element-bound="elementBound" edge="bottom_edge" />

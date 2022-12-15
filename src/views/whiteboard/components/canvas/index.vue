@@ -57,7 +57,7 @@ useErase(erasePath)
         />
       </g>
       <!-- 已经绘制的要素 -->
-      <g v-for="element in elements" :key="element.id">
+      <g v-for="element in elements" :key="element.id" :transform="element?.groupMatrix">
         <path
           :id="element?.id"
           :d="element.path"
