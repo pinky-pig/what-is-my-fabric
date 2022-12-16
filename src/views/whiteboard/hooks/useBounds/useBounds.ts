@@ -228,7 +228,18 @@ export function useBoundsBox(
             // 每次重新赋值给 matrix
             const disX = nowPt.x - prePt.x
             const disY = nowPt.y - prePt.y
+
+            // 这里需要修改一下 groupMatrix 的 rotate 的中心点的值
+            // 因为只修改角度的时候，其中心点是不变的
+            // 但是transltate和resize的时候，element是会改变，其中心点也是会改的，所以要重新计算
             element.matrix = `translate(${disX} ,${disY})`
+
+            // 设置 rotate 的角度
+            const groupElementRotateAngle = getAngleOrOriginFromRotate(element.groupMatrix, 'angle') as number
+            if (groupElementRotateAngle) {
+              const { x, y, width, height } = element.bound
+              element.groupMatrix = `rotate(${groupElementRotateAngle} ${disX + x + width / 2} ${disY + y + height / 2})`
+            }
           }
           else {
             // 之前还没有变形，说明才刚拖拽第一次
@@ -343,6 +354,7 @@ export function useBoundsBox(
           const nowPt = eventToLocation(e)
           const prePt = previousEvent ? eventToLocation(previousEvent) : { x: x + width / 2, y }
           // mouseDown的点为起点，现在mouseMove的点为终点，计算其与图形中心的角度，单位是弧度制
+          // 这里只是path到旋转角度。当松开鼠标才计算，当前path和group的旋转结合计算赋值给group
           const angle = calculateAngelBetweenAB([prePt.x, prePt.y], [nowPt.x, nowPt.y], [x + width / 2, y + height / 2])
           // 转为角度制，旋转
           currentResizingElement.value.currentElement.matrix = `rotate(${angle * 180 / Math.PI} ${x + width / 2} ${y + height / 2})`
