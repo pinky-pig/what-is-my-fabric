@@ -58,7 +58,6 @@ export function useBoundsBox(
         // 这里scale和translate比较容易，重新生成path后，不需要再进一步考虑
         // 但是rotate需要考虑bound，有个角度的问题
 
-
         // 1. 如果有rotate，那么将其属性给group，自身的移除掉
         // 2. 如果没有rotate，说明就是scale，重新生成path
         const elementRotateAngle = getAngleOrOriginFromRotate(element.matrix, 'angle') as number
@@ -68,8 +67,8 @@ export function useBoundsBox(
         if (elementRotateAngle) {
           element.groupMatrix = `rotate(${elementRotateAngle + groupElementRotateAngle} ${elementOrigin[0]} ${elementOrigin[1]})`
           element.matrix = ''
-        } else {
-          console.log(222);
+        }
+        else {
           const selected = document.getElementById(element.id) as unknown as SVGPathElement
           if (selected instanceof SVGPathElement) {
             const result = recalculateDimensions(selected)
@@ -80,7 +79,6 @@ export function useBoundsBox(
             }
           }
         }
-
       })
     }
   })
@@ -100,7 +98,7 @@ export function useBoundsBox(
           id: generateUuid(),
           elementId: element.id,
           bounds: element.bound,
-          groupMatrix: element.groupMatrix
+          groupMatrix: element.groupMatrix,
         })
       }
     })
@@ -526,14 +524,15 @@ export function useBoundsBox(
    * @returns number | number[]
    */
   function getAngleOrOriginFromRotate(str: string | undefined, type: 'angle' | 'origin'): number | number[] {
-    if (!str) return 0
+    if (!str)
+      return 0
     const rotateStr = str.match(/(^|\s)rotate\([^\)]*\)/g)
     const angleStr = rotateStr ? rotateStr[0].match(/\(([^\)]*)\)/) : 0
     const arg = angleStr ? angleStr[1].split(' ') : [0, 0, 0]
 
     return {
       angle: +arg[0],
-      origin: [+arg[1], +arg[2]]
+      origin: [+arg[1], +arg[2]],
     }[type]
   }
 }

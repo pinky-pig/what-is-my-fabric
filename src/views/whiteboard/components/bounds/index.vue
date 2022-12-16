@@ -16,7 +16,7 @@ const { elementBound } = defineProps({
         width: 100,
         height: 100,
       },
-      groupMatrix: '' as string | undefined
+      groupMatrix: '' as string | undefined,
     },
   },
 })
