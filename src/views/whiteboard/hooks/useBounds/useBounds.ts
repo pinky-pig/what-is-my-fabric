@@ -265,8 +265,18 @@ export function useBoundsBox(
 
           const { x, y, width, height } = currentResizingElement.value.currentElement.bound
 
-          const dx = (nowPt.x - prePt.x)
-          const dy = (nowPt.y - prePt.y)
+          let dx = (nowPt.x - prePt.x)
+          let dy = (nowPt.y - prePt.y)
+
+          // 如果有旋转角度的话，那么就计算一下偏移的绝对位置
+          const groupElementRotateAngle = getAngleOrOriginFromRotate(currentResizingElement.value.currentElement.groupMatrix, 'angle') as number
+          if (groupElementRotateAngle) {
+            const r = Math.sqrt( dx*dx + dy*dy )
+            const theta = Math.atan2(dy,dx) - groupElementRotateAngle * Math.PI / 180.0;
+            dx = r * Math.cos(theta)
+            dy = r * Math.sin(theta)
+          }
+
 
           let sx = 1
           let sy = 1
