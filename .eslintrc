@@ -7,7 +7,9 @@
   },
   "rules": {
     // 禁止检查每行最大字数
-    "max-statements-per-line": "off"
+    "max-statements-per-line": "off",
+    // 禁止结尾最大空行
+    "no-multiple-empty-lines": "off",
   },
   "extends": "@antfu/eslint-config"
 }

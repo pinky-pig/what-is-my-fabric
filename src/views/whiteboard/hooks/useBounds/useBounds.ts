@@ -63,13 +63,13 @@ export function useBoundsBox(
         const elementRotateAngle = getAngleOrOriginFromRotate(element.matrix, 'angle') as number
         const groupElementRotateAngle = getAngleOrOriginFromRotate(element.groupMatrix, 'angle') as number
         const elementOrigin = getAngleOrOriginFromRotate(element.matrix, 'origin')
+        const selected = document.getElementById(element.id) as unknown as SVGPathElement
 
         if (elementRotateAngle) {
           element.groupMatrix = `rotate(${elementRotateAngle + groupElementRotateAngle} ${elementOrigin[0]} ${elementOrigin[1]})`
           element.matrix = ''
         }
         else {
-          const selected = document.getElementById(element.id) as unknown as SVGPathElement
           if (selected instanceof SVGPathElement) {
             const result = recalculateDimensions(selected)
             if (result) {
@@ -238,6 +238,15 @@ export function useBoundsBox(
               const { x, y, width, height } = element.bound
               element.groupMatrix = `rotate(${groupElementRotateAngle} ${disX + x + width / 2} ${disY + y + height / 2})`
             }
+
+
+            // // 这里使用groupMatrix是可以的，但是计算的时候不太合适，因为groupElementOrigin是不会改变，所以这个值的绝对值是一直递增变大的
+            // const groupElementRotateAngle = getAngleOrOriginFromRotate(element.groupMatrix, 'angle') as number
+            // const groupElementOrigin = getAngleOrOriginFromRotate(element.groupMatrix, 'origin')
+            // if (groupElementRotateAngle && groupElementOrigin) {
+            //   element.groupMatrix = `rotate(${groupElementRotateAngle} ${groupElementOrigin[0] + disX} ${groupElementOrigin[1] + disY})`
+            //   console.log(`rotate(${groupElementRotateAngle} ${groupElementOrigin[0] + disX} ${groupElementOrigin[1] + disY})`)
+            // }
           }
           else {
             // 之前还没有变形，说明才刚拖拽第一次
@@ -271,8 +280,8 @@ export function useBoundsBox(
           // 如果有旋转角度的话，那么就计算一下偏移的绝对位置
           const groupElementRotateAngle = getAngleOrOriginFromRotate(currentResizingElement.value.currentElement.groupMatrix, 'angle') as number
           if (groupElementRotateAngle) {
-            const r = Math.sqrt( dx*dx + dy*dy )
-            const theta = Math.atan2(dy,dx) - groupElementRotateAngle * Math.PI / 180.0;
+            const r = Math.sqrt(dx * dx + dy * dy)
+            const theta = Math.atan2(dy, dx) - groupElementRotateAngle * Math.PI / 180.0
             dx = r * Math.cos(theta)
             dy = r * Math.sin(theta)
           }
@@ -359,13 +368,19 @@ export function useBoundsBox(
           // 鼠标点击开始移动的第一个点
           // 这次事件
           const { x, y, width, height } = currentResizingElement.value.currentElement.bound
+
           const nowPt = eventToLocation(e)
           const prePt = previousEvent ? eventToLocation(previousEvent) : { x: x + width / 2, y }
           // mouseDown的点为起点，现在mouseMove的点为终点，计算其与图形中心的角度，单位是弧度制
           // 这里只是path到旋转角度。当松开鼠标才计算，当前path和group的旋转结合计算赋值给group
           const angle = calculateAngelBetweenAB([prePt.x, prePt.y], [nowPt.x, nowPt.y], [x + width / 2, y + height / 2])
           // 转为角度制，旋转
-          currentResizingElement.value.currentElement.matrix = `rotate(${angle * 180 / Math.PI} ${x + width / 2} ${y + height / 2})`
+          const elementOrigin = getAngleOrOriginFromRotate(currentResizingElement.value.currentElement.groupMatrix, 'origin')
+
+          if (elementOrigin)
+            currentResizingElement.value.currentElement.matrix = `rotate(${angle * 180 / Math.PI} ${elementOrigin[0]} ${elementOrigin[1]})`
+          else
+            currentResizingElement.value.currentElement.matrix = `rotate(${angle * 180 / Math.PI} ${x + width / 2} ${y + height / 2})`
         }
         else {
           // 之前还没有变形，说明才旋转第一次，设置其为初始状态
