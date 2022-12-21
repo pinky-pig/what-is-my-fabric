@@ -62,7 +62,8 @@ export function useBoundsBox(
         // 2. 如果没有rotate，说明就是scale，重新生成path
         const elementRotateAngle = getAngleOrOriginFromRotate(element.matrix, 'angle') as number
         const groupElementRotateAngle = getAngleOrOriginFromRotate(element.groupMatrix, 'angle') as number
-        const elementOrigin = getAngleOrOriginFromRotate(element.matrix, 'origin')
+        const groupElementOrigin = getAngleOrOriginFromRotate(element.groupMatrix, 'origin') as number[]
+        const elementOrigin = getAngleOrOriginFromRotate(element.matrix, 'origin') as number[]
         const selected = document.getElementById(element.id) as unknown as SVGPathElement
 
         if (elementRotateAngle) {
@@ -71,11 +72,40 @@ export function useBoundsBox(
         }
         else {
           if (selected instanceof SVGPathElement) {
+            // 1.正常改变路径
             const result = recalculateDimensions(selected)
             if (result) {
               element.path = result
               element.bound = browserComputePathBoundingBox(result)
               element.matrix = ''
+            }
+
+            // 2.如果group有旋转角度的话，这个时候也应该旋转
+            if (groupElementRotateAngle) {
+              // 将原来的旋转角度置空
+              element.groupMatrix = ''
+              // 获取上次的范围
+              const { x, y, width, height } = element.bound
+              // 计算中心点的位置，就是缩放后的中心点基于缩放前的中心点旋转角度后的中心点位置
+              const coords = calculateCoords(groupElementOrigin, [x + width / 2, y + height / 2], groupElementRotateAngle * Math.PI / 180)
+
+              // 计算缩放后的图形的中心点和旋转后的中心点的位置偏差
+              const dX = coords[0] - (x + width / 2)
+              const dY = coords[1] - (y + height / 2)
+
+              // 将缩放后的图形移动
+              element.matrix = `translate(${dX} ${dY}) `
+
+              // 将平移后的要素重新计算坐标，然后再对其进行旋转
+              setTimeout(() => {
+                const result = recalculateDimensions(selected)
+                element.path = result
+                element.bound = browserComputePathBoundingBox(result)
+                const { x, y, width, height } = element.bound
+
+                element.groupMatrix = `rotate(${groupElementRotateAngle} ${x + width / 2} ${y + height / 2})`
+                // console.log(`rotate(${groupElementRotateAngle} ${x + width / 2} ${y + height / 2})`)
+              })
             }
           }
         }
@@ -559,5 +589,26 @@ export function useBoundsBox(
       angle: +arg[0],
       origin: [+arg[1], +arg[2]],
     }[type]
+  }
+
+  /**
+   * 计算旋转后的坐标
+   * @param start
+   * @param end
+   * @param angle
+   * @returns
+   */
+  function calculateCoords(start: number[], end: number[], angle) {
+    const x = start[0]
+    const y = start[1]
+    const x1 = end[0]
+    const y1 = end[1]
+
+    const sin = Math.sin(angle)
+    const cos = Math.cos(angle)
+
+    const x2 = x + (x1 - x) * cos - (y1 - y) * sin
+    const y2 = y + (y1 - y) * cos + (x1 - x) * sin
+    return [x2, y2]
   }
 }
