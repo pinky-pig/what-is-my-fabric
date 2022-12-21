@@ -97,14 +97,12 @@ export function useBoundsBox(
               element.matrix = `translate(${dX} ${dY}) `
 
               // 将平移后的要素重新计算坐标，然后再对其进行旋转
-              setTimeout(() => {
+              nextTick(() => {
                 const result = recalculateDimensions(selected)
                 element.path = result
                 element.bound = browserComputePathBoundingBox(result)
                 const { x, y, width, height } = element.bound
-
                 element.groupMatrix = `rotate(${groupElementRotateAngle} ${x + width / 2} ${y + height / 2})`
-                // console.log(`rotate(${groupElementRotateAngle} ${x + width / 2} ${y + height / 2})`)
               })
             }
           }
