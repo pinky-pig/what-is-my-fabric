@@ -110,6 +110,29 @@ export function useBoundsBox(
       })
     }
   })
+
+  watch(isDraggingElement, (nVal) => {
+    if (nVal) {
+      selectedBounds.value = []
+      selectedAllBoxElement.value = undefined
+    }
+    else {
+      const isSelectedElements = findElementIsSelected()
+      isSelectedElements.forEach((element) => {
+        // 获取选中移动的 svg 要素
+        const selected = document.getElementById(element.id) as unknown as SVGPathElement
+        if (selected instanceof SVGPathElement) {
+          const result = recalculateDimensions(selected)
+          if (result) {
+            element.path = result
+            element.bound = browserComputePathBoundingBox(result)
+            element.matrix = ''
+          }
+        }
+      })
+    }
+  })
+
   watch(() => elements, () => {
     // 如果是正在拖拽要素，下面的新增要素的方法就不走了
     if (isDraggingElement.value)
@@ -155,27 +178,6 @@ export function useBoundsBox(
     }
   }, {
     deep: true,
-  })
-  watch(isDraggingElement, (nVal) => {
-    if (nVal) {
-      selectedBounds.value = []
-      selectedAllBoxElement.value = undefined
-    }
-    else {
-      const isSelectedElements = findElementIsSelected()
-      isSelectedElements.forEach((element) => {
-        // 获取选中移动的 svg 要素
-        const selected = document.getElementById(element.id) as unknown as SVGPathElement
-        if (selected instanceof SVGPathElement) {
-          const result = recalculateDimensions(selected)
-          if (result) {
-            element.path = result
-            element.bound = browserComputePathBoundingBox(result)
-            element.matrix = ''
-          }
-        }
-      })
-    }
   })
 
   function handlePointerDown(e: PointerEvent) {
@@ -266,15 +268,6 @@ export function useBoundsBox(
               const { x, y, width, height } = element.bound
               element.groupMatrix = `rotate(${groupElementRotateAngle} ${disX + x + width / 2} ${disY + y + height / 2})`
             }
-
-
-            // // 这里使用groupMatrix是可以的，但是计算的时候不太合适，因为groupElementOrigin是不会改变，所以这个值的绝对值是一直递增变大的
-            // const groupElementRotateAngle = getAngleOrOriginFromRotate(element.groupMatrix, 'angle') as number
-            // const groupElementOrigin = getAngleOrOriginFromRotate(element.groupMatrix, 'origin')
-            // if (groupElementRotateAngle && groupElementOrigin) {
-            //   element.groupMatrix = `rotate(${groupElementRotateAngle} ${groupElementOrigin[0] + disX} ${groupElementOrigin[1] + disY})`
-            //   console.log(`rotate(${groupElementRotateAngle} ${groupElementOrigin[0] + disX} ${groupElementOrigin[1] + disY})`)
-            // }
           }
           else {
             // 之前还没有变形，说明才刚拖拽第一次
