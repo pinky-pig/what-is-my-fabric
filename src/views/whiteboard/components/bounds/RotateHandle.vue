@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ControlCursor } from '~/store/modules/svg'
-const { elementBound, size, rotate } = defineProps({
+import { ControlConf, ControlCursor } from '~/store/modules/svg'
+const { elementBound, size, rotate, gap } = defineProps({
   elementBound: {
     default: {
       id: '0',
@@ -14,13 +14,14 @@ const { elementBound, size, rotate } = defineProps({
     },
   },
   size: { default: 10 },
+  gap: { default: 10 },
   isHidden: { default: false },
   rotate: { default: 'top_center_rotate' },
 })
 
 const { x, y, height, width } = elementBound.bounds
 const coords = ref({
-  top_center_rotate: [x + (width - size) / 2, y - (size * 2.5)],
+  top_center_rotate: [x + (width - size) / 2, y - (size / 2) - (gap * 2 + 10)],
 })
 const cursorRef = ref(ControlCursor[rotate])
 </script>
@@ -37,7 +38,7 @@ const cursorRef = ref(ControlCursor[rotate])
     :width="size"
     :height="size"
     fill="white"
-    stroke="black"
+    :stroke="ControlConf.strokeColor"
     stroke-width="1px"
   />
 </template>

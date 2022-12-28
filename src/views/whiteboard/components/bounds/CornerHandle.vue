@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ControlCursor } from '~/store/modules/svg'
+import { ControlConf, ControlCursor } from '~/store/modules/svg'
 
-const { elementBound, size, corner } = defineProps({
+const { elementBound, size, corner, gap } = defineProps({
   elementBound: {
     default: {
       id: '0',
@@ -15,16 +15,17 @@ const { elementBound, size, corner } = defineProps({
     },
   },
   size: { default: 10 },
+  gap: { default: 10 },
   isHidden: { default: false },
   corner: { default: 'top_left_corner' },
 })
 const { x, y, height, width } = elementBound.bounds
 
 const coords = {
-  top_left_corner: [x - (size / 2), y - (size / 2)],
-  top_right_corner: [x + width - (size / 2), y - (size / 2)],
-  bottom_right_corner: [x + width - (size / 2), y + height - (size / 2)],
-  bottom_left_corner: [x - (size / 2), y + height - (size / 2)],
+  top_left_corner: [x - (size / 2) - gap, y - (size / 2) - gap],
+  top_right_corner: [x + width - (size / 2) + gap, y - (size / 2) - gap],
+  bottom_right_corner: [x + width - (size / 2) + gap, y + height - (size / 2) + gap],
+  bottom_left_corner: [x - (size / 2) - gap, y + height - (size / 2) + gap],
 }
 const cursorRef = ref(ControlCursor[corner])
 </script>
@@ -36,10 +37,12 @@ const cursorRef = ref(ControlCursor[corner])
     :style="{ opacity: isHidden ? 0 : 1 }"
     :x="coords[corner][0]"
     :y="coords[corner][1]"
+    :rx="size / 5"
+    :ry="size / 5"
     :width="size"
     :height="size"
     fill="white"
-    stroke="black"
+    :stroke="ControlConf.strokeColor"
     stroke-width="1px"
   />
 </template>

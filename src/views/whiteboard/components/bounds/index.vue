@@ -4,8 +4,9 @@
 import RotateHandle from './RotateHandle.vue'
 import EdgeHandle from './EdgeHandle.vue'
 import CornerHandle from './CornerHandle.vue'
+import { ControlConf } from '~/store/modules/svg'
 
-const { elementBound } = defineProps({
+const { elementBound, gap } = defineProps({
   elementBound: {
     default: {
       id: '',
@@ -19,20 +20,31 @@ const { elementBound } = defineProps({
       groupMatrix: '' as string | undefined,
     },
   },
+  gap: { default: 10 },
 })
 </script>
 
 <template>
   <g :id="`transfrom_selection_box-${elementBound.elementId}`" :transform="elementBound?.groupMatrix" class="transfrom_selection_box">
-    <RotateHandle :element-bound="elementBound" center="top_center_rotate" />
-    <EdgeHandle :element-bound="elementBound" edge="top_edge" />
-    <EdgeHandle :element-bound="elementBound" edge="bottom_edge" />
-    <EdgeHandle :element-bound="elementBound" edge="left_edge" />
-    <EdgeHandle :element-bound="elementBound" edge="right_edge" />
-    <CornerHandle :element-bound="elementBound" corner="top_left_corner" />
-    <CornerHandle :element-bound="elementBound" corner="top_right_corner" />
-    <CornerHandle :element-bound="elementBound" corner="bottom_right_corner" />
-    <CornerHandle :element-bound="elementBound" corner="bottom_left_corner" />
+    <rect
+      :id="`edge-handle-${elementBound.elementId}`"
+      :x="elementBound.bounds.x - gap"
+      :y="elementBound.bounds.y - gap"
+      :width="elementBound.bounds.width + gap * 2"
+      :height="elementBound.bounds.height + gap * 2"
+      fill="transparent"
+      :stroke="ControlConf.strokeColor"
+      stroke-width="1px"
+    />
+    <RotateHandle :element-bound="elementBound" center="top_center_rotate" :gap="gap" />
+    <EdgeHandle :element-bound="elementBound" edge="top_edge" :gap="gap" />
+    <EdgeHandle :element-bound="elementBound" edge="bottom_edge" :gap="gap" />
+    <EdgeHandle :element-bound="elementBound" edge="left_edge" :gap="gap" />
+    <EdgeHandle :element-bound="elementBound" edge="right_edge" :gap="gap" />
+    <CornerHandle :element-bound="elementBound" corner="top_left_corner" :gap="gap" />
+    <CornerHandle :element-bound="elementBound" corner="top_right_corner" :gap="gap" />
+    <CornerHandle :element-bound="elementBound" corner="bottom_right_corner" :gap="gap" />
+    <CornerHandle :element-bound="elementBound" corner="bottom_left_corner" :gap="gap" />
   </g>
 </template>
 
