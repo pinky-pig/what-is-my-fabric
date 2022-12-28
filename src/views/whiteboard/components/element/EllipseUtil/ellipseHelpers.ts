@@ -5,6 +5,8 @@
 // sweep-flag - 0:逆时针 1:顺时针
 // https://pomax.github.io/bezierinfo/#circles_cubic
 
+import { path2Rough } from '../path2Rough'
+
 export function getEllipseDefaultPath(mouseFromPoint: number[], mouseToPoint: number[]) {
   // const rx = (mouseToPoint[0] - mouseFromPoint[0]) / 2
   // const ry = (mouseToPoint[1] - mouseFromPoint[1]) / 2
@@ -35,6 +37,6 @@ export function getEllipseDefaultPath(mouseFromPoint: number[], mouseToPoint: nu
     M ${mouseToPoint[0] - rx} ${mouseToPoint[1]}
     C ${mouseFromPoint[0] + rx / 2} ${mouseToPoint[1]} ${mouseFromPoint[0]} ${mouseToPoint[1] - ry / 2} ${mouseFromPoint[0]} ${mouseFromPoint[1] + ry}
  `
-  return path
+  return path2Rough(path)
 }
 

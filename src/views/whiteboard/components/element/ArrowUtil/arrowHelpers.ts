@@ -1,3 +1,5 @@
+import { path2Rough } from '../path2Rough'
+
 export function getArrowDefaultPath(mouseFromPoint: number[], mouseToPoint: number[]) {
   // 1.这里得出平行于x轴的箭头
   const coords = horizontalArrow(mouseFromPoint, mouseToPoint)
@@ -16,7 +18,8 @@ export function getArrowDefaultPath(mouseFromPoint: number[], mouseToPoint: numb
   path += ` L ${points[2][0]} ${points[2][1]}`
   path += ` M ${points[1][0]} ${points[1][1]}`
   path += ` L ${points[3][0]} ${points[3][1]}`
-  return path
+
+  return path2Rough(path)
 }
 
 /**
