@@ -1,20 +1,3 @@
-# eslint 忽略检查 (根据项目需要自行添加)
-node_modules
 dist
+node_modules
 public
-*.sh
-lib
-*.md
-*.woff
-*.ttf
-.vscode
-.idea
-/dist/
-/public
-/docs
-.local
-package.json
-!.env-config.ts
-components.d.ts
-*.config.ts
-src/views/type-challenges/

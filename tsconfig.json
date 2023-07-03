@@ -2,37 +2,20 @@
   "compilerOptions": {
     "baseUrl": ".",
     "module": "ESNext",
-    "target": "ESNext",
+    "target": "es2016",
     "lib": ["DOM", "ESNext"],
     "strict": true,
-    "noImplicitAny": false, // 是否在表达式和声明上有隐含的any类型时报错
     "esModuleInterop": true,
-    "jsx": "preserve",
+    "incremental": false,
     "skipLibCheck": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "noUnusedLocals": false,
+    "noUnusedLocals": true,
     "strictNullChecks": true,
-    "allowJs": true,
     "forceConsistentCasingInFileNames": true,
-    "types": [
-      "vite/client",
-      "vite-plugin-vue-layouts/client"
-    ],
     "paths": {
-      "~/*": ["src/*"],
-      "~@*": ["src/*"]
+      "drauu": ["./packages/core/src/index.ts"]
     }
   },
-  "exclude": ["dist", "node_modules", "cypress", "server"],
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "src/typings/**/*.d.ts",
-    "vite.config.*",
-    "src/components.d.ts",
-    "src/auto-imports.d.ts"
-  ]
+  "exclude": ["**/dist", "node_modules"]
 }
